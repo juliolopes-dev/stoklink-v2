@@ -27,16 +27,16 @@ app.register(jwt, {
   secret: env.JWT_SECRET
 })
 
-// Routes
-app.register(authRoutes)
-app.register(filialRoutes)
-app.register(usuarioRoutes)
-app.register(notaFiscalRoutes)
-app.register(conferenciaRoutes)
-app.register(divergenciaRoutes)
-app.register(distribuicaoRoutes)
-app.register(fornecedorRoutes)
-app.register(empresaRoutes)
+// Routes - todas com prefixo /api
+app.register(authRoutes, { prefix: '/api' })
+app.register(filialRoutes, { prefix: '/api' })
+app.register(usuarioRoutes, { prefix: '/api' })
+app.register(notaFiscalRoutes, { prefix: '/api' })
+app.register(conferenciaRoutes, { prefix: '/api' })
+app.register(divergenciaRoutes, { prefix: '/api' })
+app.register(distribuicaoRoutes, { prefix: '/api' })
+app.register(fornecedorRoutes, { prefix: '/api' })
+app.register(empresaRoutes, { prefix: '/api' })
 
 // Health check
 app.get('/health', async () => {
