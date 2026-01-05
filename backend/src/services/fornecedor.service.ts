@@ -1,5 +1,11 @@
 import { prisma } from '../lib/prisma.js'
 
+// Remove formatação do CNPJ (pontos, barras, traços)
+function normalizeCnpj(cnpj: string | null | undefined): string | null {
+  if (!cnpj) return null
+  return cnpj.replace(/[^\d]/g, '')
+}
+
 interface CreateFornecedorInput {
   empresaId: string
   nome: string
@@ -64,16 +70,19 @@ export const fornecedorService = {
   },
 
   async findByCnpj(cnpj: string, empresaId: string) {
+    const cnpjNormalizado = normalizeCnpj(cnpj)
     return prisma.fornecedor.findFirst({
-      where: { cnpj, empresaId }
+      where: { cnpj: cnpjNormalizado, empresaId }
     })
   },
 
   async findOrCreate(empresaId: string, nome: string, cnpj?: string) {
+    const cnpjNormalizado = normalizeCnpj(cnpj)
+    
     // Se tem CNPJ, tenta encontrar por CNPJ
-    if (cnpj) {
+    if (cnpjNormalizado) {
       const existente = await prisma.fornecedor.findFirst({
-        where: { cnpj, empresaId }
+        where: { cnpj: cnpjNormalizado, empresaId }
       })
       if (existente) return existente
     }
@@ -83,16 +92,18 @@ export const fornecedorService = {
       data: {
         empresaId,
         nome,
-        cnpj: cnpj || null
+        cnpj: cnpjNormalizado
       }
     })
   },
 
   async create(data: CreateFornecedorInput) {
+    const cnpjNormalizado = normalizeCnpj(data.cnpj)
+    
     // Verifica se CNPJ já existe na empresa
-    if (data.cnpj) {
+    if (cnpjNormalizado) {
       const existente = await prisma.fornecedor.findFirst({
-        where: { cnpj: data.cnpj, empresaId: data.empresaId }
+        where: { cnpj: cnpjNormalizado, empresaId: data.empresaId }
       })
       if (existente) {
         throw new Error('Já existe um fornecedor com este CNPJ')
@@ -103,7 +114,7 @@ export const fornecedorService = {
       data: {
         empresaId: data.empresaId,
         nome: data.nome,
-        cnpj: data.cnpj || null,
+        cnpj: cnpjNormalizado,
         email: data.email || null,
         telefone: data.telefone || null,
         contato: data.contato || null,
@@ -123,10 +134,13 @@ export const fornecedorService = {
       throw new Error('Fornecedor não encontrado')
     }
 
+    // Normaliza CNPJ se fornecido
+    const cnpjNormalizado = data.cnpj !== undefined ? normalizeCnpj(data.cnpj) : undefined
+
     // Se está alterando CNPJ, verifica se já existe na empresa
-    if (data.cnpj && data.cnpj !== fornecedor.cnpj) {
+    if (cnpjNormalizado && cnpjNormalizado !== fornecedor.cnpj) {
       const existente = await prisma.fornecedor.findFirst({
-        where: { cnpj: data.cnpj, empresaId }
+        where: { cnpj: cnpjNormalizado, empresaId }
       })
       if (existente) {
         throw new Error('Já existe um fornecedor com este CNPJ')
@@ -135,7 +149,10 @@ export const fornecedorService = {
 
     return prisma.fornecedor.update({
       where: { id },
-      data
+      data: {
+        ...data,
+        cnpj: cnpjNormalizado !== undefined ? cnpjNormalizado : undefined
+      }
     })
   },
 
