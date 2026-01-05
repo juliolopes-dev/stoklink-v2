@@ -76,7 +76,7 @@ export function Usuarios() {
         email: usuario.email,
         senha: '',
         perfil: usuario.perfil,
-        filialId: usuario.filial.id
+        filialId: usuario.filial?.id || ''
       })
     } else {
       setEditingId(null)
@@ -151,7 +151,7 @@ export function Usuarios() {
     return (
       u.nome.toLowerCase().includes(search) ||
       u.email.toLowerCase().includes(search) ||
-      u.filial.nome.toLowerCase().includes(search)
+      u.filial?.nome?.toLowerCase().includes(search)
     )
   })
 
@@ -239,11 +239,13 @@ export function Usuarios() {
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-gray-600">
-                        {usuario.filial.nome}
+                        {usuario.filial?.nome || 'Sem filial'}
                       </span>
-                      <span className="ml-2 text-xs text-gray-400 font-mono">
-                        ({usuario.filial.codigo})
-                      </span>
+                      {usuario.filial && (
+                        <span className="ml-2 text-xs text-gray-400 font-mono">
+                          ({usuario.filial.codigo})
+                        </span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-center">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
