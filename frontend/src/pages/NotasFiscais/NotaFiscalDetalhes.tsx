@@ -11,6 +11,7 @@ import {
 } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
+import { useModal } from '../../contexts/ModalContext'
 
 interface ItemNF {
   id: string
@@ -94,6 +95,7 @@ interface FilialOption {
 export function NotaFiscalDetalhes() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { alert } = useModal()
   const [nota, setNota] = useState<NotaFiscalDetalhe | null>(null)
   const [loading, setLoading] = useState(true)
   const [conferindoVolumes, setConferindoVolumes] = useState(false)
@@ -141,7 +143,7 @@ export function NotaFiscalDetalhes() {
     
     // Se não tem filial de recebimento definida, exige seleção
     if (!nota?.filialRecebimento && !filialRecebimentoId) {
-      alert('Selecione a filial de recebimento')
+      alert('Atenção', 'Selecione a filial de recebimento', 'info')
       return
     }
 
@@ -247,7 +249,7 @@ export function NotaFiscalDetalhes() {
     } catch (error: unknown) {
       console.error('Erro ao salvar:', error)
       const err = error as { response?: { data?: { error?: string } } }
-      alert(err.response?.data?.error || 'Erro ao salvar')
+      alert('Erro', err.response?.data?.error || 'Erro ao salvar', 'error')
     } finally {
       setSaving(false)
     }

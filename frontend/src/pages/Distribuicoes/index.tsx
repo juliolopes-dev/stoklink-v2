@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { FiTruck, FiFilter, FiSend, FiCheck, FiX, FiEye } from 'react-icons/fi'
 import { api } from '../../services/api'
+import { useModal } from '../../contexts/ModalContext'
 
 interface Distribuicao {
   id: string
@@ -41,6 +42,7 @@ const statusConfig: Record<string, { label: string; color: string }> = {
 }
 
 export function Distribuicoes() {
+  const { confirm } = useModal()
   const [distribuicoes, setDistribuicoes] = useState<Distribuicao[]>([])
   const [resumo, setResumo] = useState<Resumo | null>(null)
   const [loading, setLoading] = useState(true)
@@ -91,7 +93,8 @@ export function Distribuicoes() {
   }
 
   async function handleCancelar(id: string) {
-    if (!confirm('Deseja realmente cancelar esta distribuição?')) return
+    const confirmed = await confirm('Cancelar distribuição', 'Deseja realmente cancelar esta distribuição?')
+    if (!confirmed) return
     
     try {
       await api.post(`/distribuicoes/${id}/cancelar`, {

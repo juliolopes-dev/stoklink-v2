@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiMapPin, FiBox } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { useAuth } from '../../contexts/AuthContext'
+import { useModal } from '../../contexts/ModalContext'
 
 interface Filial {
   id: string
@@ -39,6 +40,7 @@ const initialForm: FilialForm = {
 
 export function Filiais() {
   const { user } = useAuth()
+  const { confirm, alert } = useModal()
   const isAdmin = user?.perfil === 'ADMIN'
   
   const [filiais, setFiliais] = useState<Filial[]>([])
@@ -107,14 +109,15 @@ export function Filiais() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Deseja realmente excluir esta filial?')) return
+    const confirmed = await confirm('Excluir filial', 'Deseja realmente excluir esta filial?')
+    if (!confirmed) return
 
     try {
       await api.delete(`/filiais/${id}`)
       loadFiliais()
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string } } }
-      alert(error.response?.data?.error || 'Erro ao excluir filial')
+      alert('Erro', error.response?.data?.error || 'Erro ao excluir filial', 'error')
     }
   }
 

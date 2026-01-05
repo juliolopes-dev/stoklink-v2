@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiPhone, FiMail } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { useAuth } from '../../contexts/AuthContext'
+import { useModal } from '../../contexts/ModalContext'
 
 interface Fornecedor {
   id: string
@@ -43,6 +44,7 @@ const initialForm: FornecedorForm = {
 
 export function Fornecedores() {
   const { user } = useAuth()
+  const { confirm, alert } = useModal()
   const isAdmin = user?.perfil === 'ADMIN'
   
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([])
@@ -113,14 +115,15 @@ export function Fornecedores() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Deseja realmente excluir este fornecedor?')) return
+    const confirmed = await confirm('Excluir fornecedor', 'Deseja realmente excluir este fornecedor?')
+    if (!confirmed) return
 
     try {
       await api.delete(`/fornecedores/${id}`)
       loadFornecedores()
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string } } }
-      alert(error.response?.data?.error || 'Erro ao excluir fornecedor')
+      alert('Erro', error.response?.data?.error || 'Erro ao excluir fornecedor', 'error')
     }
   }
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiUser, FiShield } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { useAuth } from '../../contexts/AuthContext'
+import { useModal } from '../../contexts/ModalContext'
 
 interface Filial {
   id: string
@@ -36,6 +37,7 @@ const initialForm: UsuarioForm = {
 
 export function Usuarios() {
   const { user } = useAuth()
+  const { confirm, alert } = useModal()
   const isAdmin = user?.perfil === 'ADMIN'
   
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
@@ -118,23 +120,24 @@ export function Usuarios() {
 
   async function handleDelete(id: string) {
     if (id === user?.id) {
-      alert('Você não pode excluir seu próprio usuário')
+      alert('Ação não permitida', 'Você não pode excluir seu próprio usuário', 'error')
       return
     }
-    if (!confirm('Deseja realmente excluir este usuário?')) return
+    const confirmed = await confirm('Excluir usuário', 'Deseja realmente excluir este usuário?')
+    if (!confirmed) return
 
     try {
       await api.delete(`/usuarios/${id}`)
       loadData()
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string } } }
-      alert(error.response?.data?.error || 'Erro ao excluir usuário')
+      alert('Erro', error.response?.data?.error || 'Erro ao excluir usuário', 'error')
     }
   }
 
   async function handleToggleAtivo(usuario: Usuario) {
     if (usuario.id === user?.id) {
-      alert('Você não pode desativar seu próprio usuário')
+      alert('Ação não permitida', 'Você não pode desativar seu próprio usuário', 'error')
       return
     }
     try {
