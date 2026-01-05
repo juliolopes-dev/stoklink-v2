@@ -219,19 +219,19 @@ export function NotasFiscais() {
                         />
                         {/* 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                          <span className="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-blue-100 text-blue-800">
                             Conferir volumes
                           </span>
                         )}
                         {/* 2ª Conferência - Receber no Destino */}
                         {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          <span className="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-indigo-100 text-indigo-800">
                             Conferir volumes (Destino)
                           </span>
                         )}
                         {/* Conferência de Itens */}
                         {nf.filialRecebimento && ['VOLUMES_CONFERIDOS', 'PENDENTE_TRANSFERENCIA'].includes(nf.status) && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200">
+                          <span className="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-orange-100 text-orange-800">
                             Conferir itens
                           </span>
                         )}
