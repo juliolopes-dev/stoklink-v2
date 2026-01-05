@@ -49,8 +49,7 @@ if (env.NODE_ENV === 'production') {
   
   app.register(fastifyStatic, {
     root: publicPath,
-    prefix: '/',
-    decorateReply: false
+    prefix: '/'
   })
 
   // SPA fallback - todas as rotas não-API retornam index.html
