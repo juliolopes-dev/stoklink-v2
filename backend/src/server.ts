@@ -3,11 +3,7 @@ import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
 import fastifyStatic from '@fastify/static'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { env } from './config/env.js'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 import { authRoutes } from './routes/auth.routes.js'
 import { filialRoutes } from './routes/filial.routes.js'
 import { usuarioRoutes } from './routes/usuario.routes.js'
@@ -49,7 +45,7 @@ app.get('/health', async () => {
 
 // Servir frontend estático em produção
 if (env.NODE_ENV === 'production') {
-  const publicPath = path.join(__dirname, '..', 'public')
+  const publicPath = path.join(process.cwd(), 'public')
   
   app.register(fastifyStatic, {
     root: publicPath,
