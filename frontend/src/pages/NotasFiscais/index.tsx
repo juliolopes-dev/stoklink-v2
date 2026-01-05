@@ -212,26 +212,26 @@ export function NotasFiscais() {
                       <span className="text-sm text-gray-900">{nf.quantidadeVolumes}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-1 items-start">
                         <StatusBadge 
                           status={nf.status} 
                           tooltip={!nf.filialRecebimento ? 'Aguardando conferência de volumes' : undefined}
                         />
                         {/* 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (
-                          <span className="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-blue-100 text-blue-800">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             Conferir volumes
                           </span>
                         )}
                         {/* 2ª Conferência - Receber no Destino */}
                         {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
-                          <span className="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-indigo-100 text-indigo-800">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                             Conf. destino
                           </span>
                         )}
                         {/* Conferência de Itens */}
                         {nf.filialRecebimento && ['VOLUMES_CONFERIDOS', 'PENDENTE_TRANSFERENCIA'].includes(nf.status) && (
-                          <span className="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-orange-100 text-orange-800">
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                             Conferir itens
                           </span>
                         )}
