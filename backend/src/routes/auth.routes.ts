@@ -10,6 +10,11 @@ const loginSchema = z.object({
   senha: z.string().min(1, 'Senha é obrigatória')
 })
 
+const changePasswordSchema = z.object({
+  senhaAtual: z.string().min(1, 'Senha atual é obrigatória'),
+  novaSenha: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres')
+})
+
 export async function authRoutes(app: FastifyInstance) {
   app.post('/auth/login', async (request, reply) => {
     try {
@@ -52,6 +57,22 @@ export async function authRoutes(app: FastifyInstance) {
     } catch (error) {
       if (error instanceof Error) {
         return reply.status(404).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro interno do servidor' })
+    }
+  })
+
+  app.put('/auth/change-password', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const { senhaAtual, novaSenha } = changePasswordSchema.parse(request.body)
+      const result = await authService.changePassword(request.user.id, senhaAtual, novaSenha)
+      return reply.send(result)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors[0].message })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
       }
       return reply.status(500).send({ error: 'Erro interno do servidor' })
     }

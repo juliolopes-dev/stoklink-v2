@@ -54,6 +54,31 @@ export class AuthService {
     }
   }
 
+  async changePassword(userId: string, senhaAtual: string, novaSenha: string) {
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: userId }
+    })
+
+    if (!usuario) {
+      throw new Error('Usuário não encontrado')
+    }
+
+    const senhaValida = await bcrypt.compare(senhaAtual, usuario.senha)
+
+    if (!senhaValida) {
+      throw new Error('Senha atual incorreta')
+    }
+
+    const senhaHash = await bcrypt.hash(novaSenha, 10)
+
+    await prisma.usuario.update({
+      where: { id: userId },
+      data: { senha: senhaHash }
+    })
+
+    return { message: 'Senha alterada com sucesso' }
+  }
+
   async getProfile(userId: string) {
     const usuario = await prisma.usuario.findUnique({
       where: { id: userId },
