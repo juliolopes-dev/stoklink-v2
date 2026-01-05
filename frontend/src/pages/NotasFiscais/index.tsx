@@ -226,7 +226,7 @@ export function NotasFiscais() {
                         {/* 2ª Conferência - Receber no Destino */}
                         {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
                           <span className="px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap bg-indigo-100 text-indigo-800">
-                            Conferir volumes (Destino)
+                            Conf. destino
                           </span>
                         )}
                         {/* Conferência de Itens */}
