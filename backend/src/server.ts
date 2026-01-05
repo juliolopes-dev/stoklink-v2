@@ -4,6 +4,7 @@ import jwt from '@fastify/jwt'
 import fastifyStatic from '@fastify/static'
 import path from 'path'
 import { env } from './config/env.js'
+import { logger } from './lib/logger.js'
 import { authRoutes } from './routes/auth.routes.js'
 import { filialRoutes } from './routes/filial.routes.js'
 import { usuarioRoutes } from './routes/usuario.routes.js'
@@ -15,7 +16,8 @@ import { fornecedorRoutes } from './routes/fornecedor.routes.js'
 import { empresaRoutes } from './routes/empresa.routes.js'
 
 const app = Fastify({
-  logger: true
+  logger: false,
+  disableRequestLogging: true
 })
 
 // Plugins
@@ -25,6 +27,30 @@ app.register(cors, {
 
 app.register(jwt, {
   secret: env.JWT_SECRET
+})
+
+// Hook para logar todas as requisições
+app.addHook('onResponse', (request, reply, done) => {
+  const responseTime = reply.elapsedTime
+  const userId = (request.user as { id?: string })?.id
+  
+  // Não logar requisições de arquivos estáticos
+  if (!request.url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+    logger.request(
+      request.method,
+      request.url,
+      reply.statusCode,
+      responseTime,
+      userId
+    )
+  }
+  done()
+})
+
+// Hook para logar erros
+app.addHook('onError', (request, reply, error, done) => {
+  logger.error(`Erro na requisição ${request.method} ${request.url}`, error)
+  done()
 })
 
 // Routes - todas com prefixo /api
@@ -65,9 +91,20 @@ if (env.NODE_ENV === 'production') {
 const start = async () => {
   try {
     await app.listen({ port: env.PORT, host: '0.0.0.0' })
-    console.log(`🚀 Server running on http://localhost:${env.PORT}`)
+    logger.startup(env.PORT, env.NODE_ENV)
+    logger.info('Rotas registradas:', {
+      auth: '/api/auth/*',
+      filiais: '/api/filiais/*',
+      usuarios: '/api/usuarios/*',
+      notasFiscais: '/api/notas-fiscais/*',
+      conferencias: '/api/conferencias/*',
+      divergencias: '/api/divergencias/*',
+      distribuicoes: '/api/distribuicoes/*',
+      fornecedores: '/api/fornecedores/*',
+      empresas: '/api/empresas/*'
+    })
   } catch (err) {
-    app.log.error(err)
+    logger.error('Falha ao iniciar servidor', err)
     process.exit(1)
   }
 }
