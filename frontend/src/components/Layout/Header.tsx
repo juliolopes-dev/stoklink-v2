@@ -56,8 +56,29 @@ export function Header() {
     setShowPasswordModal(true)
   }
 
+  const [showAlert, setShowAlert] = useState(true)
+
   return (
     <>
+      {showAlert && (
+        <div className="bg-amber-50 border-b border-amber-200 px-6 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-amber-800">
+              <FiLock size={18} />
+              <span className="text-sm">
+                <strong>Dica de segurança:</strong> Lembre-se de alterar sua senha regularmente. 
+                Clique em <strong>"Alterar Senha"</strong> no menu para atualizar.
+              </span>
+            </div>
+            <button
+              onClick={() => setShowAlert(false)}
+              className="text-amber-600 hover:text-amber-800 text-sm font-medium"
+            >
+              Fechar
+            </button>
+          </div>
+        </div>
+      )}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
