@@ -44,6 +44,11 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
     label: 'Pend. Transferência',
     color: 'bg-purple-100 text-purple-800',
     defaultTooltip: 'Volumes OK - Aguardando conferência de itens e transferência para filial destino'
+  },
+  AGUARDANDO_CONFERENCIA_DESTINO: {
+    label: 'Aguard. Destino',
+    color: 'bg-indigo-100 text-indigo-800',
+    defaultTooltip: 'Volumes conferidos no CD - Aguardando conferência na filial destino'
   }
 }
 

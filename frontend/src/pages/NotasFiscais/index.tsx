@@ -217,16 +217,23 @@ export function NotasFiscais() {
                           status={nf.status} 
                           tooltip={!nf.filialRecebimento ? 'Aguardando conferência de volumes' : undefined}
                         />
+                        {/* 1ª Conferência - Receber no CD */}
+                        {!nf.filialRecebimento && (
+                          <span className="text-xs text-blue-600 font-medium">📦 Conferir volumes (CD)</span>
+                        )}
+                        {/* 2ª Conferência - Receber no Destino */}
+                        {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
+                          <span className="text-xs text-indigo-600 font-medium">📦 Conferir volumes (Destino)</span>
+                        )}
+                        {/* Conferência de Itens */}
                         {nf.filialRecebimento && ['VOLUMES_CONFERIDOS', 'PENDENTE_TRANSFERENCIA'].includes(nf.status) && (
                           <span className="text-xs text-orange-600 font-medium">⚠ Conferir itens</span>
-                        )}
-                        {!nf.filialRecebimento && (
-                          <span className="text-xs text-blue-600 font-medium">📦 Conferir volumes</span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {/* Botão 1ª Conferência - Receber no CD */}
                         {!nf.filialRecebimento && (
                           <Link
                             to={`/notas-fiscais/${nf.id}`}
@@ -236,6 +243,17 @@ export function NotasFiscais() {
                             <span>Receber</span>
                           </Link>
                         )}
+                        {/* Botão 2ª Conferência - Receber no Destino */}
+                        {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
+                          <Link
+                            to={`/notas-fiscais/${nf.id}`}
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg transition-colors"
+                          >
+                            <FiPackage size={14} />
+                            <span>Receber Destino</span>
+                          </Link>
+                        )}
+                        {/* Botão Conferência de Itens */}
                         {nf.filialRecebimento && ['VOLUMES_CONFERIDOS', 'PENDENTE_TRANSFERENCIA'].includes(nf.status) && (
                           <Link
                             to={`/notas-fiscais/${nf.id}`}

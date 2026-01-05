@@ -171,6 +171,22 @@ export function NotaFiscalDetalhes() {
     }
   }
 
+  async function handleConferirVolumesDestino() {
+    if (!volumesRecebidos) return
+
+    try {
+      await api.post(`/notas-fiscais/${id}/conferencia-volumes`, {
+        volumesRecebidos: parseInt(volumesRecebidos),
+        tipo: 'DESTINO'
+      })
+      setConferindoVolumes(false)
+      setVolumesRecebidos('')
+      loadNota()
+    } catch (error) {
+      console.error('Erro ao conferir volumes no destino:', error)
+    }
+  }
+
   async function handleConferirItem(itemId: string) {
     if (!quantidadeConferida) return
 
@@ -285,6 +301,7 @@ export function NotaFiscalDetalhes() {
   if (!nota) return null
 
   const podeConferirVolumes = !nota.filialRecebimento
+  const podeConferirVolumesDestino = nota.status === 'AGUARDANDO_CONFERENCIA_DESTINO'
 
   return (
     <div className="h-[calc(100vh-140px)] flex flex-col overflow-hidden">
@@ -532,6 +549,7 @@ export function NotaFiscalDetalhes() {
               <p className="text-gray-500 text-xs mb-3">Nenhuma conferência realizada</p>
             )}
 
+            {/* 1ª Conferência - Recebimento no CD */}
             {podeConferirVolumes && (
               <div className="mt-3">
                 {conferindoVolumes ? (
@@ -587,7 +605,55 @@ export function NotaFiscalDetalhes() {
                     onClick={iniciarConferenciaVolumes}
                     className="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 rounded-lg transition-colors text-sm"
                   >
-                    Conferir Volumes
+                    📦 Conferir Volumes (Recebimento)
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* 2ª Conferência - Chegada no Destino */}
+            {podeConferirVolumesDestino && (
+              <div className="mt-3">
+                {conferindoVolumes ? (
+                  <div className="space-y-2">
+                    <div className="bg-indigo-50 p-2 rounded-lg">
+                      <p className="text-xs text-indigo-700 font-medium">
+                        📍 Conferência na filial destino: {nota.filialDestino.nome}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Volumes Recebidos
+                      </label>
+                      <input
+                        type="number"
+                        value={volumesRecebidos}
+                        onChange={(e) => setVolumesRecebidos(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm"
+                        placeholder="Quantidade de volumes"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleConferirVolumesDestino()}
+                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition-colors text-sm"
+                      >
+                        Confirmar
+                      </button>
+                      <button
+                        onClick={() => setConferindoVolumes(false)}
+                        className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg transition-colors text-sm"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConferindoVolumes(true)}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition-colors text-sm"
+                  >
+                    📦 Conferir Volumes (Destino)
                   </button>
                 )}
               </div>
