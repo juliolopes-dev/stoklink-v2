@@ -120,6 +120,9 @@ export function NotaFiscalDetalhes() {
   // Modo de conferência em lote (todos os itens)
   const [modoConferenciaLote, setModoConferenciaLote] = useState(false)
   const [quantidadesLote, setQuantidadesLote] = useState<Record<string, string>>({})
+  
+  // Pesquisa de itens
+  const [pesquisaItem, setPesquisaItem] = useState('')
 
   useEffect(() => {
     loadNota()
@@ -368,13 +371,22 @@ export function NotaFiscalDetalhes() {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-4 flex-1 flex flex-col min-h-0">
-            <div className="flex items-center justify-between mb-3 flex-shrink-0">
-              <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+            <div className="flex items-center justify-between mb-3 flex-shrink-0 gap-3">
+              <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2 flex-shrink-0">
                 <FiPackage size={16} />
                 Itens ({nota.itens.length})
               </h2>
+              <div className="flex-1 max-w-xs">
+                <input
+                  type="text"
+                  placeholder="Buscar por código ou descrição..."
+                  value={pesquisaItem}
+                  onChange={(e) => setPesquisaItem(e.target.value)}
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                />
+              </div>
               {nota.itens.length > 0 && ['VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES', 'EM_CONFERENCIA', 'AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA'].includes(nota.status) && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   {modoConferenciaLote ? (
                     <>
                       <button
@@ -420,7 +432,16 @@ export function NotaFiscalDetalhes() {
                 <div className="flex-1 overflow-y-auto">
                   <table className="w-full">
                     <tbody className="divide-y divide-gray-200">
-                      {nota.itens.map((item) => {
+                      {nota.itens
+                        .filter((item) => {
+                          if (!pesquisaItem.trim()) return true
+                          const termo = pesquisaItem.toLowerCase()
+                          return (
+                            item.codigoProduto.toLowerCase().includes(termo) ||
+                            item.descricao.toLowerCase().includes(termo)
+                          )
+                        })
+                        .map((item) => {
                         const emLote = modoConferenciaLote && !item.conferido
                         const emEdicaoIndividual = conferindoItemId === item.id
                         
