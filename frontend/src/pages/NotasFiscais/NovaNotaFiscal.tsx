@@ -59,7 +59,6 @@ export function NovaNotaFiscal() {
 
   // Form XML
   const [xmlFile, setXmlFile] = useState<File | null>(null)
-  const [xmlFilialRecebimentoId, setXmlFilialRecebimentoId] = useState('')
   const [xmlFilialDestinoId, setXmlFilialDestinoId] = useState('')
   const [xmlTipoMovimentacao, setXmlTipoMovimentacao] = useState('RECEBIMENTO_DIRETO')
   const [xmlQuantidadeVolumes, setXmlQuantidadeVolumes] = useState('')
@@ -84,8 +83,6 @@ export function NovaNotaFiscal() {
       if (filiaisRes.data.length > 0) {
         setFilialRecebimentoId(filiaisRes.data[0].id)
         setFilialDestinoId(filiaisRes.data[0].id)
-        // XML: Filial Recebimento começa vazia (A definir)
-        setXmlFilialRecebimentoId('')
         setXmlFilialDestinoId(filiaisRes.data[0].id)
       }
     } catch (error) {
@@ -191,7 +188,6 @@ export function NovaNotaFiscal() {
     try {
       const formData = new FormData()
       formData.append('file', xmlFile)
-      formData.append('filialRecebimentoId', xmlFilialRecebimentoId)
       formData.append('filialDestinoId', xmlFilialDestinoId)
       formData.append('tipoMovimentacao', xmlTipoMovimentacao)
       if (xmlQuantidadeVolumes) {
@@ -601,27 +597,6 @@ export function NovaNotaFiscal() {
                     placeholder="Do XML"
                     min="1"
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Filial Recebimento
-                    <span className="text-xs text-gray-500 font-normal ml-1">(opcional)</span>
-                  </label>
-                  <select
-                    value={xmlFilialRecebimentoId}
-                    onChange={(e) => setXmlFilialRecebimentoId(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
-                  >
-                    <option value="">📦 A definir no recebimento</option>
-                    {filiais.map(filial => (
-                      <option key={filial.id} value={filial.id}>
-                        {filial.nome}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-blue-600 mt-1">
-                    💡 Deixe "A definir" para conferir volumes antes de definir a filial
-                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
