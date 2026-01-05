@@ -217,9 +217,9 @@ export function NotasFiscais() {
                           status={nf.status} 
                           tooltip={!nf.filialRecebimento ? 'Aguardando conferência de volumes' : undefined}
                         />
-                        {/* 1ª Conferência - Receber no CD */}
+                        {/* 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (
-                          <span className="text-xs text-blue-600 font-medium">📦 Conferir volumes (CD)</span>
+                          <span className="text-xs text-blue-600 font-medium">📦 Conferir volumes</span>
                         )}
                         {/* 2ª Conferência - Receber no Destino */}
                         {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
@@ -233,7 +233,7 @@ export function NotasFiscais() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        {/* Botão 1ª Conferência - Receber no CD */}
+                        {/* Botão 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (
                           <Link
                             to={`/notas-fiscais/${nf.id}`}

@@ -549,7 +549,7 @@ export function NotaFiscalDetalhes() {
               <p className="text-gray-500 text-xs mb-3">Nenhuma conferência realizada</p>
             )}
 
-            {/* 1ª Conferência - Recebimento no CD */}
+            {/* 1ª Conferência - Recebimento na filial */}
             {podeConferirVolumes && (
               <div className="mt-3">
                 {conferindoVolumes ? (
@@ -605,7 +605,7 @@ export function NotaFiscalDetalhes() {
                     onClick={iniciarConferenciaVolumes}
                     className="w-full bg-primary-600 hover:bg-primary-700 text-white py-2 rounded-lg transition-colors text-sm"
                   >
-                    📦 Conferir Volumes (Recebimento)
+                    📦 Conferir Volumes
                   </button>
                 )}
               </div>
