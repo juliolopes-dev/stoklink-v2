@@ -1,12 +1,14 @@
 import { prisma } from '../lib/prisma.js'
 
-type StatusNotaFiscal = 'AGUARDANDO_CONFERENCIA' | 'VOLUMES_CONFERIDOS' | 'VOLUMES_DIVERGENTES' | 'BLOQUEADO' | 'CONFERIDO_DIVERGENCIA' | 'CONFERIDO_OK' | 'PENDENTE_TRANSFERENCIA'
+type StatusNotaFiscal = 'AGUARDANDO_CONFERENCIA' | 'VOLUMES_CONFERIDOS' | 'VOLUMES_DIVERGENTES' | 'BLOQUEADO' | 'CONFERIDO_DIVERGENCIA' | 'CONFERIDO_OK' | 'PENDENTE_TRANSFERENCIA' | 'AGUARDANDO_CONFERENCIA_DESTINO'
+type TipoConferenciaVolume = 'RECEBIMENTO' | 'DESTINO'
 
 interface ConferenciaVolumeInput {
   notaFiscalId: string
   usuarioId: string
   volumesRecebidos: number
   filialRecebimentoId?: string
+  tipo?: TipoConferenciaVolume
   observacoes?: string
 }
 
@@ -33,52 +35,78 @@ export class ConferenciaService {
       throw new Error('Nota fiscal não encontrada')
     }
 
-    // Verificar se já pode conferir volumes
-    if (!['AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA', 'VOLUMES_DIVERGENTES'].includes(notaFiscal.status)) {
-      throw new Error('Esta nota fiscal não está em um status que permita conferência de volumes')
+    const tipoConferencia = input.tipo || 'RECEBIMENTO'
+    
+    // Verificar se já pode conferir volumes baseado no tipo
+    if (tipoConferencia === 'RECEBIMENTO') {
+      if (!['AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA', 'VOLUMES_DIVERGENTES'].includes(notaFiscal.status)) {
+        throw new Error('Esta nota fiscal não está em um status que permita conferência de volumes no recebimento')
+      }
+    } else if (tipoConferencia === 'DESTINO') {
+      if (!['AGUARDANDO_CONFERENCIA_DESTINO'].includes(notaFiscal.status)) {
+        throw new Error('Esta nota fiscal não está aguardando conferência no destino')
+      }
     }
 
     const volumesEsperados = notaFiscal.quantidadeVolumes
     const volumesBatendo = input.volumesRecebidos === volumesEsperados
+
+    // Determinar filial da conferência
+    const filialConferencia = tipoConferencia === 'RECEBIMENTO' 
+      ? input.filialRecebimentoId 
+      : notaFiscal.filialDestinoId
 
     // Criar registro de conferência
     const conferencia = await prisma.conferenciaVolume.create({
       data: {
         notaFiscalId: input.notaFiscalId,
         usuarioId: input.usuarioId,
+        tipo: tipoConferencia,
+        filialId: filialConferencia,
         volumesEsperados,
         volumesRecebidos: input.volumesRecebidos,
         volumesBatendo,
         observacoes: input.observacoes
       },
       include: {
-        usuario: { select: { id: true, nome: true } }
+        usuario: { select: { id: true, nome: true } },
+        filial: { select: { id: true, nome: true, codigo: true } }
       }
     })
 
-    // Determinar a filial de recebimento efetiva (nova ou existente)
-    const filialRecebimentoEfetiva = input.filialRecebimentoId || notaFiscal.filialRecebimentoId
-    
-    // Atualizar status da nota fiscal
+    // Determinar novo status baseado no tipo de conferência
     let novoStatus: StatusNotaFiscal
-    
-    if (volumesBatendo) {
-      // Se filial de recebimento é diferente do destino, mantém pendente transferência
-      if (filialRecebimentoEfetiva !== notaFiscal.filialDestinoId) {
-        novoStatus = 'PENDENTE_TRANSFERENCIA'
+    const updateData: Record<string, unknown> = {}
+
+    if (tipoConferencia === 'RECEBIMENTO') {
+      // 1ª Conferência - no CD/filial de recebimento
+      const filialRecebimentoEfetiva = input.filialRecebimentoId || notaFiscal.filialRecebimentoId
+      
+      if (input.filialRecebimentoId) {
+        updateData.filialRecebimentoId = input.filialRecebimentoId
+      }
+      
+      if (volumesBatendo) {
+        // Se filial de recebimento é diferente do destino, aguarda conferência no destino
+        if (filialRecebimentoEfetiva !== notaFiscal.filialDestinoId) {
+          novoStatus = 'AGUARDANDO_CONFERENCIA_DESTINO'
+        } else {
+          // Recebimento direto (mesma filial) - volumes conferidos
+          novoStatus = 'VOLUMES_CONFERIDOS'
+        }
       } else {
-        novoStatus = 'VOLUMES_CONFERIDOS'
+        novoStatus = 'VOLUMES_DIVERGENTES'
       }
     } else {
-      novoStatus = 'VOLUMES_DIVERGENTES'
+      // 2ª Conferência - no destino final
+      if (volumesBatendo) {
+        novoStatus = 'VOLUMES_CONFERIDOS'
+      } else {
+        novoStatus = 'VOLUMES_DIVERGENTES'
+      }
     }
 
-    // Atualizar nota fiscal com filial de recebimento (se informada) e novo status
-    const updateData: Record<string, unknown> = { status: novoStatus }
-    
-    if (input.filialRecebimentoId) {
-      updateData.filialRecebimentoId = input.filialRecebimentoId
-    }
+    updateData.status = novoStatus
     
     await prisma.notaFiscal.update({
       where: { id: input.notaFiscalId },
@@ -88,7 +116,8 @@ export class ConferenciaService {
     return {
       conferencia,
       volumesBatendo,
-      novoStatus
+      novoStatus,
+      tipoConferencia
     }
   }
 
@@ -96,7 +125,8 @@ export class ConferenciaService {
     return prisma.conferenciaVolume.findMany({
       where: { notaFiscalId },
       include: {
-        usuario: { select: { id: true, nome: true } }
+        usuario: { select: { id: true, nome: true } },
+        filial: { select: { id: true, nome: true, codigo: true } }
       },
       orderBy: { dataConferencia: 'desc' }
     })

@@ -24,6 +24,12 @@ enum StatusNotaFiscal {
   CONFERIDO_DIVERGENCIA
   CONFERIDO_OK
   PENDENTE_TRANSFERENCIA
+  AGUARDANDO_CONFERENCIA_DESTINO
+}
+
+enum TipoConferenciaVolume {
+  RECEBIMENTO
+  DESTINO
 }
 
 enum TipoMovimentacao {
@@ -93,12 +99,13 @@ model Filial {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  empresa              Empresa        @relation(fields: [empresaId], references: [id])
+  empresa              Empresa             @relation(fields: [empresaId], references: [id])
   usuarios             Usuario[]
-  notasRecebidas       NotaFiscal[]   @relation("FilialRecebimento")
-  notasDestino         NotaFiscal[]   @relation("FilialDestino")
-  distribuicoesOrigem  Distribuicao[] @relation("FilialOrigem")
-  distribuicoesDestino Distribuicao[] @relation("FilialDestinoDistribuicao")
+  notasRecebidas       NotaFiscal[]        @relation("FilialRecebimento")
+  notasDestino         NotaFiscal[]        @relation("FilialDestino")
+  distribuicoesOrigem  Distribuicao[]      @relation("FilialOrigem")
+  distribuicoesDestino Distribuicao[]      @relation("FilialDestinoDistribuicao")
+  conferenciasVolumes  ConferenciaVolume[]
 
   @@unique([empresaId, codigo])
   @@map("filiais")
@@ -187,18 +194,21 @@ model ItemNotaFiscal {
 }
 
 model ConferenciaVolume {
-  id                    String   @id @default(uuid())
-  notaFiscalId          String   @map("nota_fiscal_id")
-  usuarioId             String   @map("usuario_id")
-  volumesEsperados      Int      @map("volumes_esperados")
-  volumesRecebidos      Int      @map("volumes_recebidos")
-  volumesBatendo        Boolean  @map("volumes_batendo")
+  id                    String                 @id @default(uuid())
+  notaFiscalId          String                 @map("nota_fiscal_id")
+  usuarioId             String                 @map("usuario_id")
+  tipo                  TipoConferenciaVolume  @default(RECEBIMENTO)
+  filialId              String?                @map("filial_id")
+  volumesEsperados      Int                    @map("volumes_esperados")
+  volumesRecebidos      Int                    @map("volumes_recebidos")
+  volumesBatendo        Boolean                @map("volumes_batendo")
   observacoes           String?
-  dataConferencia       DateTime @default(now()) @map("data_conferencia")
-  createdAt             DateTime @default(now()) @map("created_at")
+  dataConferencia       DateTime               @default(now()) @map("data_conferencia")
+  createdAt             DateTime               @default(now()) @map("created_at")
 
   notaFiscal NotaFiscal @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
   usuario    Usuario    @relation(fields: [usuarioId], references: [id])
+  filial     Filial?    @relation(fields: [filialId], references: [id])
 
   @@map("conferencias_volumes")
 }
