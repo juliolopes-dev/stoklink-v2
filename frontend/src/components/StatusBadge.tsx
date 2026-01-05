@@ -48,7 +48,7 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
   AGUARDANDO_CONFERENCIA_DESTINO: {
     label: 'Aguard. Destino',
     color: 'bg-indigo-100 text-indigo-800',
-    defaultTooltip: 'Volumes conferidos no CD - Aguardando conferência na filial destino'
+    defaultTooltip: 'Volumes conferidos - Aguardando conferência na filial destino'
   }
 }
 
