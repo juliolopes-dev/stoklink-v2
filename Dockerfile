@@ -1,6 +1,9 @@
 # Dockerfile único - Backend + Frontend
 FROM node:20-alpine AS frontend-builder
 
+# Instalar dependências do sistema
+RUN apk add --no-cache openssl
+
 WORKDIR /app/frontend
 
 # Copiar e buildar frontend
@@ -17,6 +20,9 @@ RUN npm run build
 # Backend builder
 FROM node:20-alpine AS backend-builder
 
+# Instalar dependências do sistema para Prisma
+RUN apk add --no-cache openssl openssl-dev
+
 WORKDIR /app/backend
 
 # Copiar arquivos de dependências
@@ -31,6 +37,9 @@ RUN npm run build
 
 # Imagem final de produção
 FROM node:20-alpine AS production
+
+# Instalar dependências do sistema para Prisma runtime
+RUN apk add --no-cache openssl
 
 WORKDIR /app
 
