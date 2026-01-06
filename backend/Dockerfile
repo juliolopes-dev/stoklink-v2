@@ -37,5 +37,5 @@ EXPOSE 3333
 ENV NODE_ENV=production
 ENV PORT=3333
 
-# Comando para iniciar (roda migrations e inicia o servidor)
-CMD ["sh", "-c", "npx prisma migrate deploy && node dist/server.js"]
+# Comando para iniciar (apenas gera o cliente Prisma e inicia o servidor)
+CMD ["sh", "-c", "npx prisma generate && node dist/server.js"]
