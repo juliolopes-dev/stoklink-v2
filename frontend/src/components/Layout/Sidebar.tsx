@@ -86,6 +86,7 @@ export function Sidebar() {
   }
 
   return (
+    <>
     <aside className="w-64 bg-gray-900 min-h-screen flex flex-col">
       <div className="p-4 border-b border-gray-800">
         <h1 className="text-2xl font-bold text-white">StokLink</h1>
