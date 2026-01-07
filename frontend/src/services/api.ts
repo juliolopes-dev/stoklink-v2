@@ -29,13 +29,14 @@ api.interceptors.response.use(
         // Primeira requisição - guardar versão
         appVersion = serverVersion
       } else if (appVersion !== serverVersion) {
-        // Versão mudou - recarregar página
+        // Versão mudou - recarregar página sem cache
         console.log(`Nova versão detectada: ${appVersion} -> ${serverVersion}`)
         appVersion = serverVersion
         
         // Pequeno delay para garantir que a resposta atual seja processada
         setTimeout(() => {
-          window.location.reload()
+          // Forçar reload sem cache adicionando timestamp na URL
+          window.location.href = window.location.pathname + '?v=' + Date.now()
         }, 500)
       }
     }
