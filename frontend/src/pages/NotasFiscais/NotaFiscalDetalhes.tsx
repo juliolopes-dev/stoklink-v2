@@ -743,28 +743,28 @@ export function NotaFiscalDetalhes() {
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">Editar Nota Fiscal</h2>
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-800">Editar Nota Fiscal</h2>
             </div>
 
-            <div className="p-6 space-y-4">
+            <div className="p-4 space-y-3 max-h-[70vh] overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Fornecedor Principal
                 </label>
-                <p className="px-4 py-2 bg-gray-100 rounded-lg text-gray-600">
+                <p className="px-3 py-1.5 bg-gray-100 rounded-lg text-gray-600 text-sm">
                   {nota.fornecedorNome}
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Fornecedor Secundário
                 </label>
                 <select
                   value={editForm.fornecedorSecundarioId}
                   onChange={(e) => setEditForm({ ...editForm, fornecedorSecundarioId: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 >
                   <option value="">Nenhum</option>
                   {fornecedores.map(f => (
@@ -776,26 +776,26 @@ export function NotaFiscalDetalhes() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Número NF Secundário
                 </label>
                 <input
                   type="text"
                   value={editForm.numeroSecundario}
                   onChange={(e) => setEditForm({ ...editForm, numeroSecundario: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   placeholder="Número da NF do fornecedor secundário"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Filial de Destino
                 </label>
                 <select
                   value={editForm.filialDestinoId}
                   onChange={(e) => setEditForm({ ...editForm, filialDestinoId: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 >
                   <option value="">Selecione a filial</option>
                   {filiaisDisponiveis.map(f => (
@@ -807,31 +807,31 @@ export function NotaFiscalDetalhes() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Transportadora
                 </label>
                 <input
                   type="text"
                   value={editForm.transportadora}
                   onChange={(e) => setEditForm({ ...editForm, transportadora: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   placeholder="Nome da transportadora"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Observações
                 </label>
                 <textarea
                   value={editForm.observacoes}
                   onChange={(e) => setEditForm({ ...editForm, observacoes: e.target.value })}
-                  rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  rows={2}
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-4 pt-4">
+              <div className="flex justify-end gap-3 pt-3">
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
