@@ -368,24 +368,27 @@ export class NotaFiscalService {
   async update(id: string, data: Record<string, unknown>) {
     const notaFiscal = await prisma.notaFiscal.findUnique({
       where: { id },
-      include: { conferenciasVolumes: { orderBy: { dataConferencia: 'asc' }, take: 1 } }
+      include: { conferenciasVolumes: { orderBy: { dataConferencia: 'desc' }, take: 1 } }
     })
 
     if (!notaFiscal) {
       throw new Error('Nota fiscal não encontrada')
     }
 
-    // Se transportadora foi enviada, atualizar na primeira conferência de volumes
+    // Se transportadora foi enviada, atualizar na última conferência de volumes
     if (data.transportadora !== undefined) {
       const transportadora = data.transportadora as string | null
       delete data.transportadora
       
       if (notaFiscal.conferenciasVolumes.length > 0) {
+        // Atualizar a última conferência de volumes
         await prisma.conferenciaVolume.update({
           where: { id: notaFiscal.conferenciasVolumes[0].id },
           data: { transportadora }
         })
       }
+      // Se não existe conferência ainda, a transportadora será perdida
+      // Isso é esperado - a transportadora deve ser informada durante a conferência de volumes
     }
 
     return prisma.notaFiscal.update({

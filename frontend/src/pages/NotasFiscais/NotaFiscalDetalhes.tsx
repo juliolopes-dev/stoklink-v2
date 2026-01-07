@@ -260,8 +260,9 @@ export function NotaFiscalDetalhes() {
       setFornecedores(fornecedoresRes.data)
       setFiliaisDisponiveis(filiaisRes.data)
       
-      // Buscar transportadora da primeira conferência
-      const transportadoraAtual = nota?.conferenciasVolumes?.[0]?.transportadora || ''
+      // Buscar transportadora da última conferência (mais recente)
+      const ultimaConferencia = nota?.conferenciasVolumes?.[nota.conferenciasVolumes.length - 1]
+      const transportadoraAtual = ultimaConferencia?.transportadora || ''
       
       setEditForm({
         numeroSecundario: nota?.numeroSecundario || '',
