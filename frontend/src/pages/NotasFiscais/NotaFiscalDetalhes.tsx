@@ -386,43 +386,43 @@ export function NotaFiscalDetalhes() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 flex-1 min-h-0">
         <div className="lg:col-span-2 flex flex-col gap-4 min-h-0">
           <div className="bg-white rounded-xl shadow-sm p-4 flex-shrink-0">
-            <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
               <FiFileText size={16} />
               Dados da Nota Fiscal
             </h2>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-3 text-sm">
+            <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-sm">
               <div>
                 <p className="text-xs text-gray-500">Número</p>
-                <p className="font-medium">{nota.numero}</p>
+                <p className="font-medium text-sm">{nota.numero}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Série</p>
-                <p className="font-medium">{nota.serie || '-'}</p>
+                <p className="font-medium text-sm">{nota.serie || '-'}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Valor Total</p>
-                <p className="font-medium">{formatCurrency(nota.valorTotal)}</p>
+                <p className="font-medium text-sm">{formatCurrency(nota.valorTotal)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Data Emissão</p>
-                <p className="font-medium">{formatDate(nota.dataEmissao)}</p>
+                <p className="font-medium text-sm">{formatDate(nota.dataEmissao)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Data Recebimento</p>
-                <p className="font-medium">{formatDate(nota.dataRecebimento)}</p>
+                <p className="font-medium text-sm">{formatDate(nota.dataRecebimento)}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Cadastrado por</p>
-                <p className="font-medium">{nota.usuarioCadastro.nome}</p>
+                <p className="font-medium text-sm">{nota.usuarioCadastro.nome}</p>
               </div>
               <div className="col-span-3 md:col-span-6">
                 <p className="text-xs text-gray-500">Chave de Acesso</p>
-                <p className="font-mono text-xs">{nota.chaveAcesso || '-'}</p>
+                <p className="font-mono text-xs break-all">{nota.chaveAcesso || '-'}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-4 flex-1 flex flex-col min-h-0">
+          <div className="bg-white rounded-xl shadow-sm p-4 flex-1 flex flex-col min-h-0 overflow-hidden">
             <div className="flex items-center justify-between mb-3 flex-shrink-0 gap-3">
               <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2 flex-shrink-0">
                 <FiPackage size={16} />
