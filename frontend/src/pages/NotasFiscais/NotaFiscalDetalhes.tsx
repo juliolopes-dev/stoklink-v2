@@ -379,7 +379,10 @@ export function NotaFiscalDetalhes() {
           >
             {nota.mercadoriaBloqueada ? 'Liberar Mercadoria' : 'Bloquear Mercadoria'}
           </button>
-          <StatusBadge status={nota.status} />
+          <StatusBadge 
+            status={nota.status} 
+            filialRecebimento={nota.filialRecebimento?.nome}
+          />
         </div>
       </div>
 

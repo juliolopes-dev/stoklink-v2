@@ -233,6 +233,7 @@ export function NotasFiscais() {
                         <StatusBadge 
                           status={nf.status} 
                           tooltip={!nf.filialRecebimento ? 'Aguardando conferência de volumes' : undefined}
+                          filialRecebimento={nf.filialRecebimento?.nome}
                         />
                         {/* 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (

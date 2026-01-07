@@ -3,6 +3,7 @@ import { Tooltip } from './Tooltip'
 interface StatusBadgeProps {
   status: string
   tooltip?: string
+  filialRecebimento?: string | null
 }
 
 const statusConfig: Record<string, { label: string; color: string; defaultTooltip?: string }> = {
@@ -52,13 +53,20 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
   }
 }
 
-export function StatusBadge({ status, tooltip }: StatusBadgeProps) {
+export function StatusBadge({ status, tooltip, filialRecebimento }: StatusBadgeProps) {
   const config = statusConfig[status] || {
     label: status,
     color: 'bg-gray-100 text-gray-800'
   }
 
-  const tooltipText = tooltip || config.defaultTooltip
+  let tooltipText = tooltip || config.defaultTooltip
+  
+  // Adicionar informação da filial de recebimento se disponível
+  if (filialRecebimento && tooltipText) {
+    tooltipText = `${tooltipText}\nRecebida na filial: ${filialRecebimento}`
+  } else if (filialRecebimento && !tooltipText) {
+    tooltipText = `Recebida na filial: ${filialRecebimento}`
+  }
 
   const badge = (
     <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 hover:scale-105 hover:shadow-md cursor-default ${config.color}`}>
