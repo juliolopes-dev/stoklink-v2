@@ -208,14 +208,14 @@ export function NotasFiscais() {
                       </div>
                     </td>
                     <td className="px-3 py-2">
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-1 items-start">
                         {/* Tag de Bloqueio/Liberação */}
                         {nf.mercadoriaBloqueada ? (
-                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 w-fit">
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
                             Bloqueada
                           </span>
                         ) : (
-                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 w-fit">
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                             Liberada
                           </span>
                         )}
