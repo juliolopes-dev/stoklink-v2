@@ -316,8 +316,16 @@ export class NotaFiscalService {
           select: { id: true, nome: true }
         },
         conferenciasVolumes: {
-          include: {
-            usuario: { select: { id: true, nome: true } }
+          select: {
+            id: true,
+            volumesEsperados: true,
+            volumesRecebidos: true,
+            volumesBatendo: true,
+            transportadora: true,
+            tipo: true,
+            dataConferencia: true,
+            usuario: { select: { id: true, nome: true } },
+            filial: { select: { id: true, nome: true, codigo: true } }
           },
           orderBy: { dataConferencia: 'desc' }
         },
