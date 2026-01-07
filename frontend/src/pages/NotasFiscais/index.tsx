@@ -92,8 +92,8 @@ export function NotasFiscais() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Notas Fiscais</h1>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-xl font-bold text-gray-800">Notas Fiscais</h1>
         <Link
           to="/notas-fiscais/nova"
           className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors"
@@ -103,8 +103,8 @@ export function NotasFiscais() {
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm mb-6">
-        <div className="p-4 border-b border-gray-200">
+      <div className="bg-white rounded-xl shadow-sm mb-4">
+        <div className="p-3 border-b border-gray-200">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -147,25 +147,25 @@ export function NotasFiscais() {
             <table className="w-full border-collapse table-fixed">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[22%]">
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[22%]">
                     NF / Fornecedor
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[18%]">
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[14%]">
                     Recebimento
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[14%]">
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[12%]">
                     Destino
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[14%]">
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[12%]">
                     Transportadora
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Volumes
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[6%]">
+                    Vol.
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">
                     Ações
                   </th>
                 </tr>
@@ -173,10 +173,10 @@ export function NotasFiscais() {
               <tbody>
                 {filteredNotas.map((nf) => (
                   <tr key={nf.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 max-w-[250px]">
+                    <td className="px-3 py-2 max-w-[250px]">
                       <div>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-medium text-gray-900">NF {nf.numero}</p>
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <p className="font-medium text-gray-900 text-sm">NF {nf.numero}</p>
                           {nf.numeroSecundario && (
                             <Tooltip content={nf.fornecedorSecundario ? nf.fornecedorSecundario.nome : 'Fornecedor não informado'}>
                               <span className="text-xs text-purple-600">/ {nf.numeroSecundario}</span>
@@ -200,25 +200,25 @@ export function NotasFiscais() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2">
                       <div>
-                        <p className="text-sm text-gray-900">{nf.filialRecebimento?.nome || 'A definir'}</p>
+                        <p className="text-xs text-gray-900">{nf.filialRecebimento?.nome || 'A definir'}</p>
                         <p className="text-xs text-gray-500">{formatDate(nf.dataRecebimento)}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2">
                       <div>
-                        <p className="text-sm text-gray-900">{nf.filialDestino.nome}</p>
+                        <p className="text-xs text-gray-900">{nf.filialDestino.nome}</p>
                         <p className="text-xs text-gray-500">{nf.filialDestino.codigo}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{nf.transportadora || '-'}</span>
+                    <td className="px-3 py-2">
+                      <span className="text-xs text-gray-900">{nf.transportadora || '-'}</span>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-gray-900">{nf.quantidadeVolumes}</span>
+                    <td className="px-3 py-2">
+                      <span className="text-xs text-gray-900">{nf.quantidadeVolumes}</span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2">
                       <div className="flex flex-col gap-1 items-start">
                         <StatusBadge 
                           status={nf.status} 
@@ -244,7 +244,7 @@ export function NotasFiscais() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-3 py-2 text-right">
                       <div className="flex items-center justify-end gap-2">
                         {/* Botão 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (
