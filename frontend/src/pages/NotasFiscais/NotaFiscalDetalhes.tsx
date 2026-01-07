@@ -349,8 +349,8 @@ export function NotaFiscalDetalhes() {
   const usuarioPodeConferirDestino = user?.filialId === nota.filialDestino.id
 
   return (
-    <div className="h-[calc(100vh-140px)] flex flex-col overflow-hidden">
-      <div className="flex items-center gap-4 mb-4 flex-shrink-0">
+    <div className="h-screen flex flex-col overflow-hidden p-6">
+      <div className="flex items-center gap-4 mb-3 flex-shrink-0">
         <button
           onClick={() => navigate('/notas-fiscais')}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -585,8 +585,8 @@ export function NotaFiscalDetalhes() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-sm p-4 flex-shrink-0">
+        <div className="flex flex-col gap-3 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-sm p-3 flex-shrink-0">
             <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <FiTruck size={16} />
               Movimentação
@@ -616,7 +616,7 @@ export function NotaFiscalDetalhes() {
           </div>
 
           <div className="bg-white rounded-xl shadow-sm p-4 flex-shrink-0">
-            <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
               <FiCheckCircle size={16} />
               Conferência de Volumes
             </h2>
