@@ -377,7 +377,7 @@ export function NotaFiscalDetalhes() {
                 : 'bg-red-600 hover:bg-red-700 text-white'
             }`}
           >
-            {nota.mercadoriaBloqueada ? '✓ Liberar Mercadoria' : '🔒 Bloquear Mercadoria'}
+            {nota.mercadoriaBloqueada ? 'Liberar Mercadoria' : 'Bloquear Mercadoria'}
           </button>
           <StatusBadge status={nota.status} />
         </div>
