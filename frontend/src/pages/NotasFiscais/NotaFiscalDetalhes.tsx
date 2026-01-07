@@ -30,6 +30,7 @@ interface ConferenciaVolume {
   volumesEsperados: number
   volumesBatendo: boolean
   transportadora: string | null
+  observacoes: string | null
   dataConferencia: string
   usuario: { nome: string }
 }
@@ -579,6 +580,12 @@ export function NotaFiscalDetalhes() {
                 <p className="text-xs text-gray-500">Volumes</p>
                 <p className="font-medium text-xl">{nota.quantidadeVolumes}</p>
               </div>
+              {nota.observacoes && (
+                <div className="col-span-2 mt-2 pt-2 border-t border-gray-200">
+                  <p className="text-xs text-gray-500 mb-1">Observações da NF</p>
+                  <p className="text-sm text-gray-700 italic">{nota.observacoes}</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -603,6 +610,11 @@ export function NotaFiscalDetalhes() {
                     {conf.transportadora && (
                       <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
                         <FiTruck size={12} /> {conf.transportadora}
+                      </p>
+                    )}
+                    {conf.observacoes && (
+                      <p className="text-xs text-gray-600 mt-1 italic">
+                        Obs: {conf.observacoes}
                       </p>
                     )}
                     <p className="text-xs text-gray-500 mt-1">
