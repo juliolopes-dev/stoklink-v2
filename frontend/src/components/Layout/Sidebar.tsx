@@ -143,24 +143,24 @@ export function Sidebar() {
         )}
       </nav>
 
-      <div className="p-4 border-t border-gray-800 space-y-3">
+      <div className="p-4 border-t border-gray-800 space-y-2">
         <div className="text-gray-400 text-xs">
           <p className="text-white font-medium text-sm">{user?.nome}</p>
           <p className="text-xs">{user?.perfil === 'ADMIN' ? 'Administrador' : 'Conferente'}</p>
           <p className="text-xs truncate">{user?.email}</p>
-          <p className="text-xs mt-2 text-gray-500">{user?.filial?.nome} ({user?.filial?.codigo})</p>
+          <p className="text-xs mt-1 text-gray-500">{user?.filial?.nome} ({user?.filial?.codigo})</p>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex gap-2">
           <button
             onClick={openModal}
-            className="flex items-center gap-2 px-3 py-2 text-xs text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
           >
             <FiLock size={14} />
-            <span>Alterar Senha</span>
+            <span>Senha</span>
           </button>
           <button
             onClick={signOut}
-            className="flex items-center gap-2 px-3 py-2 text-xs text-red-400 hover:bg-gray-800 rounded-lg transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors shadow-sm"
           >
             <FiLogOut size={14} />
             <span>Sair</span>
