@@ -155,10 +155,9 @@ export function NotasFiscais() {
             <p>Nenhuma nota fiscal encontrada</p>
           </div>
         ) : (
-          <div className="flex-1 overflow-hidden flex flex-col">
-            <div className="overflow-x-auto overflow-y-auto flex-1">
+          <div className="flex-1 overflow-y-auto">
             <table className="w-full border-collapse table-fixed">
-              <thead className="sticky top-0 z-10">
+              <thead className="sticky top-0 z-10 bg-gray-50">
                 <tr className="bg-gray-50 border-b border-gray-200">
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[22%]">
                     NF / Fornecedor
@@ -311,7 +310,6 @@ export function NotasFiscais() {
                 ))}
               </tbody>
             </table>
-            </div>
           </div>
         )}
       </div>
