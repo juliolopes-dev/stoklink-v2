@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FiBarChart2, FiFilter, FiDownload } from 'react-icons/fi'
+import { FiBarChart2, FiFilter } from 'react-icons/fi'
 import { api } from '../../services/api'
 
 interface Filial {
