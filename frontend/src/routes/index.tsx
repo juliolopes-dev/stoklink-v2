@@ -12,6 +12,7 @@ import { Conferencias } from '../pages/Conferencias'
 import { ConferenciaItens } from '../pages/Conferencias/ConferenciaItens'
 import { Divergencias } from '../pages/Divergencias'
 import { Distribuicoes } from '../pages/Distribuicoes'
+import { Relatorios } from '../pages/Relatorios'
 import { Fornecedores } from '../pages/Fornecedores'
 import { Filiais } from '../pages/Filiais'
 import { Usuarios } from '../pages/Usuarios'
@@ -42,6 +43,7 @@ export function AppRoutes() {
             <Route path="conferencias/:id/itens" element={<ConferenciaItens />} />
             <Route path="divergencias" element={<Divergencias />} />
             <Route path="distribuicoes" element={<Distribuicoes />} />
+            <Route path="relatorios" element={<Relatorios />} />
             <Route path="fornecedores" element={<Fornecedores />} />
             <Route path="filiais" element={<Filiais />} />
             <Route path="usuarios" element={<Usuarios />} />

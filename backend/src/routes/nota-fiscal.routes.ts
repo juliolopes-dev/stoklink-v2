@@ -302,6 +302,26 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     }
   })
 
+  // Relatório por filial de recebimento
+  app.get('/notas-fiscais/relatorio/filial/:filialId', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const paramsSchema = z.object({
+        filialId: z.string().uuid()
+      })
+      const { filialId } = paramsSchema.parse(request.params)
+      const notas = await notaFiscalService.getByFilialRecebimento(filialId)
+      return reply.send(notas)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao buscar relatório' })
+    }
+  })
+
   // Deletar
   app.delete('/notas-fiscais/:id', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {

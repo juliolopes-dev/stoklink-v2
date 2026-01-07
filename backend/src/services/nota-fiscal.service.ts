@@ -659,4 +659,30 @@ export class NotaFiscalService {
       }
     })
   }
+
+  async getByFilialRecebimento(filialId: string) {
+    return prisma.notaFiscal.findMany({
+      where: {
+        filialRecebimentoId: filialId
+      },
+      select: {
+        id: true,
+        numero: true,
+        fornecedorNome: true,
+        dataRecebimento: true,
+        status: true,
+        quantidadeVolumes: true,
+        valorTotal: true,
+        filialRecebimento: {
+          select: {
+            nome: true,
+            codigo: true
+          }
+        }
+      },
+      orderBy: {
+        dataRecebimento: 'desc'
+      }
+    })
+  }
 }

@@ -5,6 +5,7 @@ import {
   FiFileText, 
   FiPackage, 
   FiAlertTriangle, 
+  FiBarChart2,
   // FiTruck, // Desativado temporariamente
   FiUsers,
   FiMapPin,
@@ -21,6 +22,7 @@ const menuItems = [
   { path: '/notas-fiscais', icon: FiFileText, label: 'Notas Fiscais' },
   { path: '/conferencias', icon: FiPackage, label: 'Conferências' },
   { path: '/divergencias', icon: FiAlertTriangle, label: 'Divergências' },
+  { path: '/relatorios', icon: FiBarChart2, label: 'Relatórios' },
   // { path: '/distribuicoes', icon: FiTruck, label: 'Distribuições' }, // Desativado temporariamente
 ]
 
