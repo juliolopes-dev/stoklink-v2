@@ -61,7 +61,7 @@ export function StatusBadge({ status, tooltip }: StatusBadgeProps) {
   const tooltipText = tooltip || config.defaultTooltip
 
   const badge = (
-    <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${config.color}`}>
+    <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 hover:scale-105 hover:shadow-md cursor-default ${config.color}`}>
       {config.label}
     </span>
   )
