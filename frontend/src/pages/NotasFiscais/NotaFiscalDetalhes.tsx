@@ -309,7 +309,7 @@ export function NotaFiscalDetalhes() {
     } catch (error: unknown) {
       console.error('Erro ao alterar bloqueio:', error)
       const err = error as { response?: { data?: { error?: string } } }
-      alert(err.response?.data?.error || 'Erro ao alterar bloqueio da mercadoria')
+      alert('Erro', err.response?.data?.error || 'Erro ao alterar bloqueio da mercadoria', 'error')
     }
   }
 
