@@ -89,7 +89,7 @@ export function Sidebar() {
     <>
     <aside className="w-64 bg-gray-900 min-h-screen flex flex-col">
       <div className="p-4 border-b border-gray-800">
-        <h1 className="text-2xl font-bold text-white">StokLink</h1>
+        <h1 className="text-2xl font-bold text-white text-center">StokLink</h1>
       </div>
 
       <nav className="flex-1 p-4">
@@ -147,8 +147,6 @@ export function Sidebar() {
         <div className="text-gray-400 text-xs">
           <p className="text-white font-medium text-sm">{user?.nome}</p>
           <p className="text-xs">{user?.perfil === 'ADMIN' ? 'Administrador' : 'Conferente'}</p>
-          <p className="text-xs truncate">{user?.email}</p>
-          <p className="text-xs mt-1 text-gray-500">{user?.filial?.nome} ({user?.filial?.codigo})</p>
         </div>
         <div className="flex gap-2">
           <button
