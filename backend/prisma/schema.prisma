@@ -116,10 +116,10 @@ model NotaFiscal {
   filialDestinoId        String              @map("filial_destino_id")
   usuarioCadastroId      String              @map("usuario_cadastro_id")
   observacoes            String?
-  mercadoriaBloqueada    Boolean             @default(true) @map("mercadoria_bloqueada")
   xmlOriginal            String?             @map("xml_original")
   createdAt              DateTime            @default(now()) @map("created_at")
   updatedAt              DateTime            @updatedAt @map("updated_at")
+  mercadoriaBloqueada    Boolean             @default(true) @map("mercadoria_bloqueada")
   conferenciasItens      ConferenciaItem[]
   conferenciasVolumes    ConferenciaVolume[]
   distribuicoes          Distribuicao[]
