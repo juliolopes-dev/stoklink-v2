@@ -224,7 +224,9 @@ export function NotasFiscais() {
                     <td className="px-3 py-2">
                       <div>
                         <p className="text-xs text-gray-900">{nf.filialRecebimento?.nome || '-'}</p>
-                        <p className="text-xs text-gray-500">{formatDate(nf.dataRecebimento)}</p>
+                        {nf.status === 'VOLUMES_CONFERIDOS' || nf.status === 'CONFERIDO_OK' || nf.status === 'CONFERIDO_DIVERGENCIA' ? (
+                          <p className="text-xs text-gray-500">{formatDate(nf.dataRecebimento)}</p>
+                        ) : null}
                       </div>
                     </td>
                     <td className="px-3 py-2">
