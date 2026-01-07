@@ -20,6 +20,7 @@ interface NotaFiscal {
   quantidadeVolumes: number
   status: string
   tipoMovimentacao: string
+  transportadora: string | null
   filialRecebimento: {
     nome: string
     codigo: string
@@ -152,8 +153,11 @@ export function NotasFiscais() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[18%]">
                     Recebimento
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[18%]">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[14%]">
                     Destino
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[14%]">
+                    Transportadora
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Volumes
@@ -207,6 +211,9 @@ export function NotasFiscais() {
                         <p className="text-sm text-gray-900">{nf.filialDestino.nome}</p>
                         <p className="text-xs text-gray-500">{nf.filialDestino.codigo}</p>
                       </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm text-gray-900">{nf.transportadora || '-'}</span>
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-sm text-gray-900">{nf.quantidadeVolumes}</span>

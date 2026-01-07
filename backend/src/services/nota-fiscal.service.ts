@@ -280,7 +280,7 @@ export class NotaFiscalService {
       }
     }
 
-    return prisma.notaFiscal.findMany({
+    const notas = await prisma.notaFiscal.findMany({
       where,
       include: {
         filialRecebimento: {
@@ -295,12 +295,25 @@ export class NotaFiscalService {
         usuarioCadastro: {
           select: { id: true, nome: true }
         },
+        conferenciasVolumes: {
+          select: { transportadora: true },
+          where: { transportadora: { not: null } },
+          take: 1,
+          orderBy: { dataConferencia: 'asc' }
+        },
         _count: {
           select: { itens: true, divergencias: true }
         }
       },
       orderBy: { dataRecebimento: 'desc' }
     })
+
+    // Mapear para incluir transportadora no nível da nota
+    return notas.map(nota => ({
+      ...nota,
+      transportadora: nota.conferenciasVolumes[0]?.transportadora || null,
+      conferenciasVolumes: undefined
+    }))
   }
 
   async findById(id: string) {
