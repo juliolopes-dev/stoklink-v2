@@ -330,6 +330,9 @@ export function NotaFiscalDetalhes() {
 
   const podeConferirVolumes = !nota.filialRecebimento
   const podeConferirVolumesDestino = nota.status === 'AGUARDANDO_CONFERENCIA_DESTINO'
+  
+  // Verificar se usuário pertence à filial de destino para conferir volumes no destino
+  const usuarioPodeConferirDestino = user?.filialId === nota.filialDestino.id
 
   return (
     <div className="h-[calc(100vh-140px)] flex flex-col overflow-hidden">
@@ -726,7 +729,13 @@ export function NotaFiscalDetalhes() {
                 ) : (
                   <button
                     onClick={() => setConferindoVolumes(true)}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg transition-colors text-sm"
+                    disabled={!usuarioPodeConferirDestino}
+                    className={`w-full py-2 rounded-lg transition-colors text-sm ${
+                      usuarioPodeConferirDestino
+                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                    title={!usuarioPodeConferirDestino ? 'Apenas usuários da filial de destino podem conferir volumes no destino' : ''}
                   >
                     📦 Conferir Volumes (Destino)
                   </button>
