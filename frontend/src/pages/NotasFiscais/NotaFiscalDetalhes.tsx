@@ -12,6 +12,7 @@ import {
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
 import { useModal } from '../../contexts/ModalContext'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface ItemNF {
   id: string
@@ -97,6 +98,9 @@ export function NotaFiscalDetalhes() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { alert } = useModal()
+  const { user } = useAuth()
+  
+  // Verificar se o usuário pode conferir itens (pertence à filial de destino)
   const [nota, setNota] = useState<NotaFiscalDetalhe | null>(null)
   const [loading, setLoading] = useState(true)
   const [conferindoVolumes, setConferindoVolumes] = useState(false)
@@ -127,6 +131,9 @@ export function NotaFiscalDetalhes() {
   
   // Pesquisa de itens
   const [pesquisaItem, setPesquisaItem] = useState('')
+
+  // Verificar se usuário pode conferir itens (pertence à filial de destino)
+  const podeConferirItens = nota && user ? user.filialId === nota.filialDestino.id : false
 
   useEffect(() => {
     loadNota()
@@ -424,7 +431,13 @@ export function NotaFiscalDetalhes() {
                   ) : (
                     <button
                       onClick={handleSelecionarTodos}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs transition-colors"
+                      disabled={!podeConferirItens}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                        podeConferirItens 
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                      title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
                     >
                       Selecionar Todos
                     </button>
@@ -519,7 +532,13 @@ export function NotaFiscalDetalhes() {
                               ) : (
                                 <button
                                   onClick={() => iniciarConferenciaItem(item)}
-                                  className="px-2 py-0.5 bg-primary-600 hover:bg-primary-700 text-white rounded text-xs"
+                                  disabled={!podeConferirItens}
+                                  className={`px-2 py-0.5 rounded text-xs ${
+                                    podeConferirItens 
+                                      ? 'bg-primary-600 hover:bg-primary-700 text-white' 
+                                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                  }`}
+                                  title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
                                 >
                                   Conferir
                                 </button>
