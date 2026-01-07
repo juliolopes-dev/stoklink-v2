@@ -111,6 +111,8 @@ export function NotaFiscalDetalhes() {
   const [editForm, setEditForm] = useState({
     numeroSecundario: '',
     fornecedorSecundarioId: '',
+    filialDestinoId: '',
+    transportadora: '',
     observacoes: ''
   })
   const [saving, setSaving] = useState(false)
@@ -243,16 +245,26 @@ export function NotaFiscalDetalhes() {
 
   async function openEditModal() {
     try {
-      const response = await api.get('/fornecedores/ativos')
-      setFornecedores(response.data)
+      const [fornecedoresRes, filiaisRes] = await Promise.all([
+        api.get('/fornecedores/ativos'),
+        api.get('/filiais/ativas')
+      ])
+      setFornecedores(fornecedoresRes.data)
+      setFiliaisDisponiveis(filiaisRes.data)
+      
+      // Buscar transportadora da primeira conferência
+      const transportadoraAtual = nota?.conferenciasVolumes?.[0]?.transportadora || ''
+      
       setEditForm({
         numeroSecundario: nota?.numeroSecundario || '',
         fornecedorSecundarioId: nota?.fornecedorSecundario?.id || '',
+        filialDestinoId: nota?.filialDestino?.id || '',
+        transportadora: transportadoraAtual,
         observacoes: nota?.observacoes || ''
       })
       setShowEditModal(true)
     } catch (error) {
-      console.error('Erro ao carregar fornecedores:', error)
+      console.error('Erro ao carregar dados:', error)
     }
   }
 
@@ -262,6 +274,8 @@ export function NotaFiscalDetalhes() {
       const payload = {
         numeroSecundario: editForm.numeroSecundario || null,
         fornecedorSecundarioId: editForm.fornecedorSecundarioId || null,
+        filialDestinoId: editForm.filialDestinoId || null,
+        transportadora: editForm.transportadora || null,
         observacoes: editForm.observacoes || null
       }
       console.log('Enviando:', payload)
@@ -771,6 +785,37 @@ export function NotaFiscalDetalhes() {
                   onChange={(e) => setEditForm({ ...editForm, numeroSecundario: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   placeholder="Número da NF do fornecedor secundário"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Filial de Destino
+                </label>
+                <select
+                  value={editForm.filialDestinoId}
+                  onChange={(e) => setEditForm({ ...editForm, filialDestinoId: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                >
+                  <option value="">Selecione a filial</option>
+                  {filiaisDisponiveis.map(f => (
+                    <option key={f.id} value={f.id}>
+                      {f.nome} ({f.codigo})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Transportadora
+                </label>
+                <input
+                  type="text"
+                  value={editForm.transportadora}
+                  onChange={(e) => setEditForm({ ...editForm, transportadora: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  placeholder="Nome da transportadora"
                 />
               </div>
 
