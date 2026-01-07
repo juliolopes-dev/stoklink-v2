@@ -75,8 +75,8 @@ export function Relatorios() {
     })
   }
 
-  const valorTotal = notas.reduce((acc, nf) => acc + nf.valorTotal, 0)
-  const volumesTotal = notas.reduce((acc, nf) => acc + nf.quantidadeVolumes, 0)
+  const valorTotal = notas.reduce((acc, nf) => acc + (nf.valorTotal || 0), 0)
+  const volumesTotal = notas.reduce((acc, nf) => acc + (nf.quantidadeVolumes || 0), 0)
 
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] overflow-hidden p-6">
