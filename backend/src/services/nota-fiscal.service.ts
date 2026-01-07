@@ -462,8 +462,6 @@ export class NotaFiscalService {
       throw new Error('Nota fiscal não encontrada')
     }
 
-    let temDivergencia = false
-
     // Atualizar cada item com a quantidade informada
     for (const item of notaFiscal.itens) {
       if (!item.conferido && quantidades[item.id] !== undefined) {
@@ -476,10 +474,6 @@ export class NotaFiscalService {
             conferido: true
           }
         })
-
-        if (qtdConferida !== Number(item.quantidadeNota)) {
-          temDivergencia = true
-        }
       }
     }
 
@@ -495,11 +489,15 @@ export class NotaFiscalService {
         where: { notaFiscalId, conferido: true }
       })
       
+      let temDivergencia = false
+      
       for (const i of todosItens) {
         const qtdNota = Number(i.quantidadeNota)
         const qtdConferida = Number(i.quantidadeConferida || 0)
         
         if (qtdNota !== qtdConferida) {
+          temDivergencia = true
+          
           // Verificar se já existe divergência para este item
           const divergenciaExistente = await prisma.divergencia.findFirst({
             where: { itemNotaFiscalId: i.id }
