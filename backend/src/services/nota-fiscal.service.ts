@@ -632,4 +632,31 @@ export class NotaFiscalService {
 
     return itemAtualizado
   }
+
+  async toggleBloqueioMercadoria(id: string, bloqueada: boolean) {
+    const notaFiscal = await prisma.notaFiscal.findUnique({
+      where: { id }
+    })
+
+    if (!notaFiscal) {
+      throw new Error('Nota fiscal não encontrada')
+    }
+
+    return prisma.notaFiscal.update({
+      where: { id },
+      data: { mercadoriaBloqueada: bloqueada },
+      include: {
+        fornecedor: true,
+        fornecedorSecundario: true,
+        filialRecebimento: true,
+        filialDestino: true,
+        conferenciasVolumes: {
+          orderBy: { dataConferencia: 'asc' },
+          include: {
+            usuario: { select: { id: true, nome: true } }
+          }
+        }
+      }
+    })
+  }
 }

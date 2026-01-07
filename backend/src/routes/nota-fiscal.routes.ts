@@ -229,6 +229,29 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     }
   })
 
+  // Liberar/Bloquear mercadoria
+  app.patch('/notas-fiscais/:id/mercadoria-bloqueada', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const { id } = idParamSchema.parse(request.params)
+      
+      const bodySchema = z.object({
+        bloqueada: z.boolean()
+      })
+      const { bloqueada } = bodySchema.parse(request.body)
+      
+      const notaFiscal = await notaFiscalService.toggleBloqueioMercadoria(id, bloqueada)
+      return reply.send(notaFiscal)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao alterar bloqueio da mercadoria' })
+    }
+  })
+
   // Conferir todos os itens de uma vez
   app.post('/notas-fiscais/:id/itens/conferir-todos', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {

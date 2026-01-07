@@ -21,6 +21,7 @@ interface NotaFiscal {
   status: string
   tipoMovimentacao: string
   transportadora: string | null
+  mercadoriaBloqueada: boolean
   filialRecebimento: {
     nome: string
     codigo: string
@@ -207,10 +208,7 @@ export function NotasFiscais() {
                       </div>
                     </td>
                     <td className="px-3 py-2">
-                      <div>
-                        <p className="text-xs text-gray-900">{nf.filialDestino.nome}</p>
-                        <p className="text-xs text-gray-500">{nf.filialDestino.codigo}</p>
-                      </div>
+                      <p className="text-xs text-gray-900">{nf.filialDestino.codigo}</p>
                     </td>
                     <td className="px-3 py-2">
                       <span className="text-xs text-gray-900">{nf.transportadora || '-'}</span>
@@ -224,6 +222,16 @@ export function NotasFiscais() {
                           status={nf.status} 
                           tooltip={!nf.filialRecebimento ? 'Aguardando conferência de volumes' : undefined}
                         />
+                        {/* Tag de Bloqueio/Liberação */}
+                        {nf.mercadoriaBloqueada ? (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            🔒 Bloqueada
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ✓ Liberada
+                          </span>
+                        )}
                         {/* 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">

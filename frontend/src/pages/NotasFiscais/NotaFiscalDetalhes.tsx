@@ -65,6 +65,7 @@ interface NotaFiscalDetalhe {
   status: string
   tipoMovimentacao: string
   observacoes: string | null
+  mercadoriaBloqueada: boolean
   filialRecebimento: {
     id: string
     nome: string
@@ -301,6 +302,17 @@ export function NotaFiscalDetalhes() {
     }
   }
 
+  async function toggleBloqueioMercadoria(bloqueada: boolean) {
+    try {
+      await api.patch(`/notas-fiscais/${id}/mercadoria-bloqueada`, { bloqueada })
+      loadNota()
+    } catch (error: unknown) {
+      console.error('Erro ao alterar bloqueio:', error)
+      const err = error as { response?: { data?: { error?: string } } }
+      alert(err.response?.data?.error || 'Erro ao alterar bloqueio da mercadoria')
+    }
+  }
+
   function formatDate(dateString: string | null) {
     if (!dateString) return '-'
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -356,6 +368,16 @@ export function NotaFiscalDetalhes() {
           >
             <FiEdit2 size={16} />
             Editar
+          </button>
+          <button
+            onClick={() => toggleBloqueioMercadoria(!nota.mercadoriaBloqueada)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+              nota.mercadoriaBloqueada
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-red-600 hover:bg-red-700 text-white'
+            }`}
+          >
+            {nota.mercadoriaBloqueada ? '✓ Liberar Mercadoria' : '🔒 Bloquear Mercadoria'}
           </button>
           <StatusBadge status={nota.status} />
         </div>
