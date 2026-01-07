@@ -371,11 +371,15 @@ export function NotaFiscalDetalhes() {
           </button>
           <button
             onClick={() => toggleBloqueioMercadoria(!nota.mercadoriaBloqueada)}
+            disabled={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA'}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              nota.mercadoriaBloqueada
+              nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA'
+                ? 'bg-gray-400 cursor-not-allowed text-white'
+                : nota.mercadoriaBloqueada
                 ? 'bg-green-600 hover:bg-green-700 text-white'
                 : 'bg-red-600 hover:bg-red-700 text-white'
             }`}
+            title={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' ? 'A mercadoria só pode ser desbloqueada após a conclusão de todo o fluxo de conferência' : ''}
           >
             {nota.mercadoriaBloqueada ? 'Liberar Mercadoria' : 'Bloquear Mercadoria'}
           </button>

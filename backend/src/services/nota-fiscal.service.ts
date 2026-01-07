@@ -642,6 +642,11 @@ export class NotaFiscalService {
       throw new Error('Nota fiscal não encontrada')
     }
 
+    // Impedir desbloqueio se o fluxo não foi concluído
+    if (!bloqueada && notaFiscal.status !== 'CONFERIDO_OK' && notaFiscal.status !== 'CONFERIDO_DIVERGENCIA') {
+      throw new Error('A mercadoria só pode ser desbloqueada após a conclusão de todo o fluxo de conferência')
+    }
+
     return prisma.notaFiscal.update({
       where: { id },
       data: { mercadoriaBloqueada: bloqueada },
