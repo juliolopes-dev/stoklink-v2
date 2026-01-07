@@ -1,6 +1,9 @@
 // Configurar timezone para America/Sao_Paulo (UTC-3)
 process.env.TZ = 'America/Sao_Paulo'
 
+// Versão da aplicação - incrementar a cada deploy
+const APP_VERSION = '1.0.1'
+
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
@@ -25,11 +28,20 @@ const app = Fastify({
 
 // Plugins
 app.register(cors, {
-  origin: true
+  origin: true,
+  exposedHeaders: ['X-App-Version']
 })
 
 app.register(jwt, {
   secret: env.JWT_SECRET
+})
+
+// Hook para adicionar header de versão em todas as respostas da API
+app.addHook('onSend', (request, reply, payload, done) => {
+  if (request.url.startsWith('/api')) {
+    reply.header('X-App-Version', APP_VERSION)
+  }
+  done(null, payload)
 })
 
 // Hook para logar todas as requisições
