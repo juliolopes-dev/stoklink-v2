@@ -7,7 +7,223 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ==================== ENUMS ====================
+model Empresa {
+  id           String       @id @default(uuid())
+  razaoSocial  String       @map("razao_social")
+  nomeFantasia String?      @map("nome_fantasia")
+  cnpj         String       @unique
+  email        String       @unique
+  telefone     String?
+  endereco     String?
+  cidade       String?
+  uf           String?
+  logo         String?
+  ativo        Boolean      @default(true)
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  filiais      Filial[]
+  fornecedores Fornecedor[]
+  notasFiscais NotaFiscal[]
+  usuarios     Usuario[]
+
+  @@map("empresas")
+}
+
+model Fornecedor {
+  id                     String       @id @default(uuid())
+  empresaId              String       @map("empresa_id")
+  nome                   String
+  cnpj                   String?
+  email                  String?
+  telefone               String?
+  contato                String?
+  endereco               String?
+  cidade                 String?
+  uf                     String?
+  ativo                  Boolean      @default(true)
+  createdAt              DateTime     @default(now()) @map("created_at")
+  updatedAt              DateTime     @updatedAt @map("updated_at")
+  empresa                Empresa      @relation(fields: [empresaId], references: [id])
+  notasFiscais           NotaFiscal[] @relation("FornecedorPrincipal")
+  notasFiscaisSecundario NotaFiscal[] @relation("FornecedorSecundario")
+
+  @@unique([empresaId, cnpj])
+  @@map("fornecedores")
+}
+
+model Filial {
+  id                   String              @id @default(uuid())
+  empresaId            String              @map("empresa_id")
+  nome                 String
+  codigo               String
+  endereco             String?
+  cidade               String?
+  uf                   String?
+  ativo                Boolean             @default(true)
+  ehCD                 Boolean             @default(false) @map("eh_cd")
+  createdAt            DateTime            @default(now()) @map("created_at")
+  updatedAt            DateTime            @updatedAt @map("updated_at")
+  conferenciasVolumes  ConferenciaVolume[]
+  distribuicoesDestino Distribuicao[]      @relation("FilialDestinoDistribuicao")
+  distribuicoesOrigem  Distribuicao[]      @relation("FilialOrigem")
+  empresa              Empresa             @relation(fields: [empresaId], references: [id])
+  notasDestino         NotaFiscal[]        @relation("FilialDestino")
+  notasRecebidas       NotaFiscal[]        @relation("FilialRecebimento")
+  usuarios             Usuario[]
+
+  @@unique([empresaId, codigo])
+  @@map("filiais")
+}
+
+model Usuario {
+  id                  String              @id @default(uuid())
+  empresaId           String              @map("empresa_id")
+  nome                String
+  email               String              @unique
+  senha               String
+  perfil              PerfilUsuario       @default(CONFERENTE)
+  ativo               Boolean             @default(true)
+  filialId            String?             @map("filial_id")
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+  conferenciasItens   ConferenciaItem[]
+  conferenciasVolumes ConferenciaVolume[]
+  notasCadastradas    NotaFiscal[]
+  empresa             Empresa             @relation(fields: [empresaId], references: [id])
+  filial              Filial?             @relation(fields: [filialId], references: [id])
+
+  @@map("usuarios")
+}
+
+model NotaFiscal {
+  id                     String              @id @default(uuid())
+  empresaId              String              @map("empresa_id")
+  numero                 String
+  serie                  String?
+  chaveAcesso            String?             @unique @map("chave_acesso")
+  fornecedorNome         String              @map("fornecedor_nome")
+  fornecedorCnpj         String?             @map("fornecedor_cnpj")
+  fornecedorId           String?             @map("fornecedor_id")
+  fornecedorSecundarioId String?             @map("fornecedor_secundario_id")
+  numeroSecundario       String?             @map("numero_secundario")
+  dataEmissao            DateTime?           @map("data_emissao")
+  dataRecebimento        DateTime            @default(now()) @map("data_recebimento")
+  valorTotal             Decimal?            @map("valor_total") @db.Decimal(12, 2)
+  quantidadeVolumes      Int                 @map("quantidade_volumes")
+  tipoMovimentacao       TipoMovimentacao    @map("tipo_movimentacao")
+  status                 StatusNotaFiscal    @default(AGUARDANDO_CONFERENCIA)
+  filialRecebimentoId    String?             @map("filial_recebimento_id")
+  filialDestinoId        String              @map("filial_destino_id")
+  usuarioCadastroId      String              @map("usuario_cadastro_id")
+  observacoes            String?
+  xmlOriginal            String?             @map("xml_original")
+  createdAt              DateTime            @default(now()) @map("created_at")
+  updatedAt              DateTime            @updatedAt @map("updated_at")
+  conferenciasItens      ConferenciaItem[]
+  conferenciasVolumes    ConferenciaVolume[]
+  distribuicoes          Distribuicao[]
+  divergencias           Divergencia[]
+  itens                  ItemNotaFiscal[]
+  empresa                Empresa             @relation(fields: [empresaId], references: [id])
+  filialDestino          Filial              @relation("FilialDestino", fields: [filialDestinoId], references: [id])
+  filialRecebimento      Filial?             @relation("FilialRecebimento", fields: [filialRecebimentoId], references: [id])
+  fornecedor             Fornecedor?         @relation("FornecedorPrincipal", fields: [fornecedorId], references: [id])
+  fornecedorSecundario   Fornecedor?         @relation("FornecedorSecundario", fields: [fornecedorSecundarioId], references: [id])
+  usuarioCadastro        Usuario             @relation(fields: [usuarioCadastroId], references: [id])
+
+  @@map("notas_fiscais")
+}
+
+model ItemNotaFiscal {
+  id                  String        @id @default(uuid())
+  notaFiscalId        String        @map("nota_fiscal_id")
+  codigoProduto       String        @map("codigo_produto")
+  descricao           String
+  ncm                 String?
+  unidade             String
+  quantidadeNota      Decimal       @map("quantidade_nota") @db.Decimal(12, 3)
+  quantidadeConferida Decimal?      @map("quantidade_conferida") @db.Decimal(12, 3)
+  valorUnitario       Decimal?      @map("valor_unitario") @db.Decimal(12, 2)
+  valorTotal          Decimal?      @map("valor_total") @db.Decimal(12, 2)
+  conferido           Boolean       @default(false)
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+  divergencias        Divergencia[]
+  notaFiscal          NotaFiscal    @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
+
+  @@map("itens_nota_fiscal")
+}
+
+model ConferenciaVolume {
+  id               String                @id @default(uuid())
+  notaFiscalId     String                @map("nota_fiscal_id")
+  usuarioId        String                @map("usuario_id")
+  tipo             TipoConferenciaVolume @default(RECEBIMENTO)
+  filialId         String?               @map("filial_id")
+  volumesEsperados Int                   @map("volumes_esperados")
+  volumesRecebidos Int                   @map("volumes_recebidos")
+  volumesBatendo   Boolean               @map("volumes_batendo")
+  observacoes      String?
+  dataConferencia  DateTime              @default(now()) @map("data_conferencia")
+  createdAt        DateTime              @default(now()) @map("created_at")
+  transportadora   String?               @db.VarChar(255)
+  filial           Filial?               @relation(fields: [filialId], references: [id])
+  notaFiscal       NotaFiscal            @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
+  usuario          Usuario               @relation(fields: [usuarioId], references: [id])
+
+  @@map("conferencias_volumes")
+}
+
+model ConferenciaItem {
+  id              String     @id @default(uuid())
+  notaFiscalId    String     @map("nota_fiscal_id")
+  usuarioId       String     @map("usuario_id")
+  finalizada      Boolean    @default(false)
+  observacoes     String?
+  dataConferencia DateTime   @default(now()) @map("data_conferencia")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  notaFiscal      NotaFiscal @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
+  usuario         Usuario    @relation(fields: [usuarioId], references: [id])
+
+  @@map("conferencias_itens")
+}
+
+model Divergencia {
+  id                   String          @id @default(uuid())
+  notaFiscalId         String          @map("nota_fiscal_id")
+  itemNotaFiscalId     String?         @map("item_nota_fiscal_id")
+  tipo                 String
+  descricao            String
+  quantidadeEsperada   Decimal?        @map("quantidade_esperada") @db.Decimal(12, 3)
+  quantidadeRecebida   Decimal?        @map("quantidade_recebida") @db.Decimal(12, 3)
+  resolvida            Boolean         @default(false)
+  dataResolucao        DateTime?       @map("data_resolucao")
+  observacoesResolucao String?         @map("observacoes_resolucao")
+  createdAt            DateTime        @default(now()) @map("created_at")
+  updatedAt            DateTime        @updatedAt @map("updated_at")
+  itemNotaFiscal       ItemNotaFiscal? @relation(fields: [itemNotaFiscalId], references: [id])
+  notaFiscal           NotaFiscal      @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
+
+  @@map("divergencias")
+}
+
+model Distribuicao {
+  id               String     @id @default(uuid())
+  notaFiscalId     String     @map("nota_fiscal_id")
+  filialOrigemId   String     @map("filial_origem_id")
+  filialDestinoId  String     @map("filial_destino_id")
+  urgente          Boolean    @default(false)
+  status           String     @default("PENDENTE")
+  observacoes      String?
+  dataDistribuicao DateTime?  @map("data_distribuicao")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+  filialDestino    Filial     @relation("FilialDestinoDistribuicao", fields: [filialDestinoId], references: [id])
+  filialOrigem     Filial     @relation("FilialOrigem", fields: [filialOrigemId], references: [id])
+  notaFiscal       NotaFiscal @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
+
+  @@map("distribuicoes")
+}
 
 enum PerfilUsuario {
   ADMIN
@@ -36,234 +252,4 @@ enum TipoMovimentacao {
   RECEBIMENTO_DIRETO
   RECEBIMENTO_INDIRETO
   DISTRIBUICAO_URGENTE
-}
-
-// ==================== TABELAS ====================
-
-model Empresa {
-  id          String   @id @default(uuid())
-  razaoSocial String   @map("razao_social")
-  nomeFantasia String? @map("nome_fantasia")
-  cnpj        String   @unique
-  email       String   @unique
-  telefone    String?
-  endereco    String?
-  cidade      String?
-  uf          String?
-  logo        String?
-  ativo       Boolean  @default(true)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  usuarios     Usuario[]
-  filiais      Filial[]
-  fornecedores Fornecedor[]
-  notasFiscais NotaFiscal[]
-
-  @@map("empresas")
-}
-
-model Fornecedor {
-  id        String   @id @default(uuid())
-  empresaId String   @map("empresa_id")
-  nome      String
-  cnpj      String?
-  email     String?
-  telefone  String?
-  contato   String?
-  endereco  String?
-  cidade    String?
-  uf        String?
-  ativo     Boolean  @default(true)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  empresa                Empresa      @relation(fields: [empresaId], references: [id])
-  notasFiscais           NotaFiscal[] @relation("FornecedorPrincipal")
-  notasFiscaisSecundario NotaFiscal[] @relation("FornecedorSecundario")
-
-  @@unique([empresaId, cnpj])
-  @@map("fornecedores")
-}
-
-model Filial {
-  id        String   @id @default(uuid())
-  empresaId String   @map("empresa_id")
-  nome      String
-  codigo    String
-  endereco  String?
-  cidade    String?
-  uf        String?
-  ativo     Boolean  @default(true)
-  ehCD      Boolean  @default(false) @map("eh_cd")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  empresa              Empresa             @relation(fields: [empresaId], references: [id])
-  usuarios             Usuario[]
-  notasRecebidas       NotaFiscal[]        @relation("FilialRecebimento")
-  notasDestino         NotaFiscal[]        @relation("FilialDestino")
-  distribuicoesOrigem  Distribuicao[]      @relation("FilialOrigem")
-  distribuicoesDestino Distribuicao[]      @relation("FilialDestinoDistribuicao")
-  conferenciasVolumes  ConferenciaVolume[]
-
-  @@unique([empresaId, codigo])
-  @@map("filiais")
-}
-
-model Usuario {
-  id        String        @id @default(uuid())
-  empresaId String        @map("empresa_id")
-  nome      String
-  email     String        @unique
-  senha     String
-  perfil    PerfilUsuario @default(CONFERENTE)
-  ativo     Boolean       @default(true)
-  filialId  String?       @map("filial_id")
-  createdAt DateTime      @default(now()) @map("created_at")
-  updatedAt DateTime      @updatedAt @map("updated_at")
-
-  empresa             Empresa             @relation(fields: [empresaId], references: [id])
-  filial              Filial?             @relation(fields: [filialId], references: [id])
-  notasCadastradas    NotaFiscal[]
-  conferenciasVolumes ConferenciaVolume[]
-  conferenciasItens   ConferenciaItem[]
-
-  @@map("usuarios")
-}
-
-model NotaFiscal {
-  id                  String            @id @default(uuid())
-  empresaId           String            @map("empresa_id")
-  numero              String
-  serie               String?
-  chaveAcesso         String?           @unique @map("chave_acesso")
-  fornecedorNome      String            @map("fornecedor_nome")
-  fornecedorCnpj      String?           @map("fornecedor_cnpj")
-  fornecedorId        String?           @map("fornecedor_id")
-  fornecedorSecundarioId String?        @map("fornecedor_secundario_id")
-  numeroSecundario    String?           @map("numero_secundario")
-  dataEmissao         DateTime?         @map("data_emissao")
-  dataRecebimento     DateTime          @default(now()) @map("data_recebimento")
-  valorTotal          Decimal?          @map("valor_total") @db.Decimal(12, 2)
-  quantidadeVolumes   Int               @map("quantidade_volumes")
-  tipoMovimentacao    TipoMovimentacao  @map("tipo_movimentacao")
-  status              StatusNotaFiscal  @default(AGUARDANDO_CONFERENCIA)
-  filialRecebimentoId String?           @map("filial_recebimento_id")
-  filialDestinoId     String            @map("filial_destino_id")
-  usuarioCadastroId   String            @map("usuario_cadastro_id")
-  observacoes         String?
-  xmlOriginal         String?           @map("xml_original") @db.Text
-  createdAt           DateTime          @default(now()) @map("created_at")
-  updatedAt           DateTime          @updatedAt @map("updated_at")
-
-  empresa              Empresa             @relation(fields: [empresaId], references: [id])
-  fornecedor           Fornecedor?         @relation("FornecedorPrincipal", fields: [fornecedorId], references: [id])
-  fornecedorSecundario Fornecedor?         @relation("FornecedorSecundario", fields: [fornecedorSecundarioId], references: [id])
-  filialRecebimento    Filial?             @relation("FilialRecebimento", fields: [filialRecebimentoId], references: [id])
-  filialDestino        Filial              @relation("FilialDestino", fields: [filialDestinoId], references: [id])
-  usuarioCadastro      Usuario             @relation(fields: [usuarioCadastroId], references: [id])
-  itens                ItemNotaFiscal[]
-  conferenciasVolumes  ConferenciaVolume[]
-  conferenciasItens    ConferenciaItem[]
-  divergencias         Divergencia[]
-  distribuicoes        Distribuicao[]
-
-  @@map("notas_fiscais")
-}
-
-model ItemNotaFiscal {
-  id                  String   @id @default(uuid())
-  notaFiscalId        String   @map("nota_fiscal_id")
-  codigoProduto       String   @map("codigo_produto")
-  descricao           String
-  ncm                 String?
-  unidade             String
-  quantidadeNota      Decimal  @map("quantidade_nota") @db.Decimal(12, 3)
-  quantidadeConferida Decimal? @map("quantidade_conferida") @db.Decimal(12, 3)
-  valorUnitario       Decimal? @map("valor_unitario") @db.Decimal(12, 2)
-  valorTotal          Decimal? @map("valor_total") @db.Decimal(12, 2)
-  conferido           Boolean  @default(false)
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
-
-  notaFiscal   NotaFiscal    @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
-  divergencias Divergencia[]
-
-  @@map("itens_nota_fiscal")
-}
-
-model ConferenciaVolume {
-  id                    String                 @id @default(uuid())
-  notaFiscalId          String                 @map("nota_fiscal_id")
-  usuarioId             String                 @map("usuario_id")
-  tipo                  TipoConferenciaVolume  @default(RECEBIMENTO)
-  filialId              String?                @map("filial_id")
-  transportadora        String?
-  volumesEsperados      Int                    @map("volumes_esperados")
-  volumesRecebidos      Int                    @map("volumes_recebidos")
-  volumesBatendo        Boolean                @map("volumes_batendo")
-  observacoes           String?
-  dataConferencia       DateTime               @default(now()) @map("data_conferencia")
-  createdAt             DateTime               @default(now()) @map("created_at")
-
-  notaFiscal NotaFiscal @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
-  usuario    Usuario    @relation(fields: [usuarioId], references: [id])
-  filial     Filial?    @relation(fields: [filialId], references: [id])
-
-  @@map("conferencias_volumes")
-}
-
-model ConferenciaItem {
-  id              String   @id @default(uuid())
-  notaFiscalId    String   @map("nota_fiscal_id")
-  usuarioId       String   @map("usuario_id")
-  finalizada      Boolean  @default(false)
-  observacoes     String?
-  dataConferencia DateTime @default(now()) @map("data_conferencia")
-  createdAt       DateTime @default(now()) @map("created_at")
-
-  notaFiscal NotaFiscal @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
-  usuario    Usuario    @relation(fields: [usuarioId], references: [id])
-
-  @@map("conferencias_itens")
-}
-
-model Divergencia {
-  id                  String   @id @default(uuid())
-  notaFiscalId        String   @map("nota_fiscal_id")
-  itemNotaFiscalId    String?  @map("item_nota_fiscal_id")
-  tipo                String
-  descricao           String
-  quantidadeEsperada  Decimal? @map("quantidade_esperada") @db.Decimal(12, 3)
-  quantidadeRecebida  Decimal? @map("quantidade_recebida") @db.Decimal(12, 3)
-  resolvida           Boolean  @default(false)
-  dataResolucao       DateTime? @map("data_resolucao")
-  observacoesResolucao String?  @map("observacoes_resolucao")
-  createdAt           DateTime @default(now()) @map("created_at")
-  updatedAt           DateTime @updatedAt @map("updated_at")
-
-  notaFiscal     NotaFiscal      @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
-  itemNotaFiscal ItemNotaFiscal? @relation(fields: [itemNotaFiscalId], references: [id])
-
-  @@map("divergencias")
-}
-
-model Distribuicao {
-  id              String   @id @default(uuid())
-  notaFiscalId    String   @map("nota_fiscal_id")
-  filialOrigemId  String   @map("filial_origem_id")
-  filialDestinoId String   @map("filial_destino_id")
-  urgente         Boolean  @default(false)
-  status          String   @default("PENDENTE")
-  observacoes     String?
-  dataDistribuicao DateTime? @map("data_distribuicao")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  notaFiscal    NotaFiscal @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
-  filialOrigem  Filial     @relation("FilialOrigem", fields: [filialOrigemId], references: [id])
-  filialDestino Filial     @relation("FilialDestinoDistribuicao", fields: [filialDestinoId], references: [id])
-
-  @@map("distribuicoes")
 }

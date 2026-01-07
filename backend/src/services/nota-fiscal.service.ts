@@ -366,29 +366,38 @@ export class NotaFiscalService {
   }
 
   async update(id: string, data: Record<string, unknown>) {
+    console.log('📝 [UPDATE NF] Dados recebidos:', JSON.stringify(data, null, 2))
+    
     const notaFiscal = await prisma.notaFiscal.findUnique({
       where: { id },
-      include: { conferenciasVolumes: { orderBy: { dataConferencia: 'asc' }, take: 1 } }
+      include: { conferenciasVolumes: { orderBy: { dataConferencia: 'asc' } } }
     })
 
     if (!notaFiscal) {
       throw new Error('Nota fiscal não encontrada')
     }
 
+    console.log(`📦 [UPDATE NF] NF ${notaFiscal.numero} tem ${notaFiscal.conferenciasVolumes.length} conferências`)
+
     // Se transportadora foi enviada, atualizar na primeira conferência de volumes (recebimento)
     if (data.transportadora !== undefined) {
       const transportadora = data.transportadora as string | null
+      console.log(`🚚 [UPDATE NF] Transportadora recebida: "${transportadora}"`)
       delete data.transportadora
       
       if (notaFiscal.conferenciasVolumes.length > 0) {
-        // Atualizar a primeira conferência de volumes (recebimento)
-        await prisma.conferenciaVolume.update({
-          where: { id: notaFiscal.conferenciasVolumes[0].id },
+        const conferenciaId = notaFiscal.conferenciasVolumes[0].id
+        console.log(`✅ [UPDATE NF] Atualizando conferência ${conferenciaId} com transportadora: "${transportadora}"`)
+        
+        const updated = await prisma.conferenciaVolume.update({
+          where: { id: conferenciaId },
           data: { transportadora }
         })
+        
+        console.log(`✅ [UPDATE NF] Conferência atualizada:`, JSON.stringify(updated, null, 2))
+      } else {
+        console.log('⚠️ [UPDATE NF] Nenhuma conferência encontrada - transportadora não será salva')
       }
-      // Se não existe conferência ainda, a transportadora será perdida
-      // Isso é esperado - a transportadora deve ser informada durante a conferência de volumes
     }
 
     return prisma.notaFiscal.update({
