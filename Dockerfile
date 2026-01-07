@@ -38,8 +38,11 @@ RUN npm run build
 # Imagem final de produção
 FROM node:20-alpine AS production
 
-# Instalar dependências do sistema para Prisma runtime
-RUN apk add --no-cache openssl
+# Instalar dependências do sistema para Prisma runtime e timezone
+RUN apk add --no-cache openssl tzdata
+
+# Configurar timezone para America/Sao_Paulo (UTC-3)
+ENV TZ=America/Sao_Paulo
 
 WORKDIR /app
 

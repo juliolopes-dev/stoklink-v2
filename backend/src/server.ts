@@ -1,3 +1,6 @@
+// Configurar timezone para America/Sao_Paulo (UTC-3)
+process.env.TZ = 'America/Sao_Paulo'
+
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
