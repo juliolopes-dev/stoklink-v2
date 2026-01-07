@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { FiBarChart2, FiFilter } from 'react-icons/fi'
 import { api } from '../../services/api'
 
+// Página de relatórios por filial de recebimento
 interface Filial {
   id: string
   nome: string
