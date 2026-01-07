@@ -92,13 +92,9 @@ export function Divergencias() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Divergências</h1>
-      </div>
-
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden">
       {resumo && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 flex-shrink-0">
           <div className="bg-white rounded-xl shadow-sm p-4">
             <p className="text-sm text-gray-500">Total</p>
             <p className="text-2xl font-bold text-gray-800">{resumo.total}</p>
@@ -125,19 +121,25 @@ export function Divergencias() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm">
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center gap-4">
-            <FiFilter className="text-gray-400" />
-            <select
-              value={filtroResolvida}
-              onChange={(e) => setFiltroResolvida(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-            >
-              <option value="">Todas</option>
-              <option value="false">Pendentes</option>
-              <option value="true">Resolvidas</option>
-            </select>
+      <div className="bg-white rounded-xl shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="p-4 border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <FiAlertTriangle size={20} />
+              Divergências
+            </h1>
+            <div className="flex items-center gap-4">
+              <FiFilter className="text-gray-400" />
+              <select
+                value={filtroResolvida}
+                onChange={(e) => setFiltroResolvida(e.target.value)}
+                className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              >
+                <option value="">Todas</option>
+                <option value="false">Pendentes</option>
+                <option value="true">Resolvidas</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -147,7 +149,7 @@ export function Divergencias() {
             <p className="text-gray-500">Nenhuma divergência encontrada</p>
           </div>
         ) : (
-          <div>
+          <div className="flex-1 overflow-y-auto">
             {divergencias.map((div) => (
               <div key={div.id} className="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 <div className="flex items-start justify-between">
