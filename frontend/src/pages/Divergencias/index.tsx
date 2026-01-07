@@ -42,6 +42,18 @@ export function Divergencias() {
     loadData()
   }, [filtroResolvida])
 
+  // Recarregar dados quando a página fica visível novamente
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadData()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [filtroResolvida])
+
   async function loadData() {
     setLoading(true)
     try {

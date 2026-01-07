@@ -57,6 +57,18 @@ export function NotasFiscais() {
     loadNotas()
   }, [statusFilter])
 
+  // Recarregar dados quando a página fica visível novamente
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        loadNotas()
+      }
+    }
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [statusFilter])
+
   async function loadNotas() {
     setLoading(true)
     try {
