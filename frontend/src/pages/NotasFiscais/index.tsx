@@ -213,9 +213,11 @@ export function NotasFiscais() {
                           <p className="text-xs text-blue-600">Emissão: {formatDate(nf.dataEmissao)}</p>
                         )}
                         {nf.fornecedorSecundario && (
-                          <p className="text-xs text-purple-500 truncate max-w-[200px]">
-                            + {nf.fornecedorSecundario.nome}
-                          </p>
+                          <Tooltip content={nf.fornecedorSecundario.nome}>
+                            <p className="text-xs text-purple-500 truncate max-w-[200px]">
+                              + {nf.fornecedorSecundario.nome}
+                            </p>
+                          </Tooltip>
                         )}
                       </div>
                     </td>
