@@ -386,8 +386,8 @@ export function NotaFiscalDetalhes() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 flex-1 min-h-0">
-        <div className="lg:col-span-2 flex flex-col gap-3 min-h-0">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 flex-1 min-h-0 overflow-hidden">
+        <div className="lg:col-span-2 flex flex-col gap-3 min-h-0 overflow-hidden">
           <div className="bg-white rounded-xl shadow-sm p-3 flex-shrink-0">
             <h2 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
               <FiFileText size={16} />
