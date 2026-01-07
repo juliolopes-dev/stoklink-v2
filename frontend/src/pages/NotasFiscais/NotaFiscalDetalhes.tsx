@@ -25,9 +25,10 @@ interface ItemNF {
 
 interface ConferenciaVolume {
   id: string
-  volumesEsperados: number
   volumesRecebidos: number
+  volumesEsperados: number
   volumesBatendo: boolean
+  transportadora: string | null
   dataConferencia: string
   usuario: { nome: string }
 }
@@ -101,6 +102,7 @@ export function NotaFiscalDetalhes() {
   const [conferindoVolumes, setConferindoVolumes] = useState(false)
   const [volumesRecebidos, setVolumesRecebidos] = useState('')
   const [filialRecebimentoId, setFilialRecebimentoId] = useState('')
+  const [transportadora, setTransportadora] = useState('')
   const [filiaisDisponiveis, setFiliaisDisponiveis] = useState<FilialOption[]>([])
   
   // Modal de edição
@@ -153,10 +155,12 @@ export function NotaFiscalDetalhes() {
     try {
       await api.post(`/notas-fiscais/${id}/conferencia-volumes`, {
         volumesRecebidos: parseInt(volumesRecebidos),
-        filialRecebimentoId: filialRecebimentoId || undefined
+        filialRecebimentoId: filialRecebimentoId || undefined,
+        transportadora: transportadora || undefined
       })
       setConferindoVolumes(false)
       setFilialRecebimentoId('')
+      setTransportadora('')
       loadNota()
     } catch (error) {
       console.error('Erro ao conferir volumes:', error)
@@ -560,6 +564,11 @@ export function NotaFiscalDetalhes() {
                         {conf.volumesBatendo ? 'OK' : 'Divergente'}
                       </span>
                     </div>
+                    {conf.transportadora && (
+                      <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                        <FiTruck size={12} /> {conf.transportadora}
+                      </p>
+                    )}
                     <p className="text-xs text-gray-500 mt-1">
                       {conf.usuario.nome} - {formatDate(conf.dataConferencia)}
                     </p>
@@ -596,6 +605,18 @@ export function NotaFiscalDetalhes() {
                     )}
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
+                        Transportadora
+                      </label>
+                      <input
+                        type="text"
+                        value={transportadora}
+                        onChange={(e) => setTransportadora(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                        placeholder="Nome da transportadora"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">
                         Volumes Recebidos
                       </label>
                       <input
@@ -614,7 +635,7 @@ export function NotaFiscalDetalhes() {
                         Confirmar
                       </button>
                       <button
-                        onClick={() => { setConferindoVolumes(false); setFilialRecebimentoId(''); }}
+                        onClick={() => { setConferindoVolumes(false); setFilialRecebimentoId(''); setTransportadora(''); }}
                         className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg transition-colors text-sm"
                       >
                         Cancelar

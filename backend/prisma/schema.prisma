@@ -199,6 +199,7 @@ model ConferenciaVolume {
   usuarioId             String                 @map("usuario_id")
   tipo                  TipoConferenciaVolume  @default(RECEBIMENTO)
   filialId              String?                @map("filial_id")
+  transportadora        String?
   volumesEsperados      Int                    @map("volumes_esperados")
   volumesRecebidos      Int                    @map("volumes_recebidos")
   volumesBatendo        Boolean                @map("volumes_batendo")

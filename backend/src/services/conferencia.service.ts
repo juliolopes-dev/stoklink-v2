@@ -9,6 +9,7 @@ interface ConferenciaVolumeInput {
   volumesRecebidos: number
   filialRecebimentoId?: string
   tipo?: TipoConferenciaVolume
+  transportadora?: string
   observacoes?: string
 }
 
@@ -63,6 +64,7 @@ export class ConferenciaService {
         usuarioId: input.usuarioId,
         tipo: tipoConferencia,
         filialId: filialConferencia,
+        transportadora: input.transportadora,
         volumesEsperados,
         volumesRecebidos: input.volumesRecebidos,
         volumesBatendo,
