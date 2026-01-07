@@ -189,6 +189,13 @@ export function NotasFiscais() {
                       <div>
                         <div className="flex items-center gap-1 flex-wrap">
                           <p className="font-medium text-gray-900 text-sm">NF {nf.numero}</p>
+                          {nf._count.divergencias > 0 && (
+                            <Tooltip content={`${nf._count.divergencias} divergência(s) encontrada(s)`}>
+                              <span className="flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
+                                {nf._count.divergencias}
+                              </span>
+                            </Tooltip>
+                          )}
                           {nf.numeroSecundario && (
                             <Tooltip content={nf.fornecedorSecundario ? nf.fornecedorSecundario.nome : 'Fornecedor não informado'}>
                               <span className="text-xs text-purple-600">/ {nf.numeroSecundario}</span>
