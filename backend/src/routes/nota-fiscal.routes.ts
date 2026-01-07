@@ -262,7 +262,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       })
       const { quantidadeConferida } = bodySchema.parse(request.body)
       
-      const item = await notaFiscalService.conferirItem(id, itemId, quantidadeConferida)
+      const item = await notaFiscalService.conferirItem(id, itemId, quantidadeConferida, request.user.id)
       return reply.send(item)
     } catch (error) {
       if (error instanceof z.ZodError) {

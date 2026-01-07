@@ -516,7 +516,27 @@ export class NotaFiscalService {
     return { success: true, message: 'Itens conferidos com sucesso' }
   }
 
-  async conferirItem(notaFiscalId: string, itemId: string, quantidadeConferida: number) {
+  async conferirItem(notaFiscalId: string, itemId: string, quantidadeConferida: number, usuarioId: string) {
+    // Buscar nota fiscal para validar filial de destino
+    const notaFiscal = await prisma.notaFiscal.findUnique({
+      where: { id: notaFiscalId },
+      select: { filialDestinoId: true }
+    })
+
+    if (!notaFiscal) {
+      throw new Error('Nota fiscal não encontrada')
+    }
+
+    // Validar que o usuário pertence à filial de destino
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: usuarioId },
+      select: { filialId: true }
+    })
+    
+    if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
+      throw new Error('Apenas usuários da filial de destino podem realizar a conferência de itens')
+    }
+
     const item = await prisma.itemNotaFiscal.findFirst({
       where: { id: itemId, notaFiscalId }
     })

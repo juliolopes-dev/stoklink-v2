@@ -2,7 +2,7 @@
 process.env.TZ = 'America/Sao_Paulo'
 
 // Versão da aplicação - incrementar a cada deploy
-const APP_VERSION = '1.0.1'
+const APP_VERSION = '1.0.2'
 
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
