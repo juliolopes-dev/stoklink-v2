@@ -47,6 +47,16 @@ export class ConferenciaService {
       if (!['AGUARDANDO_CONFERENCIA_DESTINO'].includes(notaFiscal.status)) {
         throw new Error('Esta nota fiscal não está aguardando conferência no destino')
       }
+      
+      // Validar que o usuário pertence à filial de destino
+      const usuario = await prisma.usuario.findUnique({
+        where: { id: input.usuarioId },
+        select: { filialId: true, nome: true }
+      })
+      
+      if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
+        throw new Error('Apenas usuários da filial de destino podem realizar a conferência no destino')
+      }
     }
 
     const volumesEsperados = notaFiscal.quantidadeVolumes
