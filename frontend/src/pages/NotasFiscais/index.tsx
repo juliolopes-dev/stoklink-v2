@@ -92,19 +92,18 @@ export function NotasFiscais() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold text-gray-800">Notas Fiscais</h1>
-        <Link
-          to="/notas-fiscais/nova"
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors"
-        >
-          <FiPlus size={20} />
-          Nova NF
-        </Link>
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm mb-4">
+      <div className="bg-white rounded-xl shadow-sm">
         <div className="p-3 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="text-lg font-bold text-gray-800">Notas Fiscais</h1>
+            <Link
+              to="/notas-fiscais/nova"
+              className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 rounded-lg transition-colors text-sm"
+            >
+              <FiPlus size={16} />
+              Nova NF
+            </Link>
+          </div>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
               <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
