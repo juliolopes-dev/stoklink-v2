@@ -50,6 +50,8 @@ export function NovaNotaFiscal() {
   const [serie, setSerie] = useState('')
   const [fornecedorNome, setFornecedorNome] = useState('')
   const [fornecedorCnpj, setFornecedorCnpj] = useState('')
+  const [showFornecedorSuggestions, setShowFornecedorSuggestions] = useState(false)
+  const [filteredFornecedores, setFilteredFornecedores] = useState<{ id: string; nome: string; cnpj?: string }[]>([])
   const [quantidadeVolumes, setQuantidadeVolumes] = useState('')
   const [tipoMovimentacao, setTipoMovimentacao] = useState('RECEBIMENTO_DIRETO')
   const [filialRecebimentoId, setFilialRecebimentoId] = useState('')
@@ -66,7 +68,7 @@ export function NovaNotaFiscal() {
   const [loadingPreview, setLoadingPreview] = useState(false)
   const [xmlNumeroSecundario, setXmlNumeroSecundario] = useState('')
   const [xmlFornecedorSecundarioId, setXmlFornecedorSecundarioId] = useState('')
-  const [fornecedores, setFornecedores] = useState<{ id: string; nome: string }[]>([])
+  const [fornecedores, setFornecedores] = useState<{ id: string; nome: string; cnpj?: string }[]>([])
 
   useEffect(() => {
     loadFiliais()
@@ -301,17 +303,58 @@ export function NovaNotaFiscal() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                <div className="relative">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Nome do Fornecedor *
+                    Nome do Fornecedor * <span className="text-xs text-gray-500">(Digite para buscar)</span>
                   </label>
                   <input
                     type="text"
                     value={fornecedorNome}
-                    onChange={(e) => setFornecedorNome(e.target.value)}
+                    onChange={(e) => {
+                      const value = e.target.value
+                      setFornecedorNome(value)
+                      
+                      if (value.length >= 2) {
+                        const filtered = fornecedores.filter(f => 
+                          f.nome.toLowerCase().includes(value.toLowerCase())
+                        )
+                        setFilteredFornecedores(filtered)
+                        setShowFornecedorSuggestions(filtered.length > 0)
+                      } else {
+                        setShowFornecedorSuggestions(false)
+                      }
+                    }}
+                    onFocus={() => {
+                      if (fornecedorNome.length >= 2 && filteredFornecedores.length > 0) {
+                        setShowFornecedorSuggestions(true)
+                      }
+                    }}
+                    onBlur={() => {
+                      setTimeout(() => setShowFornecedorSuggestions(false), 200)
+                    }}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    placeholder="Digite o nome do fornecedor..."
                     required
                   />
+                  {showFornecedorSuggestions && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                      {filteredFornecedores.map((f) => (
+                        <button
+                          key={f.id}
+                          type="button"
+                          onClick={() => {
+                            setFornecedorNome(f.nome)
+                            setFornecedorCnpj(f.cnpj || '')
+                            setShowFornecedorSuggestions(false)
+                          }}
+                          className="w-full px-4 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                        >
+                          <p className="font-medium text-sm text-gray-800">{f.nome}</p>
+                          {f.cnpj && <p className="text-xs text-gray-500">{f.cnpj}</p>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -322,6 +365,7 @@ export function NovaNotaFiscal() {
                     value={fornecedorCnpj}
                     onChange={(e) => setFornecedorCnpj(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    placeholder="Opcional"
                   />
                 </div>
               </div>
