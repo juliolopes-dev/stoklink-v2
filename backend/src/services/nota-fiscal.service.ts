@@ -398,7 +398,13 @@ export class NotaFiscalService {
         fornecedor: true,
         fornecedorSecundario: true,
         filialRecebimento: true,
-        filialDestino: true
+        filialDestino: true,
+        conferenciasVolumes: {
+          orderBy: { dataConferencia: 'asc' },
+          include: {
+            usuario: { select: { id: true, nome: true } }
+          }
+        }
       }
     })
   }
