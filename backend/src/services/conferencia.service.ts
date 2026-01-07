@@ -161,6 +161,16 @@ export class ConferenciaService {
       throw new Error('Esta nota fiscal não está em um status que permita conferência de itens')
     }
 
+    // Validar que o usuário pertence à filial de destino
+    const usuario = await prisma.usuario.findUnique({
+      where: { id: input.usuarioId },
+      select: { filialId: true }
+    })
+    
+    if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
+      throw new Error('Apenas usuários da filial de destino podem realizar a conferência de itens')
+    }
+
     // Atualizar quantidades conferidas dos itens
     for (const itemConferido of input.itensConferidos) {
       const itemExiste = notaFiscal.itens.find((i: { id: string }) => i.id === itemConferido.itemId)
