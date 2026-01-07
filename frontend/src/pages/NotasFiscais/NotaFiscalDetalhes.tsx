@@ -349,7 +349,7 @@ export function NotaFiscalDetalhes() {
   const usuarioPodeConferirDestino = user?.filialId === nota.filialDestino.id
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden p-6">
+    <div className="h-full flex flex-col overflow-hidden p-6">
       <div className="flex items-center gap-4 mb-3 flex-shrink-0">
         <button
           onClick={() => navigate('/notas-fiscais')}

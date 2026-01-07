@@ -104,7 +104,7 @@ export function Divergencias() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden p-6">
+    <div className="flex flex-col h-full overflow-hidden p-6">
       {resumo && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 flex-shrink-0">
           <div className="bg-white rounded-xl shadow-sm p-4">
