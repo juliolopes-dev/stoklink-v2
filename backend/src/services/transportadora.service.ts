@@ -23,14 +23,14 @@ interface UpdateTransportadoraInput {
 
 export const transportadoraService = {
   async findAll(empresaId: string, apenasAtivos = false) {
-    return prisma.transportadora.findMany({
+    return (prisma as any).transportadora.findMany({
       where: { empresaId, ...(apenasAtivos ? { ativo: true } : {}) },
       orderBy: { nome: 'asc' }
     })
   },
 
   async findById(id: string, empresaId: string) {
-    return prisma.transportadora.findFirst({
+    return (prisma as any).transportadora.findFirst({
       where: { id, empresaId }
     })
   },
@@ -38,14 +38,14 @@ export const transportadoraService = {
   async create(data: CreateTransportadoraInput) {
     const cnpjNormalizado = normalizeCnpj(data.cnpj)
     
-    const existente = await prisma.transportadora.findFirst({
+    const existente = await (prisma as any).transportadora.findFirst({
       where: { nome: data.nome, empresaId: data.empresaId }
     })
     if (existente) {
       throw new Error('Já existe uma transportadora com este nome')
     }
 
-    return prisma.transportadora.create({
+    return (prisma as any).transportadora.create({
       data: {
         empresaId: data.empresaId,
         nome: data.nome,
@@ -57,7 +57,7 @@ export const transportadoraService = {
   },
 
   async update(id: string, empresaId: string, data: UpdateTransportadoraInput) {
-    const transportadora = await prisma.transportadora.findFirst({
+    const transportadora = await (prisma as any).transportadora.findFirst({
       where: { id, empresaId }
     })
     if (!transportadora) {
@@ -67,7 +67,7 @@ export const transportadoraService = {
     const cnpjNormalizado = data.cnpj !== undefined ? normalizeCnpj(data.cnpj) : undefined
 
     if (data.nome && data.nome !== transportadora.nome) {
-      const existente = await prisma.transportadora.findFirst({
+      const existente = await (prisma as any).transportadora.findFirst({
         where: { nome: data.nome, empresaId }
       })
       if (existente) {
@@ -75,7 +75,7 @@ export const transportadoraService = {
       }
     }
 
-    return prisma.transportadora.update({
+    return (prisma as any).transportadora.update({
       where: { id },
       data: {
         ...data,
@@ -85,7 +85,7 @@ export const transportadoraService = {
   },
 
   async delete(id: string, empresaId: string) {
-    const transportadora = await prisma.transportadora.findFirst({
+    const transportadora = await (prisma as any).transportadora.findFirst({
       where: { id, empresaId }
     })
 
@@ -93,7 +93,7 @@ export const transportadoraService = {
       throw new Error('Transportadora não encontrada')
     }
 
-    return prisma.transportadora.delete({
+    return (prisma as any).transportadora.delete({
       where: { id }
     })
   }
