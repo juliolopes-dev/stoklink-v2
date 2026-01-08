@@ -51,6 +51,7 @@ export function NotasFiscais() {
   const [notas, setNotas] = useState<NotaFiscal[]>([])
   const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('')
+  const [rpFilter, setRpFilter] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
@@ -85,12 +86,22 @@ export function NotasFiscais() {
   }
 
   const filteredNotas = notas.filter(nf => {
-    if (!searchTerm) return true
-    const search = searchTerm.toLowerCase()
-    return (
-      nf.numero.toLowerCase().includes(search) ||
-      nf.fornecedorNome.toLowerCase().includes(search)
-    )
+    // Filtro de busca
+    if (searchTerm) {
+      const search = searchTerm.toLowerCase()
+      const matchSearch = nf.numero.toLowerCase().includes(search) ||
+        nf.fornecedorNome.toLowerCase().includes(search)
+      if (!matchSearch) return false
+    }
+    
+    // Filtro RP (Recebimento Prévio)
+    if (rpFilter === 'SIM') {
+      if (!nf.filialRecebimento) return false
+    } else if (rpFilter === 'NAO') {
+      if (nf.filialRecebimento) return false
+    }
+    
+    return true
   })
 
   function formatDate(dateString: string) {
@@ -130,6 +141,15 @@ export function NotasFiscais() {
             </div>
             <div className="flex items-center gap-2">
               <FiFilter className="text-gray-400" size={20} />
+              <select
+                value={rpFilter}
+                onChange={(e) => setRpFilter(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+              >
+                <option value="">Todos RP</option>
+                <option value="SIM">RP-SIM</option>
+                <option value="NAO">RP-NÃO</option>
+              </select>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
@@ -231,6 +251,16 @@ export function NotasFiscais() {
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex flex-col gap-1 items-start">
+                        {/* Tag RP-SIM / RP-NÃO */}
+                        {nf.filialRecebimento ? (
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                            RP-SIM
+                          </span>
+                        ) : (
+                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
+                            RP-NÃO
+                          </span>
+                        )}
                         {/* Tag de Bloqueio/Liberação */}
                         {nf.mercadoriaBloqueada ? (
                           <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
