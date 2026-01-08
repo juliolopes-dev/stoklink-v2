@@ -32,9 +32,9 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
     defaultTooltip: 'Conferência de produtos em andamento'
   },
   CONFERIDO_DIVERGENCIA: {
-    label: 'Divergência',
+    label: 'Conferido c/ Divergência',
     color: 'bg-red-100 text-red-800',
-    defaultTooltip: 'Divergência em produtos'
+    defaultTooltip: 'Conferência concluída com divergências em produtos'
   },
   CONFERIDO_OK: {
     label: 'Conferido',
