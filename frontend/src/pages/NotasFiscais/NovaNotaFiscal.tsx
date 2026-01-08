@@ -155,7 +155,9 @@ export function NovaNotaFiscal() {
         fornecedorCnpj: fornecedorCnpj || undefined,
         quantidadeVolumes: parseInt(quantidadeVolumes),
         tipoMovimentacao,
-        filialRecebimentoId,
+        // NF INDIRETA: não define filialRecebimento (será definido na conferência)
+        // NF DIRETA: define filialRecebimento igual ao destino
+        filialRecebimentoId: tipoMovimentacao === 'RECEBIMENTO_INDIRETO' ? undefined : filialRecebimentoId,
         filialDestinoId,
         observacoes: observacoes || undefined,
         itens: itens.length > 0 ? itens.map(item => ({
