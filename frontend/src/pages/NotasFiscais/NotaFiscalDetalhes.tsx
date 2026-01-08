@@ -119,6 +119,7 @@ export function NotaFiscalDetalhes() {
   const [editForm, setEditForm] = useState({
     numeroSecundario: '',
     fornecedorSecundarioId: '',
+    filialRecebimentoId: '',
     filialDestinoId: '',
     transportadora: '',
     observacoes: ''
@@ -280,6 +281,7 @@ export function NotaFiscalDetalhes() {
       setEditForm({
         numeroSecundario: nota?.numeroSecundario || '',
         fornecedorSecundarioId: nota?.fornecedorSecundario?.id || '',
+        filialRecebimentoId: nota?.filialRecebimento?.id || '',
         filialDestinoId: nota?.filialDestino?.id || '',
         transportadora: transportadoraAtual,
         observacoes: nota?.observacoes || ''
@@ -296,6 +298,7 @@ export function NotaFiscalDetalhes() {
       const payload = {
         numeroSecundario: editForm.numeroSecundario || null,
         fornecedorSecundarioId: editForm.fornecedorSecundarioId || null,
+        filialRecebimentoId: editForm.filialRecebimentoId || null,
         filialDestinoId: editForm.filialDestinoId || null,
         transportadora: editForm.transportadora || null,
         observacoes: editForm.observacoes || null
@@ -900,6 +903,24 @@ export function NotaFiscalDetalhes() {
                   className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   placeholder="Número da NF do fornecedor secundário"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Filial de Recebimento
+                </label>
+                <select
+                  value={editForm.filialRecebimentoId}
+                  onChange={(e) => setEditForm({ ...editForm, filialRecebimentoId: e.target.value })}
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                >
+                  <option value="">Nenhuma</option>
+                  {filiaisDisponiveis.map(f => (
+                    <option key={f.id} value={f.id}>
+                      {f.nome} ({f.codigo})
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
