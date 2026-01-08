@@ -297,10 +297,10 @@ export class NotaFiscalService {
           select: { id: true, nome: true }
         },
         conferenciasVolumes: {
-          select: { transportadora: true },
-          where: { transportadora: { not: null } },
+          select: { transportadora: true } as any,
+          where: { transportadora: { not: null } } as any,
           take: 1,
-          orderBy: { dataConferencia: 'asc' }
+          orderBy: { dataConferencia: 'asc' } as any
         },
         _count: {
           select: { itens: true, divergencias: true }
@@ -310,7 +310,7 @@ export class NotaFiscalService {
     })
 
     // Mapear para incluir transportadora no nível da nota
-    return notas.map(nota => ({
+    return notas.map((nota: any) => ({
       ...nota,
       transportadora: nota.conferenciasVolumes[0]?.transportadora || null,
       conferenciasVolumes: undefined
@@ -340,7 +340,7 @@ export class NotaFiscalService {
             dataConferencia: true,
             usuario: { select: { id: true, nome: true } },
             filial: { select: { id: true, nome: true, codigo: true } }
-          },
+          } as any,
           orderBy: { dataConferencia: 'desc' }
         },
         conferenciasItens: {
@@ -367,7 +367,7 @@ export class NotaFiscalService {
   }
 
   async update(id: string, data: Record<string, unknown>) {
-    console.log('📝 [UPDATE NF] Dados recebidos:', JSON.stringify(data, null, 2))
+    console.log(' [UPDATE NF] Dados recebidos:', JSON.stringify(data, null, 2))
     
     const notaFiscal = await prisma.notaFiscal.findUnique({
       where: { id },
@@ -378,21 +378,22 @@ export class NotaFiscalService {
       throw new Error('Nota fiscal não encontrada')
     }
 
-    console.log(`📦 [UPDATE NF] NF ${notaFiscal.numero} tem ${notaFiscal.conferenciasVolumes.length} conferências`)
+    console.log(` [UPDATE NF] NF ${notaFiscal.numero} tem ${notaFiscal.conferenciasVolumes.length} conferências`)
 
     // Se transportadora foi enviada, atualizar na primeira conferência de volumes (recebimento)
     if (data.transportadora !== undefined) {
       const transportadora = data.transportadora as string | null
-      console.log(`🚚 [UPDATE NF] Transportadora recebida: "${transportadora}"`)
+      console.log(` [UPDATE NF] Transportadora recebida: "${transportadora}"`)
       delete data.transportadora
       
       if (notaFiscal.conferenciasVolumes.length > 0) {
         const conferenciaId = notaFiscal.conferenciasVolumes[0].id
+        console.log(` [UPDATE NF] Atualizando conferência ${conferenciaId} com transportadora: "${transportadora}"`)
         console.log(`✅ [UPDATE NF] Atualizando conferência ${conferenciaId} com transportadora: "${transportadora}"`)
         
         const updated = await prisma.conferenciaVolume.update({
           where: { id: conferenciaId },
-          data: { transportadora }
+          data: { transportadora } as any
         })
         
         console.log(`✅ [UPDATE NF] Conferência atualizada:`, JSON.stringify(updated, null, 2))
@@ -434,24 +435,6 @@ export class NotaFiscalService {
     })
   }
 
-  async delete(id: string) {
-    const notaFiscal = await prisma.notaFiscal.findUnique({
-      where: { id }
-    })
-
-    if (!notaFiscal) {
-      throw new Error('Nota fiscal não encontrada')
-    }
-
-    // Só permite deletar se estiver aguardando conferência
-    if (notaFiscal.status !== 'AGUARDANDO_CONFERENCIA') {
-      throw new Error('Não é possível excluir uma nota fiscal que já foi conferida')
-    }
-
-    return prisma.notaFiscal.delete({
-      where: { id }
-    })
-  }
 
   async conferirTodosItens(notaFiscalId: string, quantidades: Record<string, number>) {
     const notaFiscal = await prisma.notaFiscal.findUnique({
@@ -663,7 +646,7 @@ export class NotaFiscalService {
 
     return prisma.notaFiscal.update({
       where: { id },
-      data: { mercadoriaBloqueada: bloqueada },
+      data: { mercadoriaBloqueada: bloqueada } as any,
       include: {
         fornecedor: true,
         fornecedorSecundario: true,
