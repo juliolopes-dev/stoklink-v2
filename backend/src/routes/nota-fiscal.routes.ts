@@ -204,7 +204,8 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         filialRecebimentoId: z.string().uuid().optional().nullable(),
         filialDestinoId: z.string().uuid().optional().nullable(),
         transportadora: z.string().optional().nullable(),
-        observacoes: z.string().optional().nullable()
+        observacoes: z.string().optional().nullable(),
+        entradaRp: z.boolean().optional().nullable()
       })
 
       const body = bodySchema.parse(request.body)
@@ -219,6 +220,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       if (body.filialDestinoId !== undefined) data.filialDestinoId = body.filialDestinoId
       if (body.transportadora !== undefined) data.transportadora = body.transportadora || null
       if (body.observacoes !== undefined) data.observacoes = body.observacoes || null
+      if (body.entradaRp !== undefined) data.entradaRp = body.entradaRp
       const notaFiscal = await notaFiscalService.update(id, data)
       return reply.send(notaFiscal)
     } catch (error) {
