@@ -254,19 +254,41 @@ export function NotasFiscais() {
                       <div className="flex flex-col gap-1 items-start">
                         <StatusBadge 
                           status={nf.status} 
-                          tooltip={!nf.filialRecebimento ? 'Aguardando conferência de volumes' : undefined}
                           filialRecebimento={nf.filialRecebimento?.nome}
                         />
-                        {/* 1ª Conferência - Receber na filial */}
-                        {!nf.filialRecebimento && (
+                        
+                        {/* NF não chegou ainda - Conferência Pendente */}
+                        {nf.status === 'AGUARDANDO_CONFERENCIA' && !nf.filialRecebimento && (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            Conf. pendente
+                          </span>
+                        )}
+                        
+                        {/* NF chegou - Aguardando conferência de volumes */}
+                        {nf.status === 'AGUARDANDO_CONFERENCIA' && nf.filialRecebimento && (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             Conferir volumes
                           </span>
                         )}
-                        {/* Conferência de Itens */}
-                        {nf.filialRecebimento && ['VOLUMES_CONFERIDOS', 'PENDENTE_TRANSFERENCIA'].includes(nf.status) && (
+                        
+                        {/* NF DIRETA - Volumes conferidos, aguardando conferência de itens */}
+                        {nf.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && nf.status === 'VOLUMES_CONFERIDOS' && (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                             Conferir itens
+                          </span>
+                        )}
+                        
+                        {/* NF INDIRETA - Em trânsito para filial destino */}
+                        {nf.tipoMovimentacao === 'RECEBIMENTO_INDIRETO' && ['VOLUMES_CONFERIDOS', 'PENDENTE_TRANSFERENCIA'].includes(nf.status) && (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            Aguardando chegada no destino
+                          </span>
+                        )}
+                        
+                        {/* NF INDIRETA - Chegou no destino, aguardando conferência */}
+                        {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                            Conferir volumes e itens
                           </span>
                         )}
                       </div>

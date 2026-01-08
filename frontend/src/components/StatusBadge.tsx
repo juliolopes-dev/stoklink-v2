@@ -8,14 +8,14 @@ interface StatusBadgeProps {
 
 const statusConfig: Record<string, { label: string; color: string; defaultTooltip?: string }> = {
   AGUARDANDO_CONFERENCIA: {
-    label: 'Aguardando Conferência',
+    label: 'Aguardando Recebimento',
     color: 'bg-yellow-100 text-yellow-800',
-    defaultTooltip: 'Aguardando conferência de volumes'
+    defaultTooltip: 'Aguardando chegada da mercadoria'
   },
   VOLUMES_CONFERIDOS: {
     label: 'Volumes Conferidos',
     color: 'bg-blue-100 text-blue-800',
-    defaultTooltip: 'Volumes conferidos, aguardando conferência de produtos'
+    defaultTooltip: 'Volumes conferidos, aguardando conferência de itens'
   },
   VOLUMES_DIVERGENTES: {
     label: 'Divergência',
@@ -42,9 +42,9 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
     defaultTooltip: 'Conferência de volumes e produtos OK'
   },
   PENDENTE_TRANSFERENCIA: {
-    label: 'Pend. Transferência',
+    label: 'Em Trânsito',
     color: 'bg-purple-100 text-purple-800',
-    defaultTooltip: 'Volumes OK - Aguardando conferência de itens e transferência para filial destino'
+    defaultTooltip: 'Volumes conferidos na filial de recebimento - Em trânsito para filial destino'
   },
   AGUARDANDO_CONFERENCIA_DESTINO: {
     label: 'Aguard. Destino',
