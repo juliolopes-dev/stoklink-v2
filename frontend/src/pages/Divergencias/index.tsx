@@ -168,10 +168,19 @@ export function Divergencias() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        div.tipo === 'SOBRA' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        div.tipo === 'ITEM_EXTRA' 
+                          ? 'bg-orange-100 text-orange-800'
+                          : div.tipo === 'SOBRA' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
                       }`}>
-                        {div.tipo}
+                        {div.tipo === 'ITEM_EXTRA' ? 'ITEM EXTRA' : div.tipo}
                       </span>
+                      {div.tipo === 'ITEM_EXTRA' && (
+                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                          Não listado na NF
+                        </span>
+                      )}
                       <span className={`text-xs ${div.resolvida ? 'text-green-600' : 'text-red-600'}`}>
                         {div.resolvida ? 'Resolvida' : 'Pendente'}
                       </span>

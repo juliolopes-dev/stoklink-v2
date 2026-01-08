@@ -1096,7 +1096,7 @@ export function NotaFiscalDetalhes() {
                 <button
                   onClick={async () => {
                     if (!itemExtraForm.codigoProduto.trim() || !itemExtraForm.descricao.trim() || !itemExtraForm.quantidade) {
-                      alert('Preencha todos os campos obrigatórios')
+                      alert('Atenção', 'Preencha todos os campos obrigatórios')
                       return
                     }
 
@@ -1110,13 +1110,13 @@ export function NotaFiscalDetalhes() {
                         quantidadeRecebida: parseFloat(itemExtraForm.quantidade)
                       })
 
-                      alert('Item extra registrado como divergência com sucesso!')
+                      alert('Sucesso', 'Item extra registrado como divergência com sucesso!')
                       setShowItemExtraModal(false)
                       setItemExtraForm({ codigoProduto: '', descricao: '', quantidade: '', observacoes: '' })
                       loadNota()
                     } catch (error) {
                       console.error('Erro ao registrar item extra:', error)
-                      alert('Erro ao registrar item extra. Tente novamente.')
+                      alert('Erro', 'Erro ao registrar item extra. Tente novamente.')
                     } finally {
                       setSavingItemExtra(false)
                     }
