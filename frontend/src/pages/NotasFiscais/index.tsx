@@ -94,6 +94,7 @@ export function NotasFiscais() {
     if (searchTerm) {
       const search = searchTerm.toLowerCase()
       const matchSearch = nf.numero.toLowerCase().includes(search) ||
+        nf.numeroSecundario?.toLowerCase().includes(search) ||
         nf.fornecedorNome.toLowerCase().includes(search)
       if (!matchSearch) return false
     }
