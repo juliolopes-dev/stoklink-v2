@@ -184,23 +184,24 @@ export class NotaFiscalService {
       }
     }
 
-    // Verificar filiais
-    const [filialRecebimento, filialDestino] = await Promise.all([
-      prisma.filial.findUnique({ where: { id: input.filialRecebimentoId } }),
-      prisma.filial.findUnique({ where: { id: input.filialDestinoId } })
-    ])
-
-    if (!filialRecebimento) {
-      throw new Error('Filial de recebimento não encontrada')
-    }
-
+    // Verificar filial de destino (obrigatória)
+    const filialDestino = await prisma.filial.findUnique({ where: { id: input.filialDestinoId } })
     if (!filialDestino) {
       throw new Error('Filial de destino não encontrada')
     }
 
+    // Verificar filial de recebimento (opcional - só para NF direta)
+    let filialRecebimento = null
+    if (input.filialRecebimentoId) {
+      filialRecebimento = await prisma.filial.findUnique({ where: { id: input.filialRecebimentoId } })
+      if (!filialRecebimento) {
+        throw new Error('Filial de recebimento não encontrada')
+      }
+    }
+
     // Determinar status inicial
     let status: StatusNotaFiscal = 'AGUARDANDO_CONFERENCIA'
-    if (input.filialRecebimentoId !== input.filialDestinoId) {
+    if (!input.filialRecebimentoId || input.filialRecebimentoId !== input.filialDestinoId) {
       status = 'PENDENTE_TRANSFERENCIA'
     }
 
