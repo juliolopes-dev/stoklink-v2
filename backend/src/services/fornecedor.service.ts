@@ -12,7 +12,6 @@ interface CreateFornecedorInput {
   cnpj?: string
   email?: string
   telefone?: string
-  contato?: string
   endereco?: string
   cidade?: string
   uf?: string
@@ -23,7 +22,6 @@ interface UpdateFornecedorInput {
   cnpj?: string
   email?: string
   telefone?: string
-  contato?: string
   endereco?: string
   cidade?: string
   uf?: string
@@ -117,7 +115,6 @@ export const fornecedorService = {
         cnpj: cnpjNormalizado,
         email: data.email || null,
         telefone: data.telefone || null,
-        contato: data.contato || null,
         endereco: data.endereco || null,
         cidade: data.cidade || null,
         uf: data.uf || null

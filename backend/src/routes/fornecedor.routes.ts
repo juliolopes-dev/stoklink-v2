@@ -51,7 +51,6 @@ export async function fornecedorRoutes(app: FastifyInstance) {
       cnpj: z.string().optional(),
       email: z.string().email('Email inválido').optional().or(z.literal('')),
       telefone: z.string().optional(),
-      contato: z.string().optional(),
       endereco: z.string().optional(),
       cidade: z.string().optional(),
       uf: z.string().max(2).optional()
@@ -86,7 +85,6 @@ export async function fornecedorRoutes(app: FastifyInstance) {
       cnpj: z.string().optional(),
       email: z.string().email('Email inválido').optional().or(z.literal('')),
       telefone: z.string().optional(),
-      contato: z.string().optional(),
       endereco: z.string().optional(),
       cidade: z.string().optional(),
       uf: z.string().max(2).optional(),
