@@ -136,6 +136,16 @@ export function NotaFiscalDetalhes() {
   
   // Pesquisa de itens
   const [pesquisaItem, setPesquisaItem] = useState('')
+  
+  // Modal de item extra
+  const [showItemExtraModal, setShowItemExtraModal] = useState(false)
+  const [itemExtraForm, setItemExtraForm] = useState({
+    codigoProduto: '',
+    descricao: '',
+    quantidade: '',
+    observacoes: ''
+  })
+  const [savingItemExtra, setSavingItemExtra] = useState(false)
 
   // Verificar se usuário pode conferir itens (pertence à filial de destino)
   const podeConferirItens = nota && user ? user.filialId === nota.filialDestino.id : false
@@ -486,6 +496,19 @@ export function NotaFiscalDetalhes() {
               </div>
               {nota.itens.length > 0 && ['VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES', 'EM_CONFERENCIA', 'AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA'].includes(nota.status) && (
                 <div className="flex items-center gap-2 flex-shrink-0">
+                  <button
+                    onClick={() => setShowItemExtraModal(true)}
+                    disabled={!podeConferirItens}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                      podeConferirItens 
+                        ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                    title={!podeConferirItens ? 'Apenas usuários da filial de destino podem adicionar itens extras' : 'Registrar item que chegou mas não está na NF'}
+                  >
+                    <FiAlertTriangle size={14} />
+                    Item Extra
+                  </button>
                   {modoConferenciaLote ? (
                     <>
                       <button
@@ -977,6 +1000,131 @@ export function NotaFiscalDetalhes() {
                   className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50"
                 >
                   {saving ? 'Salvando...' : 'Salvar'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Adicionar Item Extra */}
+      {showItemExtraModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-orange-100 rounded-lg">
+                  <FiAlertTriangle className="text-orange-600" size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">Registrar Item Extra</h3>
+                  <p className="text-sm text-gray-500">Item recebido mas não listado na NF</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Código do Produto *
+                  </label>
+                  <input
+                    type="text"
+                    value={itemExtraForm.codigoProduto}
+                    onChange={(e) => setItemExtraForm({ ...itemExtraForm, codigoProduto: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                    placeholder="Ex: PROD123"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Descrição do Produto *
+                  </label>
+                  <input
+                    type="text"
+                    value={itemExtraForm.descricao}
+                    onChange={(e) => setItemExtraForm({ ...itemExtraForm, descricao: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                    placeholder="Ex: Cadeira de escritório"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Quantidade Recebida *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.001"
+                    min="0.001"
+                    value={itemExtraForm.quantidade}
+                    onChange={(e) => setItemExtraForm({ ...itemExtraForm, quantidade: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                    placeholder="Ex: 5"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Observações
+                  </label>
+                  <textarea
+                    value={itemExtraForm.observacoes}
+                    onChange={(e) => setItemExtraForm({ ...itemExtraForm, observacoes: e.target.value })}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none"
+                    placeholder="Informações adicionais sobre o item extra..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowItemExtraModal(false)
+                    setItemExtraForm({ codigoProduto: '', descricao: '', quantidade: '', observacoes: '' })
+                  }}
+                  disabled={savingItemExtra}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!itemExtraForm.codigoProduto.trim() || !itemExtraForm.descricao.trim() || !itemExtraForm.quantidade) {
+                      alert('Preencha todos os campos obrigatórios')
+                      return
+                    }
+
+                    setSavingItemExtra(true)
+                    try {
+                      await api.post('/divergencias', {
+                        notaFiscalId: nota.id,
+                        tipo: 'ITEM_EXTRA',
+                        descricao: `Item Extra: ${itemExtraForm.codigoProduto} - ${itemExtraForm.descricao}${itemExtraForm.observacoes ? ` | Obs: ${itemExtraForm.observacoes}` : ''}`,
+                        quantidadeEsperada: 0,
+                        quantidadeRecebida: parseFloat(itemExtraForm.quantidade)
+                      })
+
+                      alert('Item extra registrado como divergência com sucesso!')
+                      setShowItemExtraModal(false)
+                      setItemExtraForm({ codigoProduto: '', descricao: '', quantidade: '', observacoes: '' })
+                      loadNota()
+                    } catch (error) {
+                      console.error('Erro ao registrar item extra:', error)
+                      alert('Erro ao registrar item extra. Tente novamente.')
+                    } finally {
+                      setSavingItemExtra(false)
+                    }
+                  }}
+                  disabled={savingItemExtra}
+                  className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {savingItemExtra ? 'Registrando...' : 'Registrar Divergência'}
                 </button>
               </div>
             </div>
