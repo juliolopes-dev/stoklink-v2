@@ -27,12 +27,12 @@ WORKDIR /app/backend
 
 # Copiar arquivos de dependências
 COPY backend/package*.json ./
-COPY backend/prisma ./prisma/
 
 RUN npm ci
-RUN npx prisma generate
 
 COPY backend/ ./
+
+RUN npx prisma generate
 RUN npm run build
 
 # Imagem final de produção
