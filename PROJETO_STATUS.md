@@ -48,9 +48,9 @@
 - [x] Status simplificados com labels curtos
 
 ## 3. Última Sessão
-- **Data**: 30/12/2024
-- **Mudanças**: Melhorias de UX - conferência inline, tooltips, dados secundários
-- **Testes**: Lista NFs, Detalhes NF, Conferência de itens, Importação XML
+- **Data**: 08/01/2026
+- **Mudanças**: Reorganização completa do fluxo de status e tags para NF direta vs indireta
+- **Testes**: Validação de badges e tags conforme tipo de movimentação
 
 ## 4. Próximos Passos (Priorizado)
 - [ ] Telas de Admin (Filiais, Usuários)
@@ -60,10 +60,68 @@
 ## 5. Ponto de Retomada
 **Iniciar por**: Telas de administração (CRUD Filiais e Usuários no frontend)
 
-## 6. Contexto Técnico Completo
-Sistema StokLink para controle de recebimento de mercadorias entre filiais. Backend 100% funcional com: Autenticação JWT, CRUD Filiais/Usuários, Importação XML NF-e, Cadastro manual NF, Conferência de Volumes/Itens com atualização automática de status, Registro de Divergências, Distribuição entre filiais. Usuários: Admin e Conferente. Status NF: AGUARDANDO_CONFERENCIA, VOLUMES_CONFERIDOS, VOLUMES_DIVERGENTES, BLOQUEADO, EM_CONFERENCIA, CONFERIDO_DIVERGENCIA, CONFERIDO_OK, PENDENTE_TRANSFERENCIA. Credenciais teste: admin@stoklink.com/admin123, conferente@stoklink.com/conferente123. PostgreSQL em 147.93.144.135:4154/stoklink-v2. Backend porta 3333, frontend porta 5173.
+## 6. Fluxo de Status - NF Direta vs Indireta
 
-## 7. Endpoints da API
+### A) NF INDIRETA (RECEBIMENTO_INDIRETO)
+**Passa por 2 filiais: Filial de Recebimento → Filial Destino**
+
+1. **NF Cadastrada - Mercadoria não chegou**
+   - Status: `AGUARDANDO_CONFERENCIA`
+   - filialRecebimento: null
+   - Badge: "Aguardando Recebimento" (amarelo)
+   - Tag: "Conf. pendente" (cinza)
+
+2. **Volumes conferidos na Filial de Recebimento**
+   - Status: `VOLUMES_CONFERIDOS` ou `PENDENTE_TRANSFERENCIA`
+   - filialRecebimento: definida
+   - Badge: "Em Trânsito" (roxo)
+   - Tag: "Aguardando chegada no destino" (roxo)
+   - Coluna Recebimento: data/hora da conferência
+
+3. **Chegou na Filial Destino**
+   - Status: `AGUARDANDO_CONFERENCIA_DESTINO`
+   - Badge: "Aguard. Destino" (índigo)
+   - Tag: "Conferir volumes e itens" (índigo)
+
+4. **Conferência Concluída no Destino**
+   - Status: `CONFERIDO_OK` ou `CONFERIDO_DIVERGENCIA`
+   - Badge: "Conferido" ou "Conferido c/ Divergência" (verde/vermelho)
+   - Coluna Destino: data/hora da conferência
+
+### B) NF DIRETA (RECEBIMENTO_DIRETO)
+**Vai direto para filial destino**
+
+1. **NF Cadastrada - Mercadoria não chegou**
+   - Status: `AGUARDANDO_CONFERENCIA`
+   - filialRecebimento: null
+   - Badge: "Aguardando Recebimento" (amarelo)
+   - Tag: "Conf. pendente" (cinza)
+
+2. **Chegou - Aguardando conferência de volumes**
+   - Status: `AGUARDANDO_CONFERENCIA`
+   - filialRecebimento: definida (= destino)
+   - Badge: "Aguardando Recebimento" (amarelo)
+   - Tag: "Conferir volumes" (azul)
+
+3. **Volumes conferidos - Aguardando conferência de itens**
+   - Status: `VOLUMES_CONFERIDOS`
+   - Badge: "Volumes Conferidos" (azul)
+   - Tag: "Conferir itens" (laranja)
+
+4. **Conferência Concluída**
+   - Status: `CONFERIDO_OK` ou `CONFERIDO_DIVERGENCIA`
+   - Badge: "Conferido" ou "Conferido c/ Divergência" (verde/vermelho)
+
+### Regras Importantes:
+- **Filial Recebimento (NF Indireta)**: Confere APENAS volumes, não itens
+- **Filial Destino**: Confere volumes + itens (ambos os tipos de NF)
+- **Diferenciação**: Campo `tipoMovimentacao` determina o fluxo
+- **Bloqueio de Mercadoria**: Só pode ser desbloqueada após status `CONFERIDO_OK` ou `CONFERIDO_DIVERGENCIA`
+
+## 7. Contexto Técnico Completo
+Sistema StokLink para controle de recebimento de mercadorias entre filiais. Backend 100% funcional com: Autenticação JWT, CRUD Filiais/Usuários, Importação XML NF-e, Cadastro manual NF, Conferência de Volumes/Itens com atualização automática de status, Registro de Divergências, Distribuição entre filiais. Usuários: Admin e Conferente. Status NF: AGUARDANDO_CONFERENCIA, VOLUMES_CONFERIDOS, VOLUMES_DIVERGENTES, BLOQUEADO, EM_CONFERENCIA, CONFERIDO_DIVERGENCIA, CONFERIDO_OK, PENDENTE_TRANSFERENCIA, AGUARDANDO_CONFERENCIA_DESTINO. Credenciais teste: admin@stoklink.com/admin123, conferente@stoklink.com/conferente123. PostgreSQL em 147.93.144.135:4154/stoklink-v2. Backend porta 3333, frontend porta 5173.
+
+## 8. Endpoints da API
 
 ### Auth
 - POST /auth/login
