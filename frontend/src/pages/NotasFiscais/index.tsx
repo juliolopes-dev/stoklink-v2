@@ -263,12 +263,6 @@ export function NotasFiscais() {
                             Conferir volumes
                           </span>
                         )}
-                        {/* 2ª Conferência - Receber no Destino */}
-                        {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                            Conf. destino
-                          </span>
-                        )}
                         {/* Conferência de Itens */}
                         {nf.filialRecebimento && ['VOLUMES_CONFERIDOS', 'PENDENTE_TRANSFERENCIA'].includes(nf.status) && (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
