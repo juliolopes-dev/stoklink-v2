@@ -23,10 +23,12 @@ interface NotaFiscal {
   transportadora: string | null
   mercadoriaBloqueada: boolean
   filialRecebimento: {
+    id: string
     nome: string
     codigo: string
   } | null
   filialDestino: {
+    id: string
     nome: string
     codigo: string
   }
@@ -34,6 +36,12 @@ interface NotaFiscal {
     itens: number
     divergencias: number
   }
+}
+
+interface Filial {
+  id: string
+  nome: string
+  codigo: string
 }
 
 const statusOptions = [
@@ -53,10 +61,24 @@ export function NotasFiscais() {
   const [statusFilter, setStatusFilter] = useState('')
   const [rpFilter, setRpFilter] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  const [filiais, setFiliais] = useState<Filial[]>([])
+  const [showFilialModal, setShowFilialModal] = useState(false)
+  const [selectedNfId, setSelectedNfId] = useState<string | null>(null)
+  const [updating, setUpdating] = useState(false)
 
   useEffect(() => {
     loadNotas()
+    loadFiliais()
   }, [statusFilter])
+
+  async function loadFiliais() {
+    try {
+      const response = await api.get('/filiais')
+      setFiliais(response.data)
+    } catch (error) {
+      console.error('Erro ao carregar filiais:', error)
+    }
+  }
 
   // Recarregar dados quando a página fica visível novamente
   useEffect(() => {
@@ -103,6 +125,34 @@ export function NotasFiscais() {
     
     return true
   })
+
+  async function handleRpChange(nfId: string, value: string) {
+    if (value === 'SIM') {
+      // Mostrar modal para selecionar filial
+      setSelectedNfId(nfId)
+      setShowFilialModal(true)
+    } else if (value === 'NAO') {
+      // Remover filial de recebimento
+      await updateFilialRecebimento(nfId, null)
+    }
+  }
+
+  async function updateFilialRecebimento(nfId: string, filialId: string | null) {
+    setUpdating(true)
+    try {
+      await api.put(`/notas-fiscais/${nfId}`, {
+        filialRecebimentoId: filialId
+      })
+      await loadNotas()
+      setShowFilialModal(false)
+      setSelectedNfId(null)
+    } catch (error) {
+      console.error('Erro ao atualizar RP:', error)
+      alert('Erro ao atualizar recebimento prévio')
+    } finally {
+      setUpdating(false)
+    }
+  }
 
   function formatDate(dateString: string) {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -251,16 +301,20 @@ export function NotasFiscais() {
                     </td>
                     <td className="px-3 py-2">
                       <div className="flex flex-col gap-1 items-start">
-                        {/* Tag RP-SIM / RP-NÃO */}
-                        {nf.filialRecebimento ? (
-                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                            RP-SIM
-                          </span>
-                        ) : (
-                          <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                            RP-NÃO
-                          </span>
-                        )}
+                        {/* Dropdown RP-SIM / RP-NÃO */}
+                        <select
+                          value={nf.filialRecebimento ? 'SIM' : 'NAO'}
+                          onChange={(e) => handleRpChange(nf.id, e.target.value)}
+                          disabled={updating}
+                          className={`px-1.5 py-0.5 rounded text-xs font-medium border-0 outline-none cursor-pointer ${
+                            nf.filialRecebimento 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}
+                        >
+                          <option value="SIM">RP-SIM</option>
+                          <option value="NAO">RP-NÃO</option>
+                        </select>
                         {/* Tag de Bloqueio/Liberação */}
                         {nf.mercadoriaBloqueada ? (
                           <span className="px-1.5 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800">
@@ -370,6 +424,47 @@ export function NotasFiscais() {
           </div>
         )}
       </div>
+
+      {/* Modal para selecionar filial de recebimento */}
+      {showFilialModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md mx-4">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-800">Selecionar Filial de Recebimento</h2>
+            </div>
+
+            <div className="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
+              <p className="text-sm text-gray-600 mb-3">
+                Escolha a filial onde esta NF foi recebida:
+              </p>
+              {filiais.map(filial => (
+                <button
+                  key={filial.id}
+                  onClick={() => updateFilialRecebimento(selectedNfId!, filial.id)}
+                  disabled={updating}
+                  className="w-full p-3 text-left border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-primary-500 transition-colors disabled:opacity-50"
+                >
+                  <p className="font-medium text-gray-900">{filial.nome}</p>
+                  <p className="text-xs text-gray-500">Código: {filial.codigo}</p>
+                </button>
+              ))}
+            </div>
+
+            <div className="p-4 border-t border-gray-200 flex justify-end gap-2">
+              <button
+                onClick={() => {
+                  setShowFilialModal(false)
+                  setSelectedNfId(null)
+                }}
+                disabled={updating}
+                className="px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
