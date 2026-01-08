@@ -6,7 +6,7 @@ import {
   FiPackage, 
   FiAlertTriangle, 
   FiBarChart2,
-  // FiTruck, // Desativado temporariamente
+  FiTruck,
   FiUsers,
   FiMapPin,
   FiSettings,
@@ -28,6 +28,7 @@ const menuItems = [
 
 const adminMenuItems = [
   { path: '/fornecedores', icon: FiBriefcase, label: 'Fornecedores' },
+  { path: '/transportadoras', icon: FiTruck, label: 'Transportadoras' },
   { path: '/filiais', icon: FiMapPin, label: 'Filiais' },
   { path: '/usuarios', icon: FiUsers, label: 'Usuários' },
   { path: '/configuracoes', icon: FiSettings, label: 'Configurações' },

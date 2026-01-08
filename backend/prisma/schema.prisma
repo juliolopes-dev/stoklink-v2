@@ -25,6 +25,7 @@ model Empresa {
   fornecedores Fornecedor[]
   notasFiscais NotaFiscal[]
   usuarios     Usuario[]
+  transportadoras Transportadora[]
 
   @@map("empresas")
 }
@@ -36,7 +37,6 @@ model Fornecedor {
   cnpj                   String?
   email                  String?
   telefone               String?
-  contato                String?
   endereco               String?
   cidade                 String?
   uf                     String?
@@ -49,6 +49,22 @@ model Fornecedor {
 
   @@unique([empresaId, cnpj])
   @@map("fornecedores")
+}
+
+model Transportadora {
+  id        String   @id @default(uuid())
+  empresaId String   @map("empresa_id")
+  nome      String
+  cnpj      String?
+  telefone  String?
+  email     String?
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  empresa   Empresa  @relation(fields: [empresaId], references: [id])
+
+  @@unique([empresaId, nome])
+  @@map("transportadoras")
 }
 
 model Filial {

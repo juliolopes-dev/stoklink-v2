@@ -17,6 +17,7 @@ import { Fornecedores } from '../pages/Fornecedores'
 import { Filiais } from '../pages/Filiais'
 import { Usuarios } from '../pages/Usuarios'
 import { Registro } from '../pages/Registro'
+import { Transportadoras } from '../pages/Transportadoras'
 
 export function AppRoutes() {
   return (
@@ -45,6 +46,7 @@ export function AppRoutes() {
             <Route path="distribuicoes" element={<Distribuicoes />} />
             <Route path="relatorios" element={<Relatorios />} />
             <Route path="fornecedores" element={<Fornecedores />} />
+            <Route path="transportadoras" element={<Transportadoras />} />
             <Route path="filiais" element={<Filiais />} />
             <Route path="usuarios" element={<Usuarios />} />
             <Route path="configuracoes" element={<div className="text-gray-500">Configurações - Em desenvolvimento</div>} />

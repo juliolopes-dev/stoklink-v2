@@ -111,7 +111,7 @@ export function NotaFiscalDetalhes() {
   const [filialRecebimentoId, setFilialRecebimentoId] = useState('')
   const [transportadora, setTransportadora] = useState('')
   const [filiaisDisponiveis, setFiliaisDisponiveis] = useState<FilialOption[]>([])
-  const [transportadorasUsadas, setTransportadorasUsadas] = useState<string[]>([])
+  const [transportadoras, setTransportadoras] = useState<Array<{ id: string; nome: string }>>([])
   
   // Modal de edição
   const [showEditModal, setShowEditModal] = useState(false)
@@ -191,10 +191,10 @@ export function NotaFiscalDetalhes() {
     try {
       const [filiaisRes, transportadorasRes] = await Promise.all([
         api.get('/filiais/ativas'),
-        api.get('/transportadoras/usadas')
+        api.get('/transportadoras?ativos=true')
       ])
       setFiliaisDisponiveis(filiaisRes.data)
-      setTransportadorasUsadas(transportadorasRes.data)
+      setTransportadoras(transportadorasRes.data)
       setFilialRecebimentoId(nota?.filialRecebimento?.id || '')
       setConferindoVolumes(true)
     } catch (error) {
@@ -725,20 +725,17 @@ export function NotaFiscalDetalhes() {
                       <label className="block text-xs font-medium text-gray-700 mb-1">
                         Transportadora *
                       </label>
-                      <input
-                        type="text"
+                      <select
                         value={transportadora}
                         onChange={(e) => setTransportadora(e.target.value)}
-                        list="transportadoras-list"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
-                        placeholder="Digite ou selecione a transportadora"
                         required
-                      />
-                      <datalist id="transportadoras-list">
-                        {transportadorasUsadas.map((t, index) => (
-                          <option key={index} value={t} />
+                      >
+                        <option value="">Selecione a transportadora</option>
+                        {transportadoras.map((t) => (
+                          <option key={t.id} value={t.nome}>{t.nome}</option>
                         ))}
-                      </datalist>
+                      </select>
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
