@@ -37,7 +37,7 @@ const createNotaFiscalSchema = z.object({
     quantidadeNota: z.coerce.number().positive(),
     valorUnitario: z.coerce.number().optional(),
     valorTotal: z.coerce.number().optional()
-  })).optional()
+  })).min(1, 'É obrigatório incluir pelo menos um item na nota fiscal')
 })
 
 const listFiltersSchema = z.object({

@@ -145,6 +145,12 @@ export function NovaNotaFiscal() {
   async function handleSubmitManual(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+
+    if (itens.length === 0) {
+      setError('É obrigatório incluir pelo menos um item na nota fiscal')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -160,13 +166,13 @@ export function NovaNotaFiscal() {
         filialRecebimentoId: tipoMovimentacao === 'RECEBIMENTO_INDIRETO' ? undefined : filialRecebimentoId,
         filialDestinoId,
         observacoes: observacoes || undefined,
-        itens: itens.length > 0 ? itens.map(item => ({
+        itens: itens.map(item => ({
           codigoProduto: item.codigoProduto,
           descricao: item.descricao,
           unidade: item.unidade,
           quantidadeNota: parseFloat(item.quantidadeNota),
           valorUnitario: item.valorUnitario ? parseFloat(item.valorUnitario) : undefined
-        })) : undefined
+        }))
       }
 
       await api.post('/notas-fiscais', data)
