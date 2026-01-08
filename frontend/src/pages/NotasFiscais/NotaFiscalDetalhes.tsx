@@ -110,6 +110,7 @@ export function NotaFiscalDetalhes() {
   const [filialRecebimentoId, setFilialRecebimentoId] = useState('')
   const [transportadora, setTransportadora] = useState('')
   const [filiaisDisponiveis, setFiliaisDisponiveis] = useState<FilialOption[]>([])
+  const [transportadorasUsadas, setTransportadorasUsadas] = useState<string[]>([])
   
   // Modal de edição
   const [showEditModal, setShowEditModal] = useState(false)
@@ -163,11 +164,17 @@ export function NotaFiscalDetalhes() {
       return
     }
 
+    // Validar transportadora obrigatória
+    if (!transportadora || transportadora.trim() === '') {
+      alert('Erro', 'Informe a transportadora', 'error')
+      return
+    }
+
     try {
       await api.post(`/notas-fiscais/${id}/conferencia-volumes`, {
         volumesRecebidos: parseInt(volumesRecebidos),
         filialRecebimentoId: filialRecebimentoId || undefined,
-        transportadora: transportadora || undefined
+        transportadora: transportadora.trim()
       })
       setConferindoVolumes(false)
       setFilialRecebimentoId('')
@@ -180,12 +187,16 @@ export function NotaFiscalDetalhes() {
 
   async function iniciarConferenciaVolumes() {
     try {
-      const response = await api.get('/filiais/ativas')
-      setFiliaisDisponiveis(response.data)
+      const [filiaisRes, transportadorasRes] = await Promise.all([
+        api.get('/filiais/ativas'),
+        api.get('/transportadoras/usadas')
+      ])
+      setFiliaisDisponiveis(filiaisRes.data)
+      setTransportadorasUsadas(transportadorasRes.data)
       setFilialRecebimentoId(nota?.filialRecebimento?.id || '')
       setConferindoVolumes(true)
     } catch (error) {
-      console.error('Erro ao carregar filiais:', error)
+      console.error('Erro ao carregar dados:', error)
     }
   }
 
@@ -683,15 +694,22 @@ export function NotaFiscalDetalhes() {
                     )}
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Transportadora
+                        Transportadora *
                       </label>
                       <input
                         type="text"
                         value={transportadora}
                         onChange={(e) => setTransportadora(e.target.value)}
+                        list="transportadoras-list"
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
-                        placeholder="Nome da transportadora"
+                        placeholder="Digite ou selecione a transportadora"
+                        required
                       />
+                      <datalist id="transportadoras-list">
+                        {transportadorasUsadas.map((t, index) => (
+                          <option key={index} value={t} />
+                        ))}
+                      </datalist>
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">

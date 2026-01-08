@@ -71,6 +71,16 @@ export async function conferenciaRoutes(app: FastifyInstance) {
     }
   })
 
+  // Listar transportadoras já usadas
+  app.get('/transportadoras/usadas', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const transportadoras = await conferenciaService.listarTransportadorasUsadas(request.user.empresaId)
+      return reply.send(transportadoras)
+    } catch (error) {
+      return reply.status(500).send({ error: 'Erro ao buscar transportadoras' })
+    }
+  })
+
   // ==================== CONFERÊNCIA DE ITENS ====================
 
   // Registrar conferência de itens

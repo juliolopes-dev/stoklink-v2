@@ -144,6 +144,24 @@ export class ConferenciaService {
     })
   }
 
+  async listarTransportadorasUsadas(empresaId: string) {
+    const conferencias = await prisma.conferenciaVolume.findMany({
+      where: {
+        transportadora: { not: null },
+        notaFiscal: { empresaId }
+      },
+      select: {
+        transportadora: true
+      },
+      distinct: ['transportadora'],
+      orderBy: { transportadora: 'asc' }
+    })
+
+    return conferencias
+      .filter(c => c.transportadora)
+      .map(c => c.transportadora)
+  }
+
   // ==================== CONFERÊNCIA DE ITENS ====================
 
   async conferirItens(input: ConferenciaItemInput) {
