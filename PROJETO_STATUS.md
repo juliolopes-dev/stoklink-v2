@@ -47,10 +47,23 @@
 - [x] Campos secundários (NF e Fornecedor) no cadastro/importação XML
 - [x] Status simplificados com labels curtos
 
+### Fase 6 - Cadastros e Controles Adicionais ✅
+- [x] Campo entrada_rp (RP-SIM/RP-NÃO) para NFs
+- [x] CRUD completo de Transportadoras
+- [x] Dropdown de transportadoras na conferência de volumes (substituiu campo texto livre)
+- [x] Menu administrativo com Transportadoras
+- [x] Página de listagem e cadastro de transportadoras
+- [x] Validações e normalização de CNPJ
+
 ## 3. Última Sessão
-- **Data**: 08/01/2026
-- **Mudanças**: Reorganização completa do fluxo de status e tags para NF direta vs indireta
-- **Testes**: Validação de badges e tags conforme tipo de movimentação
+- **Data**: 08/01/2026 (tarde)
+- **Mudanças**: 
+  - Implementado sistema completo de cadastro de transportadoras
+  - Adicionado campo `entrada_rp` (booleano) para controle RP-SIM/RP-NÃO
+  - Conferência de volumes agora usa dropdown de transportadoras cadastradas
+  - Corrigido campo `contato` inexistente no modelo Fornecedor
+- **Deploy**: Build Docker validado e implantado com sucesso
+- **Migrations SQL**: Pendentes de execução no banco de produção (147.93.144.135:4154)
 
 ## 4. Próximos Passos (Priorizado)
 - [ ] Telas de Admin (Filiais, Usuários)
@@ -178,3 +191,24 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - POST /distribuicoes/:id/receber
 - POST /distribuicoes/:id/cancelar
 - DELETE /distribuicoes/:id
+
+### Fornecedores
+- GET /fornecedores
+- GET /fornecedores/ativos
+- GET /fornecedores/resumo
+- GET /fornecedores/:id
+- POST /fornecedores (Admin)
+- PUT /fornecedores/:id (Admin)
+- DELETE /fornecedores/:id (Admin)
+
+### Transportadoras
+- GET /transportadoras
+- GET /transportadoras/ativos
+- GET /transportadoras/:id
+- POST /transportadoras (Admin)
+- PUT /transportadoras/:id (Admin)
+- DELETE /transportadoras/:id (Admin)
+
+### Empresas
+- GET /empresas (Admin)
+- GET /empresas/:id (Admin)
