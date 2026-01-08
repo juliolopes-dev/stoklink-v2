@@ -7,7 +7,6 @@ const conferenciaService = new ConferenciaService()
 
 const conferenciaVolumeSchema = z.object({
   volumesRecebidos: z.coerce.number().int().min(0, 'Quantidade de volumes deve ser maior ou igual a 0'),
-  fornecedorId: z.string().uuid('ID do fornecedor inválido'),
   filialRecebimentoId: z.string().uuid('ID da filial inválido').optional(),
   tipo: z.enum(['RECEBIMENTO', 'DESTINO']).optional(),
   transportadora: z.string().optional(),
@@ -40,7 +39,6 @@ export async function conferenciaRoutes(app: FastifyInstance) {
         notaFiscalId: id,
         usuarioId: request.user.id,
         volumesRecebidos: data.volumesRecebidos,
-        fornecedorId: data.fornecedorId,
         filialRecebimentoId: data.filialRecebimentoId,
         tipo: data.tipo,
         transportadora: data.transportadora,

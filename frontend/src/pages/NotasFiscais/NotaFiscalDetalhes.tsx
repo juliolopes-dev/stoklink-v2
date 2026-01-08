@@ -107,11 +107,9 @@ export function NotaFiscalDetalhes() {
   const [loading, setLoading] = useState(true)
   const [conferindoVolumes, setConferindoVolumes] = useState(false)
   const [volumesRecebidos, setVolumesRecebidos] = useState('')
-  const [fornecedorId, setFornecedorId] = useState('')
   const [filialRecebimentoId, setFilialRecebimentoId] = useState('')
   const [transportadora, setTransportadora] = useState('')
   const [filiaisDisponiveis, setFiliaisDisponiveis] = useState<FilialOption[]>([])
-  const [fornecedoresAtivos, setFornecedoresAtivos] = useState<FornecedorOption[]>([])
   
   // Modal de edição
   const [showEditModal, setShowEditModal] = useState(false)
@@ -166,19 +164,12 @@ export function NotaFiscalDetalhes() {
     }
 
     try {
-      if (!fornecedorId) {
-        alert('Erro', 'Selecione o fornecedor', 'error')
-        return
-      }
-      
       await api.post(`/notas-fiscais/${id}/conferencia-volumes`, {
         volumesRecebidos: parseInt(volumesRecebidos),
-        fornecedorId,
         filialRecebimentoId: filialRecebimentoId || undefined,
         transportadora: transportadora || undefined
       })
       setConferindoVolumes(false)
-      setFornecedorId('')
       setFilialRecebimentoId('')
       setTransportadora('')
       loadNota()
@@ -189,10 +180,8 @@ export function NotaFiscalDetalhes() {
 
   async function iniciarConferenciaVolumes() {
     try {
-      const filiaisRes = await api.get('/filiais/ativas')
-      const fornecedoresRes = await api.get('/fornecedores/ativos')
-      setFiliaisDisponiveis(filiaisRes.data)
-      setFornecedoresAtivos(fornecedoresRes.data)
+      const response = await api.get('/filiais/ativas')
+      setFiliaisDisponiveis(response.data)
       setFilialRecebimentoId(nota?.filialRecebimento?.id || '')
       setConferindoVolumes(true)
     } catch (error) {
@@ -692,24 +681,6 @@ export function NotaFiscalDetalhes() {
                         </select>
                       </div>
                     )}
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Fornecedor *
-                      </label>
-                      <select
-                        value={fornecedorId}
-                        onChange={(e) => setFornecedorId(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
-                        required
-                      >
-                        <option value="">Selecione o fornecedor</option>
-                        {fornecedoresAtivos.map(f => (
-                          <option key={f.id} value={f.id}>
-                            {f.nome} {f.cnpj ? `- ${f.cnpj}` : ''}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
                         Transportadora
