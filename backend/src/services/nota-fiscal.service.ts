@@ -632,6 +632,21 @@ export class NotaFiscalService {
     return itemAtualizado
   }
 
+  async delete(id: string) {
+    const notaFiscal = await prisma.notaFiscal.findUnique({
+      where: { id }
+    })
+
+    if (!notaFiscal) {
+      throw new Error('Nota fiscal não encontrada')
+    }
+
+    // Excluir NF e todos os registros relacionados (cascade)
+    await prisma.notaFiscal.delete({
+      where: { id }
+    })
+  }
+
   async toggleBloqueioMercadoria(id: string, bloqueada: boolean) {
     const notaFiscal = await prisma.notaFiscal.findUnique({
       where: { id }

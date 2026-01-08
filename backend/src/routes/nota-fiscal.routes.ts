@@ -230,6 +230,28 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     }
   })
 
+  // Excluir NF (apenas ADMIN)
+  app.delete('/notas-fiscais/:id', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      // Verificar se é ADMIN
+      if (request.user.perfil !== 'ADMIN') {
+        return reply.status(403).send({ error: 'Apenas administradores podem excluir notas fiscais' })
+      }
+
+      const { id } = idParamSchema.parse(request.params)
+      await notaFiscalService.delete(id)
+      return reply.status(204).send()
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao excluir nota fiscal' })
+    }
+  })
+
   // Liberar/Bloquear mercadoria
   app.patch('/notas-fiscais/:id/mercadoria-bloqueada', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {

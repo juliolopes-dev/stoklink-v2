@@ -7,7 +7,8 @@ import {
   FiAlertTriangle,
   FiTruck,
   FiFileText,
-  FiEdit2
+  FiEdit2,
+  FiTrash2
 } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
@@ -324,6 +325,21 @@ export function NotaFiscalDetalhes() {
     }
   }
 
+  async function handleDelete() {
+    if (!window.confirm('Tem certeza que deseja excluir esta Nota Fiscal? Esta ação não pode ser desfeita.')) {
+      return
+    }
+
+    try {
+      await api.delete(`/notas-fiscais/${id}`)
+      navigate('/notas-fiscais')
+    } catch (error: unknown) {
+      console.error('Erro ao excluir NF:', error)
+      const err = error as { response?: { data?: { error?: string } } }
+      alert('Erro', err.response?.data?.error || 'Erro ao excluir nota fiscal', 'error')
+    }
+  }
+
   function formatDate(dateString: string | null) {
     if (!dateString) return '-'
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -373,6 +389,16 @@ export function NotaFiscalDetalhes() {
           <p className="text-gray-500 text-sm">{nota.fornecedorNome}</p>
         </div>
         <div className="ml-auto flex items-center gap-3">
+          {user?.perfil === 'ADMIN' && (
+            <button
+              onClick={handleDelete}
+              className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
+              title="Excluir Nota Fiscal"
+            >
+              <FiTrash2 size={16} />
+              Excluir
+            </button>
+          )}
           <button
             onClick={openEditModal}
             className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm transition-colors"
