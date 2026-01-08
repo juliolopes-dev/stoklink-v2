@@ -7,6 +7,7 @@ interface ConferenciaVolumeInput {
   notaFiscalId: string
   usuarioId: string
   volumesRecebidos: number
+  fornecedorId: string
   filialRecebimentoId?: string
   tipo?: TipoConferenciaVolume
   transportadora?: string
@@ -96,6 +97,11 @@ export class ConferenciaService {
       
       if (input.filialRecebimentoId) {
         updateData.filialRecebimentoId = input.filialRecebimentoId
+      }
+      
+      // Atualizar fornecedor na NF se fornecido
+      if (input.fornecedorId) {
+        updateData.fornecedorId = input.fornecedorId
       }
       
       if (volumesBatendo) {
