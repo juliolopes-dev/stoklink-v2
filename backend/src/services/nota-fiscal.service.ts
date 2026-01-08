@@ -29,7 +29,7 @@ interface CreateNotaFiscalInput {
   valorTotal?: number
   quantidadeVolumes: number
   tipoMovimentacao: TipoMovimentacao
-  filialRecebimentoId: string
+  filialRecebimentoId?: string
   filialDestinoId: string
   usuarioId: string
   observacoes?: string
