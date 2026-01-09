@@ -248,7 +248,9 @@ export function NotasFiscais() {
                             <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-md shadow-sm">✓ Fluxo Normal</span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 truncate max-w-[200px]">{nf.fornecedorNome}</p>
+                        <Tooltip content={nf.fornecedorNome}>
+                          <p className="text-sm text-gray-500 truncate max-w-[200px]">{nf.fornecedorNome}</p>
+                        </Tooltip>
                         {nf.dataEmissao && (
                           <p className="text-xs text-blue-600">Emissão: {formatDate(nf.dataEmissao)}</p>
                         )}

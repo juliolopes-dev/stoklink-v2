@@ -102,10 +102,10 @@ export function Sidebar() {
               <NavLink
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      ? 'bg-primary-600 text-white shadow-lg'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:translate-x-1 hover:shadow-md'
                   }`
                 }
               >
@@ -129,10 +129,10 @@ export function Sidebar() {
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                      `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                         isActive
-                          ? 'bg-primary-600 text-white'
-                          : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                          ? 'bg-primary-600 text-white shadow-lg'
+                          : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:translate-x-1 hover:shadow-md'
                       }`
                     }
                   >
