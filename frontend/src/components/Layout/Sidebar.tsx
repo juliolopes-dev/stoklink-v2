@@ -90,9 +90,10 @@ export function Sidebar() {
 
   return (
     <>
-    <aside className="w-64 bg-gray-900 min-h-screen flex flex-col">
-      <div className="p-4 border-b border-gray-800">
-        <h1 className="text-2xl font-bold text-white text-center">StokLink</h1>
+    <aside className="w-20 hover:w-64 bg-gray-900 min-h-screen flex flex-col transition-all duration-300 group">
+      <div className="p-4 border-b border-gray-800 overflow-hidden">
+        <h1 className="text-2xl font-bold text-white text-center whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">StokLink</h1>
+        <div className="text-2xl font-bold text-white text-center group-hover:hidden">S</div>
       </div>
 
       <nav className="flex-1 p-4">
@@ -105,12 +106,13 @@ export function Sidebar() {
                   `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                     isActive
                       ? 'bg-primary-600 text-white shadow-lg'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:translate-x-1 hover:shadow-md'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:shadow-md'
                   }`
                 }
+                title={item.label}
               >
-                <item.icon size={20} />
-                <span>{item.label}</span>
+                <item.icon size={20} className="flex-shrink-0" />
+                <span className="whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.label}</span>
               </NavLink>
             </li>
           ))}
@@ -118,10 +120,11 @@ export function Sidebar() {
 
         {isAdmin && (
           <>
-            <div className="mt-8 mb-4">
-              <span className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <div className="mt-8 mb-4 overflow-hidden">
+              <span className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 Administração
               </span>
+              <div className="border-t border-gray-700 mx-4 group-hover:hidden"></div>
             </div>
             <ul className="space-y-1">
               {adminMenuItems.map((item) => (
@@ -132,12 +135,13 @@ export function Sidebar() {
                       `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                         isActive
                           ? 'bg-primary-600 text-white shadow-lg'
-                          : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:translate-x-1 hover:shadow-md'
+                          : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:shadow-md'
                       }`
                     }
+                    title={item.label}
                   >
-                    <item.icon size={20} />
-                    <span>{item.label}</span>
+                    <item.icon size={20} className="flex-shrink-0" />
+                    <span className="whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.label}</span>
                   </NavLink>
                 </li>
               ))}
@@ -146,25 +150,27 @@ export function Sidebar() {
         )}
       </nav>
 
-      <div className="p-4 border-t border-gray-800 space-y-2">
-        <div className="text-gray-400 text-xs">
-          <p className="text-white font-medium text-sm">{user?.nome}</p>
-          <p className="text-xs">{user?.perfil === 'ADMIN' ? 'Administrador' : 'Conferente'}</p>
+      <div className="p-4 border-t border-gray-800 space-y-2 overflow-hidden">
+        <div className="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <p className="text-white font-medium text-sm whitespace-nowrap truncate">{user?.nome}</p>
+          <p className="text-xs whitespace-nowrap">{user?.perfil === 'ADMIN' ? 'Administrador' : 'Conferente'}</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={openModal}
             className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm"
+            title="Alterar Senha"
           >
-            <FiLock size={14} />
-            <span>Senha</span>
+            <FiLock size={14} className="flex-shrink-0" />
+            <span className="whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">Senha</span>
           </button>
           <button
             onClick={signOut}
             className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors shadow-sm"
+            title="Sair"
           >
-            <FiLogOut size={14} />
-            <span>Sair</span>
+            <FiLogOut size={14} className="flex-shrink-0" />
+            <span className="whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">Sair</span>
           </button>
         </div>
       </div>
