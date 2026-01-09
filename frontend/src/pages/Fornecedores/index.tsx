@@ -155,8 +155,8 @@ export function Fornecedores() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="flex flex-col h-[calc(100vh-2rem)] overflow-hidden p-6">
+      <div className="flex items-center justify-between mb-6 flex-shrink-0">
         <h1 className="text-2xl font-bold text-gray-800">Fornecedores</h1>
         {isAdmin && (
           <button
@@ -169,8 +169,8 @@ export function Fornecedores() {
         )}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm">
-        <div className="p-4 border-b border-gray-200">
+      <div className="bg-white rounded-xl shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="relative">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
             <input
@@ -188,10 +188,10 @@ export function Fornecedores() {
             Nenhum fornecedor encontrado
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            <table className="w-full border-collapse flex-shrink-0">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Nome</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">CNPJ</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Contato</th>
@@ -202,8 +202,11 @@ export function Fornecedores() {
                   )}
                 </tr>
               </thead>
-              <tbody>
-                {filteredFornecedores.map((fornecedor) => (
+            </table>
+            <div className="flex-1 overflow-y-auto">
+              <table className="w-full border-collapse">
+                <tbody>
+                  {filteredFornecedores.map((fornecedor) => (
                   <tr key={fornecedor.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
                       <p className="font-medium text-gray-900">{fornecedor.nome}</p>
@@ -271,8 +274,9 @@ export function Fornecedores() {
                     )}
                   </tr>
                 ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
