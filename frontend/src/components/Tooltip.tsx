@@ -31,8 +31,8 @@ export function Tooltip({ children, content, position = 'top' }: TooltipProps) {
     >
       {children}
       {show && (
-        <span className={`absolute z-50 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap shadow-lg ${positionClasses[position]}`}>
-          {content}
+        <span className={`absolute z-[9999] px-3 py-2 bg-gray-900 text-white text-xs rounded shadow-xl ${positionClasses[position]}`}>
+          <span className="whitespace-nowrap max-w-xs inline-block">{content}</span>
           <span className={`absolute border-4 ${arrowClasses[position]}`}></span>
         </span>
       )}
