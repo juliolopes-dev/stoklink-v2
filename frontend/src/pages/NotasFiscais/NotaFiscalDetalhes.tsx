@@ -454,7 +454,7 @@ export function NotaFiscalDetalhes() {
               <FiFileText size={16} />
               Dados da Nota Fiscal
             </h2>
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-2 text-sm">
+            <div className="grid grid-cols-4 md:grid-cols-7 gap-2 text-sm">
               <div>
                 <p className="text-xs text-gray-500">Número</p>
                 <p className="font-medium text-sm">{nota.numero}</p>
@@ -483,7 +483,7 @@ export function NotaFiscalDetalhes() {
                 <p className="text-xs text-gray-500">Data Cadastro</p>
                 <p className="font-medium text-sm">{formatDate(nota.createdAt)}</p>
               </div>
-              <div className="col-span-3 md:col-span-6">
+              <div className="col-span-4 md:col-span-7">
                 <p className="text-xs text-gray-500">Chave de Acesso</p>
                 <p className="font-mono text-xs break-all">{nota.chaveAcesso || '-'}</p>
               </div>
