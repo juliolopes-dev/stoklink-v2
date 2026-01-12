@@ -43,12 +43,13 @@ interface NotaFiscal {
 const statusOptions = [
   { value: '', label: 'Todos os status' },
   { value: 'AGUARDANDO_CONFERENCIA', label: 'Aguardando Conferência' },
+  { value: 'AGUARDANDO_CONFERENCIA_DESTINO', label: 'Aguardando Conf. Destino' },
   { value: 'VOLUMES_CONFERIDOS', label: 'Volumes Conferidos' },
   { value: 'VOLUMES_DIVERGENTES', label: 'Volumes Divergentes' },
-  { value: 'BLOQUEADO', label: 'Bloqueado' },
-  { value: 'CONFERIDO_DIVERGENCIA', label: 'Conferido c/ Divergência' },
-  { value: 'CONFERIDO_OK', label: 'Conferido OK' },
   { value: 'PENDENTE_TRANSFERENCIA', label: 'Pendente Transferência' },
+  { value: 'CONFERIDO_OK', label: 'Conferido OK' },
+  { value: 'CONFERIDO_DIVERGENCIA', label: 'Conferido c/ Divergência' },
+  { value: 'BLOQUEADO', label: 'Bloqueado' },
 ]
 
 export function NotasFiscais() {
