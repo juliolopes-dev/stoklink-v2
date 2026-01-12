@@ -9,7 +9,7 @@ const createUsuarioSchema = z.object({
   nome: z.string().min(1, 'Nome é obrigatório'),
   email: z.string().email('Email inválido'),
   senha: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
-  perfil: z.enum(['ADMIN', 'GERENTE', 'CONFERENTE']).optional(),
+  perfil: z.enum(['ADMIN', 'GERENTE', 'CONFERENTE', 'COMPRAS']).optional(),
   filialId: z.string().uuid('ID da filial inválido').optional()
 })
 
@@ -17,7 +17,7 @@ const updateUsuarioSchema = z.object({
   nome: z.string().min(1).optional(),
   email: z.string().email().optional(),
   senha: z.string().min(6).optional(),
-  perfil: z.enum(['ADMIN', 'GERENTE', 'CONFERENTE']).optional(),
+  perfil: z.enum(['ADMIN', 'GERENTE', 'CONFERENTE', 'COMPRAS']).optional(),
   filialId: z.string().uuid().optional().nullable(),
   ativo: z.boolean().optional()
 })
