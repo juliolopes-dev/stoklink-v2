@@ -60,7 +60,7 @@ interface NotaFiscalDetalhe {
   fornecedor: Fornecedor | null
   fornecedorSecundario: Fornecedor | null
   dataEmissao: string | null
-  dataRecebimento: string
+  dataRecebimento: string | null
   valorTotal: number | null
   quantidadeVolumes: number
   status: string
@@ -466,7 +466,7 @@ export function NotaFiscalDetalhes() {
               </div>
               <div>
                 <p className="text-xs text-gray-500">Data Recebimento</p>
-                <p className="font-medium text-sm">{formatDate(nota.dataRecebimento)}</p>
+                <p className="font-medium text-sm">{nota.dataRecebimento ? formatDate(nota.dataRecebimento) : 'Aguardando recebimento'}</p>
               </div>
               <div>
                 <p className="text-xs text-gray-500">Cadastrado por</p>
