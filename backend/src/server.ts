@@ -21,6 +21,7 @@ import { distribuicaoRoutes } from './routes/distribuicao.routes.js'
 import { fornecedorRoutes } from './routes/fornecedor.routes.js'
 import { empresaRoutes } from './routes/empresa.routes.js'
 import { transportadoraRoutes } from './routes/transportadora.routes.js'
+import { auditLogRoutes } from './routes/audit-log.routes.js'
 
 const app = Fastify({
   logger: false,
@@ -80,6 +81,7 @@ app.register(distribuicaoRoutes, { prefix: '/api' })
 app.register(fornecedorRoutes, { prefix: '/api' })
 app.register(empresaRoutes, { prefix: '/api' })
 app.register(transportadoraRoutes, { prefix: '/api' })
+app.register(auditLogRoutes, { prefix: '/api' })
 
 // Health check
 app.get('/health', async () => {

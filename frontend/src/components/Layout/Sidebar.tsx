@@ -12,7 +12,8 @@ import {
   FiSettings,
   FiBriefcase,
   FiLogOut,
-  FiLock
+  FiLock,
+  FiClock
 } from 'react-icons/fi'
 import { useAuth } from '../../contexts/AuthContext'
 import { api } from '../../services/api'
@@ -31,6 +32,7 @@ const adminMenuItems = [
   { path: '/transportadoras', icon: FiTruck, label: 'Transportadoras' },
   { path: '/filiais', icon: FiMapPin, label: 'Filiais' },
   { path: '/usuarios', icon: FiUsers, label: 'Usuários' },
+  { path: '/historico', icon: FiClock, label: 'Histórico' },
   { path: '/configuracoes', icon: FiSettings, label: 'Configurações' },
 ]
 

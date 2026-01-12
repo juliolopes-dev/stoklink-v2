@@ -105,6 +105,7 @@ model Usuario {
   conferenciasItens   ConferenciaItem[]
   conferenciasVolumes ConferenciaVolume[]
   notasCadastradas    NotaFiscal[]
+  auditLogs           AuditLog[]
   empresa             Empresa             @relation(fields: [empresaId], references: [id])
   filial              Filial?             @relation(fields: [filialId], references: [id])
 
@@ -272,4 +273,24 @@ enum TipoMovimentacao {
   RECEBIMENTO_DIRETO
   RECEBIMENTO_INDIRETO
   DISTRIBUICAO_URGENTE
+}
+
+model AuditLog {
+  id              String   @id @default(uuid())
+  entidade        String
+  entidadeId      String   @map("entidade_id")
+  acao            String
+  dadosAnteriores Json?    @map("dados_anteriores")
+  dadosNovos      Json?    @map("dados_novos")
+  usuarioId       String   @map("usuario_id")
+  usuarioNome     String?  @map("usuario_nome")
+  ipAddress       String?  @map("ip_address")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+
+  @@index([entidade, entidadeId])
+  @@index([usuarioId])
+  @@index([createdAt(sort: Desc)])
+  @@map("audit_logs")
 }
