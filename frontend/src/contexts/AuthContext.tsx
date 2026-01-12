@@ -5,7 +5,7 @@ interface User {
   id: string
   nome: string
   email: string
-  perfil: 'ADMIN' | 'CONFERENTE' | 'COMPRAS'
+  perfil: 'ADMIN' | 'GERENTE' | 'CONFERENTE' | 'COMPRAS' | 'FINANCEIRO'
   filialId: string
   filial: {
     id: string

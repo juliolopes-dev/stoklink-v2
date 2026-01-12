@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext'
 
 interface PrivateRouteProps {
   children: React.ReactNode
-  requiredRole?: 'ADMIN' | 'CONFERENTE'
+  requiredRole?: 'ADMIN' | 'GERENTE' | 'CONFERENTE' | 'COMPRAS' | 'FINANCEIRO'
 }
 
 export function PrivateRoute({ children, requiredRole }: PrivateRouteProps) {
