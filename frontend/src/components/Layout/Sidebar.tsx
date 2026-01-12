@@ -153,7 +153,12 @@ export function Sidebar() {
       <div className="p-4 border-t border-gray-800 space-y-2 overflow-hidden">
         <div className="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <p className="text-white font-medium text-sm whitespace-nowrap truncate">{user?.nome}</p>
-          <p className="text-xs whitespace-nowrap">{user?.perfil === 'ADMIN' ? 'Administrador' : 'Conferente'}</p>
+          <p className="text-xs whitespace-nowrap">
+            {user?.perfil === 'ADMIN' ? 'Administrador' : 
+             user?.perfil === 'GERENTE' ? 'Gerente' :
+             user?.perfil === 'COMPRAS' ? 'Compras' :
+             user?.perfil === 'FINANCEIRO' ? 'Financeiro' : 'Conferente'}
+          </p>
         </div>
         <div className="flex gap-2">
           <button
