@@ -63,6 +63,7 @@ export function NotasFiscais() {
   const [refreshing, setRefreshing] = useState(false)
   const [dataInicio, setDataInicio] = useState('')
   const [dataFim, setDataFim] = useState('')
+  const [bloqueadaFilter, setBloqueadaFilter] = useState('')
   const { showSuccess, showError } = useToast()
 
   useEffect(() => {
@@ -130,6 +131,13 @@ export function NotasFiscais() {
       const endDate = new Date(dataFim)
       endDate.setHours(23, 59, 59, 999)
       if (nfDate > endDate) return false
+    }
+
+    // Filtro por mercadoria bloqueada
+    if (bloqueadaFilter === 'SIM') {
+      if (!nf.mercadoriaBloqueada) return false
+    } else if (bloqueadaFilter === 'NAO') {
+      if (nf.mercadoriaBloqueada) return false
     }
     
     return true
@@ -224,6 +232,15 @@ export function NotasFiscais() {
                 <option value="">Todos RP</option>
                 <option value="SIM">RP-SIM</option>
                 <option value="NAO">RP-NÃO</option>
+              </select>
+              <select
+                value={bloqueadaFilter}
+                onChange={(e) => setBloqueadaFilter(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+              >
+                <option value="">Bloqueio</option>
+                <option value="SIM">Bloqueada</option>
+                <option value="NAO">Liberada</option>
               </select>
               <select
                 value={statusFilter}
