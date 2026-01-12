@@ -402,7 +402,7 @@ export function NotaFiscalDetalhes() {
           <p className="text-gray-500 text-sm">{nota.fornecedorNome}</p>
         </div>
         <div className="ml-auto flex items-center gap-3">
-          {user?.perfil === 'ADMIN' && (
+          {(user?.perfil === 'ADMIN' || user?.perfil === 'COMPRAS') && (
             <button
               onClick={handleDelete}
               className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"

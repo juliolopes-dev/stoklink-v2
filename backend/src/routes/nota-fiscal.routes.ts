@@ -234,12 +234,12 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     }
   })
 
-  // Excluir NF (apenas ADMIN)
+  // Excluir NF (apenas ADMIN e COMPRAS)
   app.delete('/notas-fiscais/:id', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
-      // Verificar se é ADMIN
-      if (request.user.perfil !== 'ADMIN') {
-        return reply.status(403).send({ error: 'Apenas administradores podem excluir notas fiscais' })
+      // Verificar se é ADMIN ou COMPRAS
+      if (request.user.perfil !== 'ADMIN' && request.user.perfil !== 'COMPRAS') {
+        return reply.status(403).send({ error: 'Apenas administradores e setor de compras podem excluir notas fiscais' })
       }
 
       const { id } = idParamSchema.parse(request.params)
