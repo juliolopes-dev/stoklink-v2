@@ -247,6 +247,7 @@ enum PerfilUsuario {
   ADMIN
   GERENTE
   CONFERENTE
+  COMPRAS
 }
 
 enum StatusNotaFiscal {

@@ -14,7 +14,7 @@ interface Usuario {
   id: string
   nome: string
   email: string
-  perfil: 'ADMIN' | 'CONFERENTE'
+  perfil: 'ADMIN' | 'CONFERENTE' | 'COMPRAS'
   ativo: boolean
   filial: Filial
 }
@@ -23,7 +23,7 @@ interface UsuarioForm {
   nome: string
   email: string
   senha: string
-  perfil: 'ADMIN' | 'CONFERENTE'
+  perfil: 'ADMIN' | 'CONFERENTE' | 'COMPRAS'
   filialId: string
 }
 
@@ -254,9 +254,11 @@ export function Usuarios() {
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         usuario.perfil === 'ADMIN'
                           ? 'bg-purple-100 text-purple-800'
+                          : usuario.perfil === 'COMPRAS'
+                          ? 'bg-orange-100 text-orange-800'
                           : 'bg-blue-100 text-blue-800'
                       }`}>
-                        {usuario.perfil === 'ADMIN' ? 'Administrador' : 'Conferente'}
+                        {usuario.perfil === 'ADMIN' ? 'Administrador' : usuario.perfil === 'COMPRAS' ? 'Compras' : 'Conferente'}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -357,11 +359,12 @@ export function Usuarios() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">Perfil *</label>
                   <select
                     value={form.perfil}
-                    onChange={(e) => setForm({ ...form, perfil: e.target.value as 'ADMIN' | 'CONFERENTE' })}
+                    onChange={(e) => setForm({ ...form, perfil: e.target.value as 'ADMIN' | 'CONFERENTE' | 'COMPRAS' })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     required
                   >
                     <option value="CONFERENTE">Conferente</option>
+                    <option value="COMPRAS">Compras</option>
                     <option value="ADMIN">Administrador</option>
                   </select>
                 </div>
