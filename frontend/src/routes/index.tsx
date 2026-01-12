@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '../contexts/AuthContext'
 import { ModalProvider } from '../contexts/ModalContext'
+import { ToastProvider } from '../contexts/ToastContext'
 import { PrivateRoute } from '../components/PrivateRoute'
 import { Layout } from '../components/Layout'
 import { Login } from '../pages/Login'
@@ -24,6 +25,7 @@ export function AppRoutes() {
     <BrowserRouter>
       <AuthProvider>
         <ModalProvider>
+        <ToastProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
@@ -54,6 +56,7 @@ export function AppRoutes() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </ToastProvider>
         </ModalProvider>
       </AuthProvider>
     </BrowserRouter>

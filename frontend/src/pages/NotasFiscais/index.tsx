@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FiPlus, FiEye, FiFilter, FiSearch, FiPackage, FiRefreshCw } from 'react-icons/fi'
+import { FiPlus, FiEye, FiFilter, FiSearch, FiPackage, FiRefreshCw, FiCalendar } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Tooltip } from '../../components/Tooltip'
+import { useToast } from '../../contexts/ToastContext'
 
 interface NotaFiscal {
   id: string
@@ -58,6 +59,9 @@ export function NotasFiscais() {
   const [searchTerm, setSearchTerm] = useState('')
   const [updating, setUpdating] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
+  const [dataInicio, setDataInicio] = useState('')
+  const [dataFim, setDataFim] = useState('')
+  const { showSuccess, showError } = useToast()
 
   useEffect(() => {
     loadNotas()
@@ -101,7 +105,8 @@ export function NotasFiscais() {
       const search = searchTerm.toLowerCase()
       const matchSearch = nf.numero.toLowerCase().includes(search) ||
         nf.numeroSecundario?.toLowerCase().includes(search) ||
-        nf.fornecedorNome.toLowerCase().includes(search)
+        nf.fornecedorNome.toLowerCase().includes(search) ||
+        nf.transportadora?.toLowerCase().includes(search)
       if (!matchSearch) return false
     }
     
@@ -110,6 +115,19 @@ export function NotasFiscais() {
       if (!nf.entradaRp) return false
     } else if (rpFilter === 'NAO') {
       if (nf.entradaRp) return false
+    }
+
+    // Filtro por data
+    if (dataInicio && nf.dataEmissao) {
+      const nfDate = new Date(nf.dataEmissao)
+      const startDate = new Date(dataInicio)
+      if (nfDate < startDate) return false
+    }
+    if (dataFim && nf.dataEmissao) {
+      const nfDate = new Date(nf.dataEmissao)
+      const endDate = new Date(dataFim)
+      endDate.setHours(23, 59, 59, 999)
+      if (nfDate > endDate) return false
     }
     
     return true
@@ -122,9 +140,10 @@ export function NotasFiscais() {
         entradaRp: value === 'SIM'
       })
       await loadNotas()
+      showSuccess('Entrada RP atualizada!')
     } catch (error) {
       console.error('Erro ao atualizar RP:', error)
-      alert('Erro ao atualizar entrada RP')
+      showError('Erro ao atualizar entrada RP')
     } finally {
       setUpdating(false)
     }
@@ -175,8 +194,26 @@ export function NotasFiscais() {
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <FiFilter className="text-gray-400" size={20} />
+              <div className="flex items-center gap-1">
+                <FiCalendar className="text-gray-400" size={16} />
+                <input
+                  type="date"
+                  value={dataInicio}
+                  onChange={(e) => setDataInicio(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                  title="Data inicial"
+                />
+                <span className="text-gray-400 text-sm">até</span>
+                <input
+                  type="date"
+                  value={dataFim}
+                  onChange={(e) => setDataFim(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                  title="Data final"
+                />
+              </div>
               <select
                 value={rpFilter}
                 onChange={(e) => setRpFilter(e.target.value)}
