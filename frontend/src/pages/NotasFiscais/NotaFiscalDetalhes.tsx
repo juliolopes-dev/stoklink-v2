@@ -27,6 +27,7 @@ interface ItemNF {
 
 interface ConferenciaVolume {
   id: string
+  tipo: 'RECEBIMENTO' | 'DESTINO'
   volumesRecebidos: number
   volumesEsperados: number
   volumesBatendo: boolean
@@ -34,6 +35,11 @@ interface ConferenciaVolume {
   observacoes: string | null
   dataConferencia: string
   usuario: { nome: string }
+  filial: {
+    id: string
+    nome: string
+    codigo: string
+  } | null
 }
 
 interface Divergencia {
@@ -689,28 +695,55 @@ export function NotaFiscalDetalhes() {
             </h2>
             
             {nota.conferenciasVolumes.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {nota.conferenciasVolumes.map((conf) => (
-                  <div key={conf.id} className={`p-2 rounded-lg text-sm ${conf.volumesBatendo ? 'bg-green-50' : 'bg-red-50'}`}>
-                    <div className="flex items-center justify-between">
-                      <span className={conf.volumesBatendo ? 'text-green-700' : 'text-red-700'}>
+                  <div key={conf.id} className={`p-3 rounded-lg border-l-4 text-sm ${
+                    conf.volumesBatendo 
+                      ? 'bg-green-50 border-green-500' 
+                      : 'bg-red-50 border-red-500'
+                  }`}>
+                    {/* Cabeçalho com tipo e status */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-semibold text-gray-700 bg-white px-2 py-1 rounded">
+                          {conf.tipo === 'RECEBIMENTO' ? '📦 Recebimento' : '🎯 Destino'}
+                        </span>
+                        <span className={`text-xs font-medium ${conf.volumesBatendo ? 'text-green-700' : 'text-red-700'}`}>
+                          {conf.volumesBatendo ? '✓ OK' : '⚠ Divergente'}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Volumes */}
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`font-medium ${conf.volumesBatendo ? 'text-green-700' : 'text-red-700'}`}>
                         {conf.volumesRecebidos} / {conf.volumesEsperados} volumes
                       </span>
-                      <span className={`text-xs ${conf.volumesBatendo ? 'text-green-600' : 'text-red-600'}`}>
-                        {conf.volumesBatendo ? 'OK' : 'Divergente'}
-                      </span>
                     </div>
+                    
+                    {/* Filial */}
+                    {conf.filial && (
+                      <p className="text-xs text-gray-700 mb-1">
+                        📍 {conf.filial.nome} ({conf.filial.codigo})
+                      </p>
+                    )}
+                    
+                    {/* Transportadora */}
                     {conf.transportadora && (
-                      <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                      <p className="text-xs text-blue-600 mb-1 flex items-center gap-1">
                         <FiTruck size={12} /> {conf.transportadora}
                       </p>
                     )}
+                    
+                    {/* Observações */}
                     {conf.observacoes && (
-                      <p className="text-xs text-gray-600 mt-1 italic">
-                        Obs: {conf.observacoes}
+                      <p className="text-xs text-gray-600 mb-1 italic">
+                        💬 {conf.observacoes}
                       </p>
                     )}
-                    <p className="text-xs text-gray-500 mt-1">
+                    
+                    {/* Usuário e data */}
+                    <p className="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-200">
                       {conf.usuario.nome} - {formatDate(conf.dataConferencia)}
                     </p>
                   </div>
