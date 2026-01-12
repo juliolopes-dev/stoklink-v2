@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FiPlus, FiEye, FiFilter, FiSearch, FiPackage } from 'react-icons/fi'
+import { FiPlus, FiEye, FiFilter, FiSearch, FiPackage, FiRefreshCw } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Tooltip } from '../../components/Tooltip'
@@ -57,6 +57,7 @@ export function NotasFiscais() {
   const [rpFilter, setRpFilter] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [updating, setUpdating] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   useEffect(() => {
     loadNotas()
@@ -74,8 +75,12 @@ export function NotasFiscais() {
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
   }, [statusFilter])
 
-  async function loadNotas() {
-    setLoading(true)
+  async function loadNotas(showRefresh = false) {
+    if (showRefresh) {
+      setRefreshing(true)
+    } else {
+      setLoading(true)
+    }
     try {
       const params = new URLSearchParams()
       if (statusFilter) params.append('status', statusFilter)
@@ -86,6 +91,7 @@ export function NotasFiscais() {
       console.error('Erro ao carregar notas fiscais:', error)
     } finally {
       setLoading(false)
+      setRefreshing(false)
     }
   }
 
@@ -140,13 +146,23 @@ export function NotasFiscais() {
         <div className="p-3 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
             <h1 className="text-lg font-bold text-gray-800">Notas Fiscais</h1>
-            <Link
-              to="/notas-fiscais/nova"
-              className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 rounded-lg transition-colors text-sm"
-            >
-              <FiPlus size={16} />
-              Nova NF
-            </Link>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => loadNotas(true)}
+                disabled={refreshing}
+                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition-colors text-sm disabled:opacity-50"
+                title="Atualizar lista"
+              >
+                <FiRefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
+              </button>
+              <Link
+                to="/notas-fiscais/nova"
+                className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 rounded-lg transition-colors text-sm"
+              >
+                <FiPlus size={16} />
+                Nova NF
+              </Link>
+            </div>
           </div>
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
