@@ -1,7 +1,7 @@
 import { prisma } from '../lib/prisma.js'
 import bcrypt from 'bcryptjs'
 
-type PerfilUsuario = 'ADMIN' | 'GERENTE' | 'CONFERENTE' | 'COMPRAS'
+type PerfilUsuario = 'ADMIN' | 'GERENTE' | 'CONFERENTE' | 'COMPRAS' | 'FINANCEIRO'
 
 interface CreateUsuarioInput {
   empresaId: string

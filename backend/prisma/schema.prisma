@@ -248,6 +248,7 @@ enum PerfilUsuario {
   GERENTE
   CONFERENTE
   COMPRAS
+  FINANCEIRO
 }
 
 enum StatusNotaFiscal {
