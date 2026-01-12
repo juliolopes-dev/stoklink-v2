@@ -2,13 +2,13 @@
 -- Execute este script no banco de dados de produção
 
 CREATE TABLE IF NOT EXISTS audit_logs (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
     entidade VARCHAR(100) NOT NULL,
-    entidade_id UUID NOT NULL,
+    entidade_id TEXT NOT NULL,
     acao VARCHAR(50) NOT NULL,
     dados_anteriores JSONB,
     dados_novos JSONB,
-    usuario_id UUID NOT NULL,
+    usuario_id TEXT NOT NULL,
     usuario_nome VARCHAR(255),
     ip_address VARCHAR(45),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

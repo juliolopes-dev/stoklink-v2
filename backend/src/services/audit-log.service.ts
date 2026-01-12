@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma.js'
+import { Prisma } from '@prisma/client'
 
 interface CreateAuditLogInput {
   entidade: string
@@ -18,8 +19,8 @@ export class AuditLogService {
         entidade: input.entidade,
         entidadeId: input.entidadeId,
         acao: input.acao,
-        dadosAnteriores: input.dadosAnteriores || undefined,
-        dadosNovos: input.dadosNovos || undefined,
+        dadosAnteriores: input.dadosAnteriores as Prisma.InputJsonValue | undefined,
+        dadosNovos: input.dadosNovos as Prisma.InputJsonValue | undefined,
         usuarioId: input.usuarioId,
         usuarioNome: input.usuarioNome,
         ipAddress: input.ipAddress
