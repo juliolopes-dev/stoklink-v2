@@ -86,6 +86,7 @@ interface NotaFiscalDetalhe {
   usuarioCadastro: {
     nome: string
   }
+  createdAt: string
   itens: ItemNF[]
   conferenciasVolumes: ConferenciaVolume[]
   divergencias: Divergencia[]
@@ -477,6 +478,10 @@ export function NotaFiscalDetalhes() {
               <div>
                 <p className="text-xs text-gray-500">Cadastrado por</p>
                 <p className="font-medium text-sm">{nota.usuarioCadastro.nome}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500">Data Cadastro</p>
+                <p className="font-medium text-sm">{formatDate(nota.createdAt)}</p>
               </div>
               <div className="col-span-3 md:col-span-6">
                 <p className="text-xs text-gray-500">Chave de Acesso</p>
