@@ -120,6 +120,11 @@ export class ConferenciaService {
 
     updateData.status = novoStatus
     
+    // Preencher dataRecebimento quando a mercadoria é fisicamente recebida (conferência de volumes)
+    if (!notaFiscal.dataRecebimento) {
+      updateData.dataRecebimento = new Date()
+    }
+    
     await prisma.notaFiscal.update({
       where: { id: input.notaFiscalId },
       data: updateData

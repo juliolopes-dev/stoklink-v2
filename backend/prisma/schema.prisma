@@ -123,7 +123,7 @@ model NotaFiscal {
   fornecedorSecundarioId String?             @map("fornecedor_secundario_id")
   numeroSecundario       String?             @map("numero_secundario")
   dataEmissao            DateTime?           @map("data_emissao")
-  dataRecebimento        DateTime            @default(now()) @map("data_recebimento")
+  dataRecebimento        DateTime?           @map("data_recebimento")
   valorTotal             Decimal?            @map("valor_total") @db.Decimal(12, 2)
   quantidadeVolumes      Int                 @map("quantidade_volumes")
   tipoMovimentacao       TipoMovimentacao    @map("tipo_movimentacao")
