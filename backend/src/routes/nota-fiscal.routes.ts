@@ -348,4 +348,17 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       return reply.status(500).send({ error: 'Erro ao buscar relatório' })
     }
   })
+
+  // Estatísticas avançadas
+  app.get('/notas-fiscais/estatisticas/avancadas', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const stats = await notaFiscalService.getEstatisticasAvancadas()
+      return reply.send(stats)
+    } catch (error) {
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao buscar estatísticas' })
+    }
+  })
 }

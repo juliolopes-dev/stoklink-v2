@@ -687,4 +687,82 @@ export class NotaFiscalService {
       }
     })
   }
+
+  async getEstatisticasAvancadas() {
+    const notas = await prisma.notaFiscal.findMany({
+      include: {
+        filialRecebimento: {
+          select: { id: true, nome: true, codigo: true }
+        },
+        filialDestino: {
+          select: { id: true, nome: true, codigo: true }
+        },
+        conferenciasVolumes: {
+          select: { createdAt: true, tipo: true }
+        }
+      }
+    })
+
+    // Estatísticas por filial de recebimento
+    const filialStats: Record<string, { nome: string, codigo: string, total: number, conferidas: number, tempoMedioHoras: number }> = {}
+    
+    for (const nf of notas) {
+      const filialId = nf.filialRecebimentoId || nf.filialDestinoId
+      const filial = nf.filialRecebimento || nf.filialDestino
+      
+      if (!filialStats[filialId]) {
+        filialStats[filialId] = {
+          nome: filial.nome,
+          codigo: filial.codigo,
+          total: 0,
+          conferidas: 0,
+          tempoMedioHoras: 0
+        }
+      }
+      
+      filialStats[filialId].total++
+      
+      if (nf.status === 'CONFERIDO_OK' || nf.status === 'CONFERIDO_DIVERGENCIA') {
+        filialStats[filialId].conferidas++
+        
+        // Calcular tempo de conferência
+        const primeiraConf = nf.conferenciasVolumes.find((c: { tipo: string }) => c.tipo === 'RECEBIMENTO')
+        if (primeiraConf && nf.createdAt) {
+          const tempoMs = new Date(primeiraConf.createdAt).getTime() - new Date(nf.createdAt).getTime()
+          const tempoHoras = tempoMs / (1000 * 60 * 60)
+          filialStats[filialId].tempoMedioHoras = 
+            (filialStats[filialId].tempoMedioHoras * (filialStats[filialId].conferidas - 1) + tempoHoras) / filialStats[filialId].conferidas
+        }
+      }
+    }
+
+    // Estatísticas por status
+    const statusStats: Record<string, number> = {}
+    for (const nf of notas) {
+      statusStats[nf.status] = (statusStats[nf.status] || 0) + 1
+    }
+
+    // Estatísticas gerais
+    const totalNotas = notas.length
+    const notasConferidas = notas.filter(n => n.status === 'CONFERIDO_OK' || n.status === 'CONFERIDO_DIVERGENCIA').length
+    const notasPendentes = notas.filter(n => n.status === 'AGUARDANDO_CONFERENCIA' || n.status === 'AGUARDANDO_CONFERENCIA_DESTINO').length
+
+    return {
+      geral: {
+        totalNotas,
+        notasConferidas,
+        notasPendentes,
+        taxaConferencia: totalNotas > 0 ? Math.round((notasConferidas / totalNotas) * 100) : 0
+      },
+      porFilial: Object.entries(filialStats).map(([id, stats]) => ({
+        filialId: id,
+        ...stats,
+        tempoMedioHoras: Math.round(stats.tempoMedioHoras * 10) / 10
+      })),
+      porStatus: Object.entries(statusStats).map(([status, count]) => ({
+        status,
+        count
+      }))
+    }
+  }
 }
