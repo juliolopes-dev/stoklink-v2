@@ -18,5 +18,18 @@ WHERE status IN (
   'EM_CONFERENCIA'
 );
 
+-- Preencher dataRecebimento das NFs que JÁ FORAM CONFERIDAS mas não têm a data preenchida
+-- Usa a data da PRIMEIRA conferência de volumes como dataRecebimento
+UPDATE notas_fiscais nf
+SET data_recebimento = (
+  SELECT MIN(cv.data_conferencia)
+  FROM conferencias_volumes cv
+  WHERE cv.nota_fiscal_id = nf.id
+)
+WHERE nf.data_recebimento IS NULL
+  AND EXISTS (
+    SELECT 1 FROM conferencias_volumes cv WHERE cv.nota_fiscal_id = nf.id
+  );
+
 -- Comentário explicativo
 COMMENT ON COLUMN notas_fiscais.data_recebimento IS 'Data em que a mercadoria foi fisicamente recebida (preenchido na conferência de volumes)';
