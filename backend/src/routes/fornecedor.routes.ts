@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { fornecedorService } from '../services/fornecedor.service.js'
-import { authMiddleware, adminMiddleware } from '../middlewares/auth.js'
+import { authMiddleware, adminMiddleware, adminOrComprasMiddleware } from '../middlewares/auth.js'
 
 export async function fornecedorRoutes(app: FastifyInstance) {
   // Todas as rotas requerem autenticação
@@ -44,8 +44,8 @@ export async function fornecedorRoutes(app: FastifyInstance) {
     return reply.send(fornecedor)
   })
 
-  // POST /fornecedores - Cria novo fornecedor (apenas admin)
-  app.post('/fornecedores', { preHandler: adminMiddleware }, async (request, reply) => {
+  // POST /fornecedores - Cria novo fornecedor (admin ou compras)
+  app.post('/fornecedores', { preHandler: adminOrComprasMiddleware }, async (request, reply) => {
     const bodySchema = z.object({
       nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
       cnpj: z.string().optional(),
@@ -76,8 +76,8 @@ export async function fornecedorRoutes(app: FastifyInstance) {
     }
   })
 
-  // PUT /fornecedores/:id - Atualiza fornecedor (apenas admin)
-  app.put('/fornecedores/:id', { preHandler: adminMiddleware }, async (request, reply) => {
+  // PUT /fornecedores/:id - Atualiza fornecedor (admin ou compras)
+  app.put('/fornecedores/:id', { preHandler: adminOrComprasMiddleware }, async (request, reply) => {
     const { id } = request.params as { id: string }
     
     const bodySchema = z.object({
@@ -111,8 +111,8 @@ export async function fornecedorRoutes(app: FastifyInstance) {
     }
   })
 
-  // DELETE /fornecedores/:id - Exclui fornecedor (apenas admin)
-  app.delete('/fornecedores/:id', { preHandler: adminMiddleware }, async (request, reply) => {
+  // DELETE /fornecedores/:id - Exclui fornecedor (admin ou compras)
+  app.delete('/fornecedores/:id', { preHandler: adminOrComprasMiddleware }, async (request, reply) => {
     const { empresaId } = request.user
     const { id } = request.params as { id: string }
 

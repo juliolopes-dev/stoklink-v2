@@ -45,7 +45,7 @@ const initialForm: FornecedorForm = {
 export function Fornecedores() {
   const { user } = useAuth()
   const { confirm, alert } = useModal()
-  const isAdmin = user?.perfil === 'ADMIN'
+  const canManage = user?.perfil === 'ADMIN' || user?.perfil === 'COMPRAS'
   
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([])
   const [loading, setLoading] = useState(true)
@@ -158,7 +158,7 @@ export function Fornecedores() {
     <div className="flex flex-col h-[calc(100vh-2rem)] overflow-hidden p-6">
       <div className="flex items-center justify-between mb-6 flex-shrink-0">
         <h1 className="text-2xl font-bold text-gray-800">Fornecedores</h1>
-        {isAdmin && (
+        {canManage && (
           <button
             onClick={() => openModal()}
             className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors"
@@ -197,7 +197,7 @@ export function Fornecedores() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Contato</th>
                   <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">NFs</th>
                   <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Status</th>
-                  {isAdmin && (
+                  {canManage && (
                     <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Ações</th>
                   )}
                 </tr>
@@ -243,8 +243,8 @@ export function Fornecedores() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       <button
-                        onClick={() => isAdmin && handleToggleAtivo(fornecedor)}
-                        disabled={!isAdmin}
+                        onClick={() => canManage && handleToggleAtivo(fornecedor)}
+                        disabled={!canManage}
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
                           fornecedor.ativo
                             ? 'bg-green-100 text-green-800'
@@ -254,7 +254,7 @@ export function Fornecedores() {
                         {fornecedor.ativo ? 'Ativo' : 'Inativo'}
                       </button>
                     </td>
-                    {isAdmin && (
+                    {canManage && (
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button

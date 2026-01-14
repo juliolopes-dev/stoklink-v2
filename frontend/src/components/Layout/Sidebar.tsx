@@ -27,6 +27,11 @@ const menuItems = [
   // { path: '/distribuicoes', icon: FiTruck, label: 'Distribuições' }, // Desativado temporariamente
 ]
 
+const comprasMenuItems = [
+  { path: '/fornecedores', icon: FiBriefcase, label: 'Fornecedores' },
+  { path: '/transportadoras', icon: FiTruck, label: 'Transportadoras' },
+]
+
 const adminMenuItems = [
   { path: '/fornecedores', icon: FiBriefcase, label: 'Fornecedores' },
   { path: '/transportadoras', icon: FiTruck, label: 'Transportadoras' },
@@ -39,6 +44,7 @@ const adminMenuItems = [
 export function Sidebar() {
   const { user, signOut } = useAuth()
   const isAdmin = user?.perfil === 'ADMIN'
+  const isCompras = user?.perfil === 'COMPRAS'
   const [showPasswordModal, setShowPasswordModal] = useState(false)
   const [senhaAtual, setSenhaAtual] = useState('')
   const [novaSenha, setNovaSenha] = useState('')
@@ -119,6 +125,37 @@ export function Sidebar() {
             </li>
           ))}
         </ul>
+
+        {isCompras && (
+          <>
+            <div className="mt-8 mb-4 overflow-hidden">
+              <span className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Cadastros
+              </span>
+              <div className="border-t border-gray-700 mx-4 group-hover:hidden"></div>
+            </div>
+            <ul className="space-y-1">
+              {comprasMenuItems.map((item) => (
+                <li key={item.path}>
+                  <NavLink
+                    to={item.path}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                        isActive
+                          ? 'bg-primary-600 text-white shadow-lg'
+                          : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:shadow-md'
+                      }`
+                    }
+                    title={item.label}
+                  >
+                    <item.icon size={20} className="flex-shrink-0" />
+                    <span className="whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.label}</span>
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
 
         {isAdmin && (
           <>

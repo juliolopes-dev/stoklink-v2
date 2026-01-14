@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { transportadoraService } from '../services/transportadora.service.js'
-import { authMiddleware, adminMiddleware } from '../middlewares/auth.js'
+import { authMiddleware, adminOrComprasMiddleware } from '../middlewares/auth.js'
 
 export async function transportadoraRoutes(app: FastifyInstance) {
   app.addHook('onRequest', authMiddleware)
@@ -33,7 +33,7 @@ export async function transportadoraRoutes(app: FastifyInstance) {
     return reply.send(transportadora)
   })
 
-  app.post('/transportadoras', { preHandler: adminMiddleware }, async (request, reply) => {
+  app.post('/transportadoras', { preHandler: adminOrComprasMiddleware }, async (request, reply) => {
     const bodySchema = z.object({
       nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
       cnpj: z.string().optional(),
@@ -60,7 +60,7 @@ export async function transportadoraRoutes(app: FastifyInstance) {
     }
   })
 
-  app.put('/transportadoras/:id', { preHandler: adminMiddleware }, async (request, reply) => {
+  app.put('/transportadoras/:id', { preHandler: adminOrComprasMiddleware }, async (request, reply) => {
     const { id } = request.params as { id: string }
     
     const bodySchema = z.object({
@@ -90,7 +90,7 @@ export async function transportadoraRoutes(app: FastifyInstance) {
     }
   })
 
-  app.delete('/transportadoras/:id', { preHandler: adminMiddleware }, async (request, reply) => {
+  app.delete('/transportadoras/:id', { preHandler: adminOrComprasMiddleware }, async (request, reply) => {
     const { empresaId } = request.user
     const { id } = request.params as { id: string }
 

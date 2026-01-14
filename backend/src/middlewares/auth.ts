@@ -19,3 +19,15 @@ export async function adminMiddleware(request: FastifyRequest, reply: FastifyRep
     return reply.status(401).send({ error: 'Token inválido ou expirado' })
   }
 }
+
+export async function adminOrComprasMiddleware(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    await request.jwtVerify()
+    
+    if (request.user.perfil !== 'ADMIN' && request.user.perfil !== 'COMPRAS') {
+      return reply.status(403).send({ error: 'Acesso restrito a administradores e setor de compras' })
+    }
+  } catch (err) {
+    return reply.status(401).send({ error: 'Token inválido ou expirado' })
+  }
+}

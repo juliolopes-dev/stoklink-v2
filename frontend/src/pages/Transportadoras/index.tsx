@@ -30,7 +30,7 @@ const initialForm: TransportadoraForm = {
 export function Transportadoras() {
   const { user } = useAuth()
   const { confirm, alert } = useModal()
-  const isAdmin = user?.perfil === 'ADMIN'
+  const canManage = user?.perfil === 'ADMIN' || user?.perfil === 'COMPRAS'
   
   const [transportadoras, setTransportadoras] = useState<Transportadora[]>([])
   const [loading, setLoading] = useState(true)
@@ -134,7 +134,7 @@ export function Transportadoras() {
             </h1>
             <p className="text-gray-600 mt-1">Gerencie as transportadoras cadastradas</p>
           </div>
-          {isAdmin && (
+          {canManage && (
             <button
               onClick={() => openModal()}
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
@@ -174,7 +174,7 @@ export function Transportadoras() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CNPJ</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contato</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    {isAdmin && (
+                    {canManage && (
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Ações</th>
                     )}
                   </tr>
@@ -206,7 +206,7 @@ export function Transportadoras() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        {isAdmin ? (
+                        {canManage ? (
                           <button
                             onClick={() => toggleStatus(transportadora.id, transportadora.ativo)}
                             className={`px-2.5 py-1 rounded-full text-xs font-medium ${
@@ -227,7 +227,7 @@ export function Transportadoras() {
                           </span>
                         )}
                       </td>
-                      {isAdmin && (
+                      {canManage && (
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <button
