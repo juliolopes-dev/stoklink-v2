@@ -3,12 +3,11 @@ import { XmlParserService } from './xml-parser.service.js'
 import { fornecedorService } from './fornecedor.service.js'
 
 type StatusNotaFiscal = 'AGUARDANDO_CONFERENCIA' | 'PENDENTE_TRANSFERENCIA' | 'EM_CONFERENCIA' | 'VOLUMES_DIVERGENTES' | 'VOLUMES_CONFERIDOS' | 'BLOQUEADO' | 'CONFERIDO_DIVERGENCIA' | 'CONFERIDO_OK' | 'CONFERIDA' | 'FINALIZADA'
-type TipoMovimentacao = 'RECEBIMENTO_DIRETO' | 'RECEBIMENTO_INDIRETO' | 'DISTRIBUICAO_URGENTE'
+type TipoMovimentacao = 'NORMAL' | 'DISTRIBUICAO_IMEDIATA'
 
 interface ImportarXmlInput {
   empresaId: string
   xmlContent: string
-  filialRecebimentoId?: string
   filialDestinoId: string
   tipoMovimentacao: TipoMovimentacao
   usuarioId: string
@@ -29,7 +28,6 @@ interface CreateNotaFiscalInput {
   valorTotal?: number
   quantidadeVolumes: number
   tipoMovimentacao: TipoMovimentacao
-  filialRecebimentoId?: string
   filialDestinoId: string
   usuarioId: string
   observacoes?: string
@@ -95,35 +93,15 @@ export class NotaFiscalService {
       }
     }
 
-    // Verificar filial de recebimento (opcional)
-    let filialRecebimento = null
-    if (input.filialRecebimentoId) {
-      filialRecebimento = await prisma.filial.findUnique({ where: { id: input.filialRecebimentoId } })
-      if (!filialRecebimento) {
-        throw new Error('Filial de recebimento não encontrada')
-      }
-    }
-
     // Verificar filial de destino (obrigatória)
     const filialDestino = await prisma.filial.findUnique({ where: { id: input.filialDestinoId } })
     if (!filialDestino) {
       throw new Error('Filial de destino não encontrada')
     }
 
-    // Validar regra de negócio: RECEBIMENTO_DIRETO deve ter mesma filial
-    if (input.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && input.filialRecebimentoId !== input.filialDestinoId) {
-      throw new Error('RECEBIMENTO_DIRETO deve ter a mesma filial de recebimento e destino')
-    }
-
-    // Determinar status inicial baseado no tipo de movimentação
-    let status: StatusNotaFiscal
-    if (input.filialRecebimentoId) {
-      // Se tem filial de recebimento definida: aguardando conferência no recebimento
-      status = 'AGUARDANDO_CONFERENCIA'
-    } else {
-      // Se não tem filial de recebimento: aguardando definição/transferência
-      status = 'PENDENTE_TRANSFERENCIA'
-    }
+    // Status inicial: sempre PENDENTE_TRANSFERENCIA (Em Trânsito)
+    // A filial de recebimento será definida na primeira conferência de volumes
+    const status: StatusNotaFiscal = 'PENDENTE_TRANSFERENCIA'
 
     // Criar ou buscar fornecedor
     const fornecedor = await fornecedorService.findOrCreate(
@@ -145,9 +123,9 @@ export class NotaFiscalService {
         dataEmissao: parsed.dataEmissao,
         valorTotal: parsed.valorTotal,
         quantidadeVolumes: input.quantidadeVolumes ?? parsed.quantidadeVolumes,
-        tipoMovimentacao: input.tipoMovimentacao,
+        tipoMovimentacao: input.tipoMovimentacao as any,
         status,
-        filialRecebimentoId: input.filialRecebimentoId || null,
+        filialRecebimentoId: null,
         filialDestinoId: input.filialDestinoId,
         usuarioCadastroId: input.usuarioId,
         observacoes: input.observacoes,
@@ -199,29 +177,9 @@ export class NotaFiscalService {
       throw new Error('Filial de destino não encontrada')
     }
 
-    // Verificar filial de recebimento (opcional - só para NF direta)
-    let filialRecebimento = null
-    if (input.filialRecebimentoId) {
-      filialRecebimento = await prisma.filial.findUnique({ where: { id: input.filialRecebimentoId } })
-      if (!filialRecebimento) {
-        throw new Error('Filial de recebimento não encontrada')
-      }
-    }
-
-    // Validar regra de negócio: RECEBIMENTO_DIRETO deve ter mesma filial
-    if (input.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && input.filialRecebimentoId !== input.filialDestinoId) {
-      throw new Error('RECEBIMENTO_DIRETO deve ter a mesma filial de recebimento e destino')
-    }
-
-    // Determinar status inicial baseado no tipo de movimentação
-    let status: StatusNotaFiscal
-    if (input.filialRecebimentoId) {
-      // Se tem filial de recebimento definida: aguardando conferência no recebimento
-      status = 'AGUARDANDO_CONFERENCIA'
-    } else {
-      // Se não tem filial de recebimento: aguardando definição/transferência
-      status = 'PENDENTE_TRANSFERENCIA'
-    }
+    // Status inicial: sempre PENDENTE_TRANSFERENCIA (Em Trânsito)
+    // A filial de recebimento será definida na primeira conferência de volumes
+    const status: StatusNotaFiscal = 'PENDENTE_TRANSFERENCIA'
 
     // Criar ou buscar fornecedor
     const fornecedor = await fornecedorService.findOrCreate(
@@ -242,9 +200,9 @@ export class NotaFiscalService {
         dataEmissao: input.dataEmissao,
         valorTotal: input.valorTotal,
         quantidadeVolumes: input.quantidadeVolumes,
-        tipoMovimentacao: input.tipoMovimentacao,
+        tipoMovimentacao: input.tipoMovimentacao as any,
         status,
-        filialRecebimentoId: input.filialRecebimentoId,
+        filialRecebimentoId: null,
         filialDestinoId: input.filialDestinoId,
         usuarioCadastroId: input.usuarioId,
         observacoes: input.observacoes,

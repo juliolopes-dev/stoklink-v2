@@ -7,9 +7,8 @@ import { authMiddleware } from '../middlewares/auth.js'
 const notaFiscalService = new NotaFiscalService()
 
 const importarXmlSchema = z.object({
-  filialRecebimentoId: z.string().uuid('ID da filial de recebimento inválido').optional().or(z.literal('')),
   filialDestinoId: z.string().uuid('ID da filial de destino inválido'),
-  tipoMovimentacao: z.enum(['RECEBIMENTO_DIRETO', 'RECEBIMENTO_INDIRETO', 'DISTRIBUICAO_URGENTE']),
+  tipoMovimentacao: z.enum(['NORMAL', 'DISTRIBUICAO_IMEDIATA']),
   quantidadeVolumes: z.coerce.number().int().positive().optional(),
   observacoes: z.string().optional(),
   numeroSecundario: z.string().optional(),
@@ -25,8 +24,7 @@ const createNotaFiscalSchema = z.object({
   dataEmissao: z.coerce.date().optional(),
   valorTotal: z.coerce.number().optional(),
   quantidadeVolumes: z.coerce.number().int().positive(),
-  tipoMovimentacao: z.enum(['RECEBIMENTO_DIRETO', 'RECEBIMENTO_INDIRETO', 'DISTRIBUICAO_URGENTE']),
-  filialRecebimentoId: z.string().uuid('ID da filial de recebimento inválido').optional().or(z.literal('')),
+  tipoMovimentacao: z.enum(['NORMAL', 'DISTRIBUICAO_IMEDIATA']),
   filialDestinoId: z.string().uuid('ID da filial de destino inválido'),
   observacoes: z.string().optional(),
   itens: z.array(z.object({
@@ -115,7 +113,6 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       const notaFiscal = await notaFiscalService.importarXml({
         empresaId: request.user.empresaId,
         xmlContent,
-        filialRecebimentoId: params.filialRecebimentoId || undefined,
         filialDestinoId: params.filialDestinoId,
         tipoMovimentacao: params.tipoMovimentacao,
         usuarioId: request.user.id,
@@ -144,7 +141,6 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
 
       const notaFiscal = await notaFiscalService.create({
         ...data,
-        filialRecebimentoId: data.filialRecebimentoId || undefined,
         empresaId: request.user.empresaId,
         usuarioId: request.user.id
       })
