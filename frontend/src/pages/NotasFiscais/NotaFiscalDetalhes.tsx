@@ -389,7 +389,8 @@ export function NotaFiscalDetalhes() {
 
   if (!nota) return null
 
-  const podeConferirVolumes = !nota.filialRecebimento
+  // Pode conferir volumes se está em trânsito (PENDENTE_TRANSFERENCIA) e ainda não tem filial de recebimento
+  const podeConferirVolumes = nota.status === 'PENDENTE_TRANSFERENCIA' && !nota.filialRecebimento
   const podeConferirVolumesDestino = nota.status === 'AGUARDANDO_CONFERENCIA_DESTINO'
   
   // Verificar se usuário pertence à filial de destino para conferir volumes no destino
