@@ -103,8 +103,8 @@ export class ConferenciaService {
         if (filialRecebimentoEfetiva !== notaFiscal.filialDestinoId) {
           novoStatus = 'AGUARDANDO_CONFERENCIA_DESTINO'
         } else {
-          // Recebimento direto (mesma filial) - volumes conferidos
-          novoStatus = 'VOLUMES_CONFERIDOS'
+          // Recebimento direto (mesma filial) - volumes OK, aguardando conferência de itens
+          novoStatus = 'AGUARDANDO_CONFERENCIA'
         }
       } else {
         novoStatus = 'VOLUMES_DIVERGENTES'
