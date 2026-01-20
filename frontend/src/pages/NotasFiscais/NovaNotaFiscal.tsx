@@ -53,17 +53,15 @@ export function NovaNotaFiscal() {
   const [showFornecedorSuggestions, setShowFornecedorSuggestions] = useState(false)
   const [filteredFornecedores, setFilteredFornecedores] = useState<{ id: string; nome: string; cnpj?: string }[]>([])
   const [quantidadeVolumes, setQuantidadeVolumes] = useState('')
-  const [tipoMovimentacao, setTipoMovimentacao] = useState('RECEBIMENTO_DIRETO')
-  const [filialRecebimentoId, setFilialRecebimentoId] = useState('')
+  const [tipoMovimentacao, setTipoMovimentacao] = useState('NORMAL')
   const [filialDestinoId, setFilialDestinoId] = useState('')
   const [observacoes, setObservacoes] = useState('')
   const [itens, setItens] = useState<ItemForm[]>([])
 
   // Form XML
   const [xmlFile, setXmlFile] = useState<File | null>(null)
-  const [xmlFilialRecebimentoId, setXmlFilialRecebimentoId] = useState('')
   const [xmlFilialDestinoId, setXmlFilialDestinoId] = useState('')
-  const [xmlTipoMovimentacao, setXmlTipoMovimentacao] = useState('RECEBIMENTO_DIRETO')
+  const [xmlTipoMovimentacao, setXmlTipoMovimentacao] = useState('NORMAL')
   const [xmlQuantidadeVolumes, setXmlQuantidadeVolumes] = useState('')
   const [xmlPreview, setXmlPreview] = useState<XmlPreview | null>(null)
   const [loadingPreview, setLoadingPreview] = useState(false)
@@ -84,9 +82,7 @@ export function NovaNotaFiscal() {
       setFiliais(filiaisRes.data)
       setFornecedores(fornecedoresRes.data)
       if (filiaisRes.data.length > 0) {
-        setFilialRecebimentoId(filiaisRes.data[0].id)
         setFilialDestinoId(filiaisRes.data[0].id)
-        setXmlFilialRecebimentoId(filiaisRes.data[0].id)
         setXmlFilialDestinoId(filiaisRes.data[0].id)
       }
     } catch (error) {
@@ -153,12 +149,6 @@ export function NovaNotaFiscal() {
       return
     }
 
-    // Validar RECEBIMENTO_DIRETO
-    if (tipoMovimentacao === 'RECEBIMENTO_DIRETO' && filialRecebimentoId !== filialDestinoId) {
-      setError('RECEBIMENTO_DIRETO deve ter a mesma filial de recebimento e destino')
-      return
-    }
-
     setLoading(true)
 
     try {
@@ -169,9 +159,6 @@ export function NovaNotaFiscal() {
         fornecedorCnpj: fornecedorCnpj || undefined,
         quantidadeVolumes: parseInt(quantidadeVolumes),
         tipoMovimentacao,
-        // NF INDIRETA: não define filialRecebimento (será definido na conferência)
-        // NF DIRETA: define filialRecebimento igual ao destino
-        filialRecebimentoId: tipoMovimentacao === 'RECEBIMENTO_INDIRETO' ? undefined : filialRecebimentoId,
         filialDestinoId,
         observacoes: observacoes || undefined,
         itens: itens.map(item => ({
@@ -200,12 +187,6 @@ export function NovaNotaFiscal() {
       return
     }
 
-    // Validar RECEBIMENTO_DIRETO
-    if (xmlTipoMovimentacao === 'RECEBIMENTO_DIRETO' && xmlFilialRecebimentoId !== xmlFilialDestinoId) {
-      setError('RECEBIMENTO_DIRETO deve ter a mesma filial de recebimento e destino')
-      return
-    }
-
     setError('')
     setLoading(true)
 
@@ -214,9 +195,6 @@ export function NovaNotaFiscal() {
       formData.append('file', xmlFile)
       formData.append('filialDestinoId', xmlFilialDestinoId)
       formData.append('tipoMovimentacao', xmlTipoMovimentacao)
-      if (xmlTipoMovimentacao !== 'RECEBIMENTO_INDIRETO') {
-        formData.append('filialRecebimentoId', xmlFilialRecebimentoId)
-      }
       if (xmlQuantidadeVolumes) {
         formData.append('quantidadeVolumes', xmlQuantidadeVolumes)
       }
@@ -395,7 +373,7 @@ export function NovaNotaFiscal() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
                     Tipo de Movimentação *
@@ -403,8 +381,7 @@ export function NovaNotaFiscal() {
                       <FiHelpCircle size={14} className="text-gray-400 cursor-help" />
                       <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-72 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
                         <p className="font-semibold mb-2">Tipos de Movimentação:</p>
-                        <p className="mb-1"><strong>Recebimento Direto:</strong> Mercadoria vai direto para a filial de destino final.</p>
-                        <p className="mb-1"><strong>Recebimento Indireto:</strong> Mercadoria chega no CD e será transferida para outra filial.</p>
+                        <p className="mb-1"><strong>Normal:</strong> Movimentação padrão de mercadoria.</p>
                         <p><strong>Distribuição Imediata:</strong> Mercadoria com prioridade de distribuição imediata.</p>
                       </div>
                     </span>
@@ -414,26 +391,8 @@ export function NovaNotaFiscal() {
                     onChange={(e) => setTipoMovimentacao(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   >
-                    <option value="RECEBIMENTO_DIRETO">Recebimento Direto</option>
-                    <option value="RECEBIMENTO_INDIRETO">Recebimento Indireto</option>
-                    <option value="DISTRIBUICAO_URGENTE">Distribuição Imediata</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Filial de Recebimento *
-                  </label>
-                  <select
-                    value={filialRecebimentoId}
-                    onChange={(e) => setFilialRecebimentoId(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                    required
-                  >
-                    {filiais.map(filial => (
-                      <option key={filial.id} value={filial.id}>
-                        {filial.nome} ({filial.codigo})
-                      </option>
-                    ))}
+                    <option value="NORMAL">Normal</option>
+                    <option value="DISTRIBUICAO_IMEDIATA">Distribuição Imediata</option>
                   </select>
                 </div>
                 <div>
@@ -630,7 +589,7 @@ export function NovaNotaFiscal() {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
                     Tipo de Movimentação *
@@ -638,8 +597,7 @@ export function NovaNotaFiscal() {
                       <FiHelpCircle size={14} className="text-gray-400 cursor-help" />
                       <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-72 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
                         <p className="font-semibold mb-2">Tipos de Movimentação:</p>
-                        <p className="mb-1"><strong>Recebimento Direto:</strong> Mercadoria vai direto para a filial de destino final.</p>
-                        <p className="mb-1"><strong>Recebimento Indireto:</strong> Mercadoria chega no CD e será transferida para outra filial.</p>
+                        <p className="mb-1"><strong>Normal:</strong> Movimentação padrão de mercadoria.</p>
                         <p><strong>Distribuição Imediata:</strong> Mercadoria com prioridade de distribuição imediata.</p>
                       </div>
                     </span>
@@ -649,26 +607,8 @@ export function NovaNotaFiscal() {
                     onChange={(e) => setXmlTipoMovimentacao(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                   >
-                    <option value="RECEBIMENTO_DIRETO">Recebimento Direto</option>
-                    <option value="RECEBIMENTO_INDIRETO">Recebimento Indireto</option>
-                    <option value="DISTRIBUICAO_URGENTE">Distribuição Imediata</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Filial Recebimento *
-                  </label>
-                  <select
-                    value={xmlFilialRecebimentoId}
-                    onChange={(e) => setXmlFilialRecebimentoId(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
-                    required
-                  >
-                    {filiais.map(filial => (
-                      <option key={filial.id} value={filial.id}>
-                        {filial.nome}
-                      </option>
-                    ))}
+                    <option value="NORMAL">Normal</option>
+                    <option value="DISTRIBUICAO_IMEDIATA">Distribuição Imediata</option>
                   </select>
                 </div>
                 <div>
