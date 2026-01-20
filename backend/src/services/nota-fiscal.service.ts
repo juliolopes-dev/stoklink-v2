@@ -110,9 +110,13 @@ export class NotaFiscalService {
       throw new Error('Filial de destino não encontrada')
     }
 
-    // Determinar status inicial
-    let status: StatusNotaFiscal = 'AGUARDANDO_CONFERENCIA'
-    if (!input.filialRecebimentoId || input.filialRecebimentoId !== input.filialDestinoId) {
+    // Determinar status inicial baseado no tipo de movimentação
+    let status: StatusNotaFiscal
+    if (input.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && input.filialRecebimentoId === input.filialDestinoId) {
+      // NF direta para mesma filial: pronta para conferência
+      status = 'AGUARDANDO_CONFERENCIA'
+    } else {
+      // NF indireta ou transferência entre filiais: aguardando transferência
       status = 'PENDENTE_TRANSFERENCIA'
     }
 
@@ -199,9 +203,13 @@ export class NotaFiscalService {
       }
     }
 
-    // Determinar status inicial
-    let status: StatusNotaFiscal = 'AGUARDANDO_CONFERENCIA'
-    if (!input.filialRecebimentoId || input.filialRecebimentoId !== input.filialDestinoId) {
+    // Determinar status inicial baseado no tipo de movimentação
+    let status: StatusNotaFiscal
+    if (input.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && input.filialRecebimentoId === input.filialDestinoId) {
+      // NF direta para mesma filial: pronta para conferência
+      status = 'AGUARDANDO_CONFERENCIA'
+    } else {
+      // NF indireta ou transferência entre filiais: aguardando transferência
       status = 'PENDENTE_TRANSFERENCIA'
     }
 
