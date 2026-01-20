@@ -102,28 +102,25 @@ export function Historico() {
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] overflow-hidden p-6">
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-          <FiClock size={24} />
-          Histórico de Alterações
-        </h1>
+        <h1 className="text-lg font-semibold text-gray-800">Histórico de Alterações</h1>
         <button
           onClick={() => loadLogs(true)}
           disabled={refreshing}
-          className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition-colors text-sm disabled:opacity-50"
+          className="h-9 flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 rounded-md transition-colors text-sm disabled:opacity-50"
           title="Atualizar lista"
         >
           <FiRefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
-          <div className="flex items-center gap-4">
-            <FiFilter className="text-gray-400" />
+          <div className="flex items-center gap-2">
+            <FiFilter className="text-gray-400" size={16} />
             <select
               value={entidadeFilter}
               onChange={(e) => setEntidadeFilter(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="h-9 border border-gray-300 rounded-md px-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
             >
               <option value="">Todas as entidades</option>
               <option value="NotaFiscal">Notas Fiscais</option>

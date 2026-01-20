@@ -130,39 +130,36 @@ export function Relatorios() {
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] overflow-hidden p-6">
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-          <FiBarChart2 size={24} />
-          Relatórios
-        </h1>
+        <h1 className="text-lg font-semibold text-gray-800">Relatórios</h1>
       </div>
 
       {/* Abas */}
       <div className="flex gap-2 mb-4">
         <button
           onClick={() => setActiveTab('estatisticas')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`h-9 px-4 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'estatisticas'
               ? 'bg-primary-600 text-white'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
-          📊 Estatísticas Avançadas
+          Estatísticas Avançadas
         </button>
         <button
           onClick={() => setActiveTab('filial')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`h-9 px-4 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'filial'
               ? 'bg-primary-600 text-white'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
-          🏢 Por Filial
+          Por Filial
         </button>
       </div>
 
       {/* Aba Estatísticas Avançadas */}
       {activeTab === 'estatisticas' && (
-        <div className="bg-white rounded-xl shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
           {loadingStats ? (
             <div className="flex items-center justify-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>

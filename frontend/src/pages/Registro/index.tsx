@@ -98,14 +98,14 @@ export function Registro() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
-        <div className="bg-primary-600 p-6 text-white text-center">
-          <img src="/logo.png" alt="StokLink" className="h-20 mx-auto mb-2 brightness-0 invert" />
-          <p className="text-primary-100">Cadastre sua empresa</p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 w-full max-w-2xl overflow-hidden">
+        <div className="bg-primary-600 p-4 text-white text-center">
+          <img src="/logo.png" alt="StokLink" className="h-16 mx-auto mb-2 brightness-0 invert" />
+          <p className="text-sm text-primary-100">Cadastre sua empresa</p>
         </div>
 
-        <div className="p-8">
+        <div className="p-6">
           {/* Steps indicator */}
           <div className="flex items-center justify-center mb-8">
             <div className={`flex items-center justify-center w-10 h-10 rounded-full ${step >= 1 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
@@ -118,7 +118,7 @@ export function Registro() {
           </div>
 
           {error && (
-            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6 text-sm">
+            <div className="bg-error-50 text-error-700 px-4 py-3 rounded-md mb-4 text-sm border border-error-200">
               {error}
             </div>
           )}
