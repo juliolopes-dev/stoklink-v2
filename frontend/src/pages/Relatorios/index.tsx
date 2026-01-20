@@ -128,7 +128,7 @@ export function Relatorios() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-2rem)] overflow-hidden p-6">
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h1 className="text-lg font-semibold text-gray-800">Relatórios</h1>
       </div>

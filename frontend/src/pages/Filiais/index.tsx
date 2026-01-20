@@ -149,8 +149,8 @@ export function Filiais() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h1 className="text-lg font-semibold text-gray-800">Filiais</h1>
         {isAdmin && (
           <button
@@ -163,10 +163,10 @@ export function Filiais() {
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow-md border border-gray-200">
-        <div className="p-4 border-b border-gray-200">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
               placeholder="Buscar por nome, código ou cidade..."
@@ -182,7 +182,7 @@ export function Filiais() {
             Nenhuma filial encontrada
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="flex-1 overflow-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">

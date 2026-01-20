@@ -124,43 +124,42 @@ export function Transportadoras() {
   )
 
   return (
-    <div className="flex-1 overflow-auto p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-lg font-semibold text-gray-800">Transportadoras</h1>
-          {canManage && (
-            <button
-              onClick={() => openModal()}
-              className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md text-sm font-medium transition-colors"
-            >
-              <FiPlus size={16} />
-              Nova Transportadora
-            </button>
-          )}
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
+        <h1 className="text-lg font-semibold text-gray-800">Transportadoras</h1>
+        {canManage && (
+          <button
+            onClick={() => openModal()}
+            className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md text-sm font-medium transition-colors"
+          >
+            <FiPlus size={16} />
+            Nova Transportadora
+          </button>
+        )}
+      </div>
+
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="p-4 border-b border-gray-200 flex-shrink-0">
+          <div className="relative">
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Buscar por nome ou CNPJ..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+            />
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
-          <div className="p-4 border-b border-gray-200">
-            <div className="relative">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <input
-                type="text"
-                placeholder="Buscar por nome ou CNPJ..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-              />
-            </div>
+        {loading ? (
+          <div className="p-8 text-center text-gray-500">Carregando...</div>
+        ) : filteredTransportadoras.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            {searchTerm ? 'Nenhuma transportadora encontrada' : 'Nenhuma transportadora cadastrada'}
           </div>
-
-          {loading ? (
-            <div className="p-8 text-center text-gray-500">Carregando...</div>
-          ) : filteredTransportadoras.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              {searchTerm ? 'Nenhuma transportadora encontrada' : 'Nenhuma transportadora cadastrada'}
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
+        ) : (
+          <div className="flex-1 overflow-auto">
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
@@ -245,9 +244,8 @@ export function Transportadoras() {
                   ))}
                 </tbody>
               </table>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {showModal && (

@@ -100,20 +100,20 @@ export function Conferencias() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h1 className="text-lg font-semibold text-gray-800">Conferência de Volumes</h1>
         <span className="text-sm text-gray-500">{notas.length} NF(s) pendente(s)</span>
       </div>
 
       {notas.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-12 text-center">
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-12 text-center flex-1">
           <FiCheckCircle size={48} className="mx-auto text-green-500 mb-4" />
           <h2 className="text-xl font-medium text-gray-800 mb-2">Tudo conferido!</h2>
           <p className="text-gray-500">Não há notas fiscais pendentes de conferência de volumes.</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="flex-1 overflow-auto space-y-4">
           {notas.map((nf) => (
             <div key={nf.id} className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
               {resultado?.id === nf.id && (
