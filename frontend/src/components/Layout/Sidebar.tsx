@@ -98,28 +98,28 @@ export function Sidebar() {
 
   return (
     <>
-    <aside className="w-20 hover:w-64 bg-gray-900 min-h-screen flex flex-col transition-all duration-300 group">
-      <div className="p-4 border-b border-gray-800 overflow-hidden">
-        <h1 className="text-2xl font-bold text-white text-center whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">StokLink</h1>
-        <div className="text-2xl font-bold text-white text-center group-hover:hidden">S</div>
+    <aside className="w-14 hover:w-56 bg-gray-900 min-h-screen flex flex-col transition-all duration-300 group">
+      <div className="p-2 border-b border-gray-800 overflow-hidden">
+        <h1 className="text-lg font-semibold text-white text-center whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">StokLink</h1>
+        <div className="text-lg font-semibold text-white text-center group-hover:hidden">S</div>
       </div>
 
-      <nav className="flex-1 p-4">
-        <ul className="space-y-1">
+      <nav className="flex-1 p-2">
+        <ul className="space-y-0.5">
           {menuItems.map((item) => (
             <li key={item.path}>
               <NavLink
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                  `flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 text-sm ${
                     isActive
-                      ? 'bg-primary-600 text-white shadow-lg'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:shadow-md'
+                      ? 'bg-primary-600 text-white'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`
                 }
                 title={item.label}
               >
-                <item.icon size={20} className="flex-shrink-0" />
+                <item.icon size={18} className="flex-shrink-0" />
                 <span className="whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.label}</span>
               </NavLink>
             </li>
@@ -128,27 +128,27 @@ export function Sidebar() {
 
         {isCompras && (
           <>
-            <div className="mt-8 mb-4 overflow-hidden">
-              <span className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="mt-4 mb-2 overflow-hidden">
+              <span className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 Cadastros
               </span>
-              <div className="border-t border-gray-700 mx-4 group-hover:hidden"></div>
+              <div className="border-t border-gray-700 mx-3 group-hover:hidden"></div>
             </div>
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {comprasMenuItems.map((item) => (
                 <li key={item.path}>
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                      `flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 text-sm ${
                         isActive
-                          ? 'bg-primary-600 text-white shadow-lg'
-                          : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:shadow-md'
+                          ? 'bg-primary-600 text-white'
+                          : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                       }`
                     }
                     title={item.label}
                   >
-                    <item.icon size={20} className="flex-shrink-0" />
+                    <item.icon size={18} className="flex-shrink-0" />
                     <span className="whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.label}</span>
                   </NavLink>
                 </li>
@@ -159,27 +159,27 @@ export function Sidebar() {
 
         {isAdmin && (
           <>
-            <div className="mt-8 mb-4 overflow-hidden">
-              <span className="px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="mt-4 mb-2 overflow-hidden">
+              <span className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 Administração
               </span>
-              <div className="border-t border-gray-700 mx-4 group-hover:hidden"></div>
+              <div className="border-t border-gray-700 mx-3 group-hover:hidden"></div>
             </div>
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {adminMenuItems.map((item) => (
                 <li key={item.path}>
                   <NavLink
                     to={item.path}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+                      `flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200 text-sm ${
                         isActive
-                          ? 'bg-primary-600 text-white shadow-lg'
-                          : 'text-gray-300 hover:bg-gray-800 hover:text-white hover:shadow-md'
+                          ? 'bg-primary-600 text-white'
+                          : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                       }`
                     }
                     title={item.label}
                   >
-                    <item.icon size={20} className="flex-shrink-0" />
+                    <item.icon size={18} className="flex-shrink-0" />
                     <span className="whitespace-nowrap overflow-hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">{item.label}</span>
                   </NavLink>
                 </li>
@@ -189,7 +189,7 @@ export function Sidebar() {
         )}
       </nav>
 
-      <div className="p-4 border-t border-gray-800 space-y-2 overflow-hidden">
+      <div className="p-2 border-t border-gray-800 space-y-1 overflow-hidden">
         <div className="text-gray-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <p className="text-white font-medium text-sm whitespace-nowrap truncate">{user?.nome}</p>
           <p className="text-xs whitespace-nowrap">
