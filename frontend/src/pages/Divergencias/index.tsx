@@ -107,19 +107,19 @@ export function Divergencias() {
     <div className="flex flex-col h-[calc(100vh-2rem)] overflow-hidden p-6">
       {resumo && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 flex-shrink-0">
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <p className="text-sm text-gray-500">Total</p>
-            <p className="text-2xl font-bold text-gray-800">{resumo.total}</p>
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+            <p className="text-xs text-gray-500">Total</p>
+            <p className="text-xl font-semibold text-gray-800">{resumo.total}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <p className="text-sm text-gray-500">Pendentes</p>
-            <p className="text-2xl font-bold text-red-600">{resumo.pendentes}</p>
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+            <p className="text-xs text-gray-500">Pendentes</p>
+            <p className="text-xl font-semibold text-error-600">{resumo.pendentes}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <p className="text-sm text-gray-500">Resolvidas</p>
-            <p className="text-2xl font-bold text-green-600">{resumo.resolvidas}</p>
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+            <p className="text-xs text-gray-500">Resolvidas</p>
+            <p className="text-xl font-semibold text-success-600">{resumo.resolvidas}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
             <p className="text-sm text-gray-500">Por Tipo</p>
             <div className="flex gap-2 mt-1">
               {resumo.porTipo.map(t => (
@@ -133,19 +133,16 @@ export function Divergencias() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
         <div className="p-4 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-              <FiAlertTriangle size={20} />
-              Divergências
-            </h1>
-            <div className="flex items-center gap-4">
-              <FiFilter className="text-gray-400" />
+            <h1 className="text-lg font-semibold text-gray-800">Divergências</h1>
+            <div className="flex items-center gap-2">
+              <FiFilter className="text-gray-400" size={16} />
               <select
                 value={filtroResolvida}
                 onChange={(e) => setFiltroResolvida(e.target.value)}
-                className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="h-9 border border-gray-300 rounded-md px-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               >
                 <option value="">Todas</option>
                 <option value="false">Pendentes</option>
