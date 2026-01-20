@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiPhone, FiMail, FiTruck } from 'react-icons/fi'
+import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiPhone, FiMail } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { useAuth } from '../../contexts/AuthContext'
 import { useModal } from '../../contexts/ModalContext'
@@ -126,26 +126,20 @@ export function Transportadoras() {
   return (
     <div className="flex-1 overflow-auto p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <FiTruck className="text-primary-600" size={32} />
-              Transportadoras
-            </h1>
-            <p className="text-gray-600 mt-1">Gerencie as transportadoras cadastradas</p>
-          </div>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-lg font-semibold text-gray-800">Transportadoras</h1>
           {canManage && (
             <button
               onClick={() => openModal()}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+              className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md text-sm font-medium transition-colors"
             >
-              <FiPlus size={20} />
+              <FiPlus size={16} />
               Nova Transportadora
             </button>
           )}
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 mb-6">
           <div className="p-4 border-b border-gray-200">
             <div className="relative">
               <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -154,7 +148,7 @@ export function Transportadoras() {
                 placeholder="Buscar por nome ou CNPJ..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               />
             </div>
           </div>

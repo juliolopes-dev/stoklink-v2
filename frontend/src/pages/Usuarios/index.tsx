@@ -178,19 +178,19 @@ export function Usuarios() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Usuários</h1>
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-lg font-semibold text-gray-800">Usuários</h1>
         <button
           onClick={() => openModal()}
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg transition-colors"
+          className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md text-sm font-medium transition-colors"
         >
-          <FiPlus size={20} />
+          <FiPlus size={16} />
           Novo Usuário
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200">
         <div className="p-4 border-b border-gray-200">
           <div className="relative">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
@@ -199,7 +199,7 @@ export function Usuarios() {
               placeholder="Buscar por nome, email ou filial..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
             />
           </div>
         </div>
