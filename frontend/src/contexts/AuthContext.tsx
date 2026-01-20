@@ -33,6 +33,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    // Detectar se é um reload da página (F5, Ctrl+R, etc)
+    const isPageReload = performance.navigation.type === 1 || 
+                         performance.getEntriesByType('navigation')[0]?.type === 'reload'
+    
+    if (isPageReload) {
+      // Limpar sessão ao recarregar
+      localStorage.removeItem('@stoklink:token')
+      localStorage.removeItem('@stoklink:user')
+      setUser(null)
+      setIsLoading(false)
+      return
+    }
+
     const token = localStorage.getItem('@stoklink:token')
     const storedUser = localStorage.getItem('@stoklink:user')
 
