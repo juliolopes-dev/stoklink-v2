@@ -110,6 +110,11 @@ export class NotaFiscalService {
       throw new Error('Filial de destino não encontrada')
     }
 
+    // Validar regra de negócio: RECEBIMENTO_DIRETO deve ter mesma filial
+    if (input.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && input.filialRecebimentoId !== input.filialDestinoId) {
+      throw new Error('RECEBIMENTO_DIRETO deve ter a mesma filial de recebimento e destino')
+    }
+
     // Determinar status inicial baseado no tipo de movimentação
     let status: StatusNotaFiscal
     if (input.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && input.filialRecebimentoId === input.filialDestinoId) {
@@ -201,6 +206,11 @@ export class NotaFiscalService {
       if (!filialRecebimento) {
         throw new Error('Filial de recebimento não encontrada')
       }
+    }
+
+    // Validar regra de negócio: RECEBIMENTO_DIRETO deve ter mesma filial
+    if (input.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && input.filialRecebimentoId !== input.filialDestinoId) {
+      throw new Error('RECEBIMENTO_DIRETO deve ter a mesma filial de recebimento e destino')
     }
 
     // Determinar status inicial baseado no tipo de movimentação

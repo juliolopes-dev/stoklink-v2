@@ -61,6 +61,7 @@ export function NovaNotaFiscal() {
 
   // Form XML
   const [xmlFile, setXmlFile] = useState<File | null>(null)
+  const [xmlFilialRecebimentoId, setXmlFilialRecebimentoId] = useState('')
   const [xmlFilialDestinoId, setXmlFilialDestinoId] = useState('')
   const [xmlTipoMovimentacao, setXmlTipoMovimentacao] = useState('RECEBIMENTO_DIRETO')
   const [xmlQuantidadeVolumes, setXmlQuantidadeVolumes] = useState('')
@@ -85,6 +86,7 @@ export function NovaNotaFiscal() {
       if (filiaisRes.data.length > 0) {
         setFilialRecebimentoId(filiaisRes.data[0].id)
         setFilialDestinoId(filiaisRes.data[0].id)
+        setXmlFilialRecebimentoId(filiaisRes.data[0].id)
         setXmlFilialDestinoId(filiaisRes.data[0].id)
       }
     } catch (error) {
@@ -151,6 +153,12 @@ export function NovaNotaFiscal() {
       return
     }
 
+    // Validar RECEBIMENTO_DIRETO
+    if (tipoMovimentacao === 'RECEBIMENTO_DIRETO' && filialRecebimentoId !== filialDestinoId) {
+      setError('RECEBIMENTO_DIRETO deve ter a mesma filial de recebimento e destino')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -192,6 +200,12 @@ export function NovaNotaFiscal() {
       return
     }
 
+    // Validar RECEBIMENTO_DIRETO
+    if (xmlTipoMovimentacao === 'RECEBIMENTO_DIRETO' && xmlFilialRecebimentoId !== xmlFilialDestinoId) {
+      setError('RECEBIMENTO_DIRETO deve ter a mesma filial de recebimento e destino')
+      return
+    }
+
     setError('')
     setLoading(true)
 
@@ -200,6 +214,9 @@ export function NovaNotaFiscal() {
       formData.append('file', xmlFile)
       formData.append('filialDestinoId', xmlFilialDestinoId)
       formData.append('tipoMovimentacao', xmlTipoMovimentacao)
+      if (xmlTipoMovimentacao !== 'RECEBIMENTO_INDIRETO') {
+        formData.append('filialRecebimentoId', xmlFilialRecebimentoId)
+      }
       if (xmlQuantidadeVolumes) {
         formData.append('quantidadeVolumes', xmlQuantidadeVolumes)
       }
@@ -613,7 +630,7 @@ export function NovaNotaFiscal() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
                     Tipo de Movimentação *
@@ -639,16 +656,20 @@ export function NovaNotaFiscal() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Volumes
+                    Filial Recebimento *
                   </label>
-                  <input
-                    type="number"
-                    value={xmlQuantidadeVolumes}
-                    onChange={(e) => setXmlQuantidadeVolumes(e.target.value)}
+                  <select
+                    value={xmlFilialRecebimentoId}
+                    onChange={(e) => setXmlFilialRecebimentoId(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
-                    placeholder="Do XML"
-                    min="1"
-                  />
+                    required
+                  >
+                    {filiais.map(filial => (
+                      <option key={filial.id} value={filial.id}>
+                        {filial.nome}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -666,6 +687,19 @@ export function NovaNotaFiscal() {
                       </option>
                     ))}
                   </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Volumes
+                  </label>
+                  <input
+                    type="number"
+                    value={xmlQuantidadeVolumes}
+                    onChange={(e) => setXmlQuantidadeVolumes(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                    placeholder="Do XML"
+                    min="1"
+                  />
                 </div>
               </div>
 
