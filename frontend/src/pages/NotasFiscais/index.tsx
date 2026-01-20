@@ -171,22 +171,22 @@ export function NotasFiscais() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-2rem)] p-6">
-      <div className="bg-white rounded-xl shadow-sm flex flex-col flex-1 min-h-0">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 flex flex-col flex-1 min-h-0">
         <div className="p-3 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
-            <h1 className="text-lg font-bold text-gray-800">Notas Fiscais</h1>
+            <h1 className="text-lg font-semibold text-gray-800">Notas Fiscais</h1>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => loadNotas(true)}
                 disabled={refreshing}
-                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg transition-colors text-sm disabled:opacity-50"
+                className="h-9 flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 rounded-md transition-colors text-sm disabled:opacity-50"
                 title="Atualizar lista"
               >
                 <FiRefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
               </button>
               <Link
                 to="/notas-fiscais/nova"
-                className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-3 py-1.5 rounded-lg transition-colors text-sm"
+                className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md transition-colors text-sm font-medium"
               >
                 <FiPlus size={16} />
                 Nova NF
@@ -201,7 +201,7 @@ export function NotasFiscais() {
                 placeholder="Buscar por número ou fornecedor..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               />
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -212,7 +212,7 @@ export function NotasFiscais() {
                   type="date"
                   value={dataInicio}
                   onChange={(e) => setDataInicio(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                  className="h-9 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                   title="Data inicial"
                 />
                 <span className="text-gray-400 text-sm">até</span>
@@ -220,14 +220,14 @@ export function NotasFiscais() {
                   type="date"
                   value={dataFim}
                   onChange={(e) => setDataFim(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                  className="h-9 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
                   title="Data final"
                 />
               </div>
               <select
                 value={rpFilter}
                 onChange={(e) => setRpFilter(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                className="h-9 border border-gray-300 rounded-md px-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
               >
                 <option value="">Todos RP</option>
                 <option value="SIM">RP-SIM</option>
@@ -236,7 +236,7 @@ export function NotasFiscais() {
               <select
                 value={bloqueadaFilter}
                 onChange={(e) => setBloqueadaFilter(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                className="h-9 border border-gray-300 rounded-md px-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
               >
                 <option value="">Bloqueio</option>
                 <option value="SIM">Bloqueada</option>
@@ -245,7 +245,7 @@ export function NotasFiscais() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="h-9 border border-gray-300 rounded-md px-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
               >
                 {statusOptions.map(option => (
                   <option key={option.value} value={option.value}>

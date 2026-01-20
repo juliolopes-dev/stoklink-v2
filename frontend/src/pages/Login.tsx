@@ -30,36 +30,36 @@ export function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-600 to-primary-800 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
-        <div className="text-center mb-8">
-          <img src="/logo.png" alt="StokLink" className="h-32 mx-auto mb-4" />
-          <p className="text-gray-500">Controle de Recebimento de Mercadorias</p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 w-full max-w-md p-6">
+        <div className="text-center mb-6">
+          <img src="/logo.png" alt="StokLink" className="h-24 mx-auto mb-4" />
+          <p className="text-sm text-gray-500">Controle de Recebimento de Mercadorias</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {successMessage && (
-            <div className="bg-green-50 text-green-600 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-success-50 text-success-700 px-4 py-3 rounded-md text-sm border border-success-200">
               {successMessage}
             </div>
           )}
           {error && (
-            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm">
+            <div className="bg-error-50 text-error-700 px-4 py-3 rounded-md text-sm border border-error-200">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <div className="relative">
-              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
+                className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 placeholder="seu@email.com"
                 required
               />
@@ -67,16 +67,16 @@ export function Login() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Senha
             </label>
             <div className="relative">
-              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
                 type="password"
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
+                className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 placeholder="••••••••"
                 required
               />
@@ -86,21 +86,21 @@ export function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-9 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-md flex items-center justify-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             ) : (
               <>
-                <FiLogIn size={20} />
+                <FiLogIn size={16} />
                 Entrar
               </>
             )}
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-gray-600">
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-500">
             Não tem uma conta?{' '}
             <Link to="/registro" className="text-primary-600 hover:text-primary-700 font-medium">
               Cadastre sua empresa
