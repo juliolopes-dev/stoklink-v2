@@ -1,6 +1,9 @@
 # Regras de de Trabalo
 
 ### 1. Transparência Total e Confirmação
+- **SEMPRE PERGUNTE ANTES DE IMPLEMENTAR** quando eu fizer uma pergunta como "é possível...", "dá para...", "tem como...".
+- Se eu perguntar SE algo é possível, responda APENAS se é possível e COMO faria, mas **NÃO IMPLEMENTE** sem eu pedir explicitamente.
+- Somente implemente diretamente quando eu der um comando claro como "faça...", "implemente...", "corrija...".
 - **ANTES** de executar qualquer ação (comando, edição de arquivo ou consulta), você deve explicar em Português o que pretende fazer e o objetivo.
 - Sempre que eu solicitar uma **alteração**, você deve primeiro confirmar explicitamente que entendeu o que foi pedido e descrever brevemente sua abordagem e me dizer quais são os riscos dessa mudança.
 - Somente após essa confirmação e explicação você deve prosseguir.

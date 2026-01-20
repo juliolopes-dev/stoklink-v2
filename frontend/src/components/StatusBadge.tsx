@@ -9,46 +9,46 @@ interface StatusBadgeProps {
 const statusConfig: Record<string, { label: string; color: string; defaultTooltip?: string }> = {
   AGUARDANDO_CONFERENCIA: {
     label: 'Aguardando Recebimento',
-    color: 'bg-yellow-100 text-yellow-800',
+    color: 'bg-warning-100 text-warning-700',
     defaultTooltip: 'Aguardando chegada da mercadoria'
   },
   VOLUMES_CONFERIDOS: {
     label: 'Volumes Conferidos',
-    color: 'bg-blue-100 text-blue-800',
+    color: 'bg-info-100 text-info-700',
     defaultTooltip: 'Volumes conferidos, aguardando conferência de itens'
   },
   VOLUMES_DIVERGENTES: {
     label: 'Divergência',
-    color: 'bg-orange-100 text-orange-800',
+    color: 'bg-warning-100 text-warning-700',
     defaultTooltip: 'Divergência em volumes'
   },
   BLOQUEADO: {
     label: 'Bloqueado',
-    color: 'bg-gray-100 text-gray-800'
+    color: 'bg-gray-100 text-gray-700'
   },
   EM_CONFERENCIA: {
     label: 'Em Conferência',
-    color: 'bg-cyan-100 text-cyan-800',
+    color: 'bg-info-100 text-info-700',
     defaultTooltip: 'Conferência de produtos em andamento'
   },
   CONFERIDO_DIVERGENCIA: {
     label: 'Conferido c/ Divergência',
-    color: 'bg-red-100 text-red-800',
+    color: 'bg-error-100 text-error-700',
     defaultTooltip: 'Conferência concluída com divergências em produtos'
   },
   CONFERIDO_OK: {
     label: 'Conferido',
-    color: 'bg-green-100 text-green-800',
+    color: 'bg-success-100 text-success-700',
     defaultTooltip: 'Conferência de volumes e produtos OK'
   },
   PENDENTE_TRANSFERENCIA: {
     label: 'Em Trânsito',
-    color: 'bg-purple-100 text-purple-800',
+    color: 'bg-primary-100 text-primary-700',
     defaultTooltip: 'Volumes conferidos na filial de recebimento - Em trânsito para filial destino'
   },
   AGUARDANDO_CONFERENCIA_DESTINO: {
     label: 'Aguard. Destino',
-    color: 'bg-indigo-100 text-indigo-800',
+    color: 'bg-primary-100 text-primary-700',
     defaultTooltip: 'Volumes conferidos - Aguardando conferência na filial destino'
   }
 }
@@ -69,7 +69,7 @@ export function StatusBadge({ status, tooltip, filialRecebimento }: StatusBadgeP
   }
 
   const badge = (
-    <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 hover:scale-105 hover:shadow-md cursor-default ${config.color}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${config.color}`}>
       {config.label}
     </span>
   )
