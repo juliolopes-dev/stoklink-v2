@@ -117,11 +117,11 @@ export class NotaFiscalService {
 
     // Determinar status inicial baseado no tipo de movimentação
     let status: StatusNotaFiscal
-    if (input.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && input.filialRecebimentoId === input.filialDestinoId) {
-      // NF direta para mesma filial: pronta para conferência
+    if (input.filialRecebimentoId) {
+      // Se tem filial de recebimento definida: aguardando conferência no recebimento
       status = 'AGUARDANDO_CONFERENCIA'
     } else {
-      // NF indireta ou transferência entre filiais: aguardando transferência
+      // Se não tem filial de recebimento: aguardando definição/transferência
       status = 'PENDENTE_TRANSFERENCIA'
     }
 
@@ -215,11 +215,11 @@ export class NotaFiscalService {
 
     // Determinar status inicial baseado no tipo de movimentação
     let status: StatusNotaFiscal
-    if (input.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && input.filialRecebimentoId === input.filialDestinoId) {
-      // NF direta para mesma filial: pronta para conferência
+    if (input.filialRecebimentoId) {
+      // Se tem filial de recebimento definida: aguardando conferência no recebimento
       status = 'AGUARDANDO_CONFERENCIA'
     } else {
-      // NF indireta ou transferência entre filiais: aguardando transferência
+      // Se não tem filial de recebimento: aguardando definição/transferência
       status = 'PENDENTE_TRANSFERENCIA'
     }
 
