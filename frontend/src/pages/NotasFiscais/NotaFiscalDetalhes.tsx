@@ -401,19 +401,19 @@ export function NotaFiscalDetalhes() {
       <div className="flex items-center gap-4 mb-3 flex-shrink-0">
         <button
           onClick={() => navigate('/notas-fiscais')}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
         >
-          <FiArrowLeft size={24} />
+          <FiArrowLeft size={20} />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-gray-800">NF {nota.numero}</h1>
-          <p className="text-gray-500 text-sm">{nota.fornecedorNome}</p>
+          <h1 className="text-lg font-semibold text-gray-800">NF {nota.numero}</h1>
+          <p className="text-gray-500 text-xs">{nota.fornecedorNome}</p>
         </div>
         <div className="ml-auto flex items-center gap-3">
           {(user?.perfil === 'ADMIN' || user?.perfil === 'COMPRAS') && (
             <button
               onClick={handleDelete}
-              className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm transition-colors"
+              className="h-9 flex items-center gap-2 px-4 bg-error-600 hover:bg-error-700 text-white rounded-md text-sm font-medium transition-colors"
               title="Excluir Nota Fiscal"
             >
               <FiTrash2 size={16} />
@@ -422,7 +422,7 @@ export function NotaFiscalDetalhes() {
           )}
           <button
             onClick={openEditModal}
-            className="flex items-center gap-2 px-3 py-1.5 border border-gray-300 hover:bg-gray-50 rounded-lg text-sm transition-colors"
+            className="h-9 flex items-center gap-2 px-4 border border-gray-300 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors"
           >
             <FiEdit2 size={16} />
             Editar
@@ -430,7 +430,7 @@ export function NotaFiscalDetalhes() {
           <button
             onClick={() => toggleBloqueioMercadoria(!nota.mercadoriaBloqueada)}
             disabled={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA'}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+            className={`h-9 flex items-center gap-2 px-4 rounded-md text-sm font-medium transition-colors ${
               nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA'
                 ? 'bg-gray-400 cursor-not-allowed text-white'
                 : nota.mercadoriaBloqueada
@@ -450,7 +450,7 @@ export function NotaFiscalDetalhes() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 flex-1 min-h-0 overflow-hidden">
         <div className="lg:col-span-2 flex flex-col gap-3 min-h-0 overflow-hidden">
-          <div className="bg-white rounded-xl shadow-sm p-3 flex-shrink-0">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3 flex-shrink-0">
             <h2 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
               <FiFileText size={16} />
               Dados da Nota Fiscal
@@ -491,7 +491,7 @@ export function NotaFiscalDetalhes() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-3 flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3 flex-1 flex flex-col min-h-0 overflow-hidden">
             <div className="flex items-center justify-between mb-3 flex-shrink-0 gap-3">
               <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2 flex-shrink-0">
                 <FiPackage size={16} />
@@ -665,7 +665,7 @@ export function NotaFiscalDetalhes() {
         </div>
 
         <div className="flex flex-col gap-3 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-sm p-3 flex-shrink-0">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3 flex-shrink-0">
             <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
               <FiTruck size={16} />
               Movimentação
@@ -694,7 +694,7 @@ export function NotaFiscalDetalhes() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-4 flex-shrink-0">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4 flex-shrink-0">
             <h2 className="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
               <FiCheckCircle size={16} />
               Conferência de Volumes
@@ -893,9 +893,9 @@ export function NotaFiscalDetalhes() {
           </div>
 
           {nota.divergencias.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm p-4 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4 flex-shrink-0">
               <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <FiAlertTriangle className="text-red-500" size={16} />
+                <FiAlertTriangle className="text-error-500" size={16} />
                 Divergências ({nota.divergencias.length})
               </h2>
               <div className="space-y-2">
