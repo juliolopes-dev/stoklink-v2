@@ -222,14 +222,14 @@ export function NovaNotaFiscal() {
       <div className="flex items-center gap-4 mb-3 flex-shrink-0">
         <button
           onClick={() => navigate('/notas-fiscais')}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
         >
-          <FiArrowLeft size={24} />
+          <FiArrowLeft size={20} />
         </button>
-        <h1 className="text-xl font-bold text-gray-800">Nova Nota Fiscal</h1>
+        <h1 className="text-lg font-semibold text-gray-800">Nova Nota Fiscal</h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
         <div className="border-b border-gray-200 flex-shrink-0">
           <div className="flex">
             <button
@@ -259,7 +259,7 @@ export function NovaNotaFiscal() {
 
         <div className="p-3 flex-1 overflow-y-auto">
           {error && (
-            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4">
+            <div className="bg-error-50 text-error-700 px-4 py-3 rounded-md mb-4 text-sm border border-error-200">
               {error}
             </div>
           )}
