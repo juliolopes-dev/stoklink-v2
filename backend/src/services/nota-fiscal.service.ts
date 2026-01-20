@@ -282,7 +282,7 @@ export class NotaFiscalService {
           select: { itens: true, divergencias: true }
         }
       },
-      orderBy: { dataRecebimento: 'desc' }
+      orderBy: { createdAt: 'desc' }
     })
 
     // Mapear para incluir transportadora no nível da nota
