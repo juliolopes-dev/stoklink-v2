@@ -128,6 +128,7 @@ export function NotaFiscalDetalhes() {
     fornecedorSecundarioId: '',
     filialRecebimentoId: '',
     filialDestinoId: '',
+    tipoMovimentacao: '',
     transportadora: '',
     observacoes: ''
   })
@@ -304,6 +305,7 @@ export function NotaFiscalDetalhes() {
         fornecedorSecundarioId: nota?.fornecedorSecundario?.id || '',
         filialRecebimentoId: nota?.filialRecebimento?.id || '',
         filialDestinoId: nota?.filialDestino?.id || '',
+        tipoMovimentacao: nota?.tipoMovimentacao || '',
         transportadora: transportadoraAtual,
         observacoes: nota?.observacoes || ''
       })
@@ -322,6 +324,7 @@ export function NotaFiscalDetalhes() {
         fornecedorSecundarioId: editForm.fornecedorSecundarioId || null,
         filialRecebimentoId: editForm.filialRecebimentoId || null,
         filialDestinoId: editForm.filialDestinoId || null,
+        tipoMovimentacao: editForm.tipoMovimentacao || null,
         transportadora: editForm.transportadora || null,
         observacoes: editForm.observacoes || null
       }
@@ -1002,6 +1005,23 @@ export function NotaFiscalDetalhes() {
                       {f.nome} ({f.codigo})
                     </option>
                   ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">
+                  Tipo de Movimentação *
+                </label>
+                <select
+                  value={editForm.tipoMovimentacao}
+                  onChange={(e) => setEditForm({ ...editForm, tipoMovimentacao: e.target.value })}
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  required
+                >
+                  <option value="">Selecione o tipo</option>
+                  <option value="NORMAL">Normal</option>
+                  <option value="URGENCIA">Urgência</option>
+                  <option value="DISTRIBUICAO_IMEDIATA">Distribuição Imediata</option>
                 </select>
               </div>
 
