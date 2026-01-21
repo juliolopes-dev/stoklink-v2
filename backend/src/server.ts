@@ -7,6 +7,7 @@ const APP_VERSION = '1.2.1'
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
+import multipart from '@fastify/multipart'
 import fastifyStatic from '@fastify/static'
 import path from 'path'
 import { env } from './config/env.js'
@@ -36,6 +37,12 @@ app.register(cors, {
 
 app.register(jwt, {
   secret: env.JWT_SECRET
+})
+
+app.register(multipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB
+  }
 })
 
 // Hook para adicionar header de versão em todas as respostas da API
