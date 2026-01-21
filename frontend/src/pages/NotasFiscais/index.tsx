@@ -162,7 +162,7 @@ export function NotasFiscais() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] p-4 pb-4">
+    <div className="flex flex-col h-[calc(100vh-2rem)] p-4 pb-4">
       <div className="bg-white rounded-lg shadow-md border border-gray-200 flex flex-col flex-1 min-h-0 mb-0">
         <div className="p-3 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between mb-3">
