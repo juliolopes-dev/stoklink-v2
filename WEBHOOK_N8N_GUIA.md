@@ -47,10 +47,26 @@ Você pode configurar de **DUAS FORMAS**:
 
 Adicione no arquivo `.env` do backend:
 
+**Opção A: Uma URL única**
 ```env
 # Webhook n8n - URL ÚNICA para todos os eventos
 WEBHOOK_N8N_URL=https://seu-n8n.com/webhook/stoklink
 ```
+
+**Opção B: Múltiplas URLs (Teste + Produção)**
+```env
+# Webhook n8n - Ambiente de TESTE
+WEBHOOK_N8N_URL_TESTE=https://n8n-n8n.tbs25p.easypanel.host/webhook-test/41d57072-8c26-487c-ba5a-0e751060e8fe
+
+# Webhook n8n - Ambiente de PRODUÇÃO
+WEBHOOK_N8N_URL_PRODUCAO=https://n8n-n8n.tbs25p.easypanel.host/webhook/41d57072-8c26-487c-ba5a-0e751060e8fe
+```
+
+**💡 Como funciona com múltiplas URLs:**
+- ✅ Todos os eventos são enviados para **TODAS** as URLs configuradas
+- ✅ Envio em **paralelo** (não bloqueia)
+- ✅ Se uma URL falhar, as outras continuam funcionando
+- ✅ Perfeito para ter ambiente de teste e produção simultaneamente
 
 #### 3. Workflow n8n com Switch
 
