@@ -67,6 +67,7 @@ export function NovaNotaFiscal() {
   const [loadingPreview, setLoadingPreview] = useState(false)
   const [xmlNumeroSecundario, setXmlNumeroSecundario] = useState('')
   const [xmlFornecedorSecundarioId, setXmlFornecedorSecundarioId] = useState('')
+  const [xmlDanfFile, setXmlDanfFile] = useState<File | null>(null)
   const [fornecedores, setFornecedores] = useState<{ id: string; nome: string; cnpj?: string }[]>([])
 
   useEffect(() => {
@@ -203,6 +204,9 @@ export function NovaNotaFiscal() {
       }
       if (xmlFornecedorSecundarioId) {
         formData.append('fornecedorSecundarioId', xmlFornecedorSecundarioId)
+      }
+      if (xmlDanfFile) {
+        formData.append('danfFile', xmlDanfFile)
       }
       
       await api.post('/notas-fiscais/importar-xml', formData, {
@@ -673,6 +677,23 @@ export function NovaNotaFiscal() {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  DANF da NF Secundária (PDF)
+                </label>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => setXmlDanfFile(e.target.files?.[0] || null)}
+                  className="w-full text-sm border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-medium file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                />
+                {xmlDanfFile && (
+                  <p className="text-xs text-gray-600 mt-1">
+                    {xmlDanfFile.name} ({(xmlDanfFile.size / 1024 / 1024).toFixed(2)} MB)
+                  </p>
+                )}
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t mt-4">

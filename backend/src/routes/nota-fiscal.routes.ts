@@ -86,21 +86,30 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   // Importar XML
   app.post('/notas-fiscais/importar-xml', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
-      const data = await request.file()
-      
-      if (!data) {
-        return reply.status(400).send({ error: 'Arquivo XML é obrigatório' })
-      }
-
-      const xmlBuffer = await data.toBuffer()
-      const xmlContent = xmlBuffer.toString('utf-8')
-
-      // Pegar campos do formulário
+      const parts = request.parts()
+      let xmlContent = ''
+      let danfFile: { filename: string; buffer: Buffer } | null = null
       const fields: Record<string, string> = {}
-      for (const [key, value] of Object.entries(data.fields)) {
-        if (value && typeof value === 'object' && 'value' in value) {
-          fields[key] = (value as { value: string }).value
+
+      // Processar todas as partes do multipart
+      for await (const part of parts) {
+        if (part.type === 'file') {
+          const buffer = await part.toBuffer()
+          if (part.fieldname === 'file') {
+            xmlContent = buffer.toString('utf-8')
+          } else if (part.fieldname === 'danfFile') {
+            danfFile = {
+              filename: part.filename,
+              buffer
+            }
+          }
+        } else {
+          fields[part.fieldname] = part.value as string
         }
+      }
+      
+      if (!xmlContent) {
+        return reply.status(400).send({ error: 'Arquivo XML é obrigatório' })
       }
       
       const params = importarXmlSchema.parse(fields)
@@ -116,6 +125,24 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         numeroSecundario: params.numeroSecundario || undefined,
         fornecedorSecundarioId: params.fornecedorSecundarioId || undefined
       })
+
+      // Se houver arquivo DANF, fazer upload
+      if (danfFile && notaFiscal.id) {
+        const uploadDir = path.join(process.cwd(), 'uploads', 'danf-secundarios')
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true })
+        }
+
+        const uniqueFilename = `${notaFiscal.id}-${Date.now()}.pdf`
+        const filePath = path.join(uploadDir, uniqueFilename)
+        
+        fs.writeFileSync(filePath, danfFile.buffer)
+
+        // Atualizar NF com caminho do DANF
+        await notaFiscalService.update(notaFiscal.id, {
+          danfSecundario: `uploads/danf-secundarios/${uniqueFilename}`
+        })
+      }
 
       return reply.status(201).send(notaFiscal)
     } catch (error) {
