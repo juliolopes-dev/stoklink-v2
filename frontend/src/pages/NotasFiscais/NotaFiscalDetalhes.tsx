@@ -74,6 +74,7 @@ interface NotaFiscalDetalhe {
   tipoMovimentacao: string
   observacoes: string | null
   mercadoriaBloqueada: boolean
+  danfSecundario: string | null
   filialRecebimento: {
     id: string
     nome: string
