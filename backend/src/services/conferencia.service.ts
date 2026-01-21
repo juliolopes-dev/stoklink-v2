@@ -104,7 +104,7 @@ export class ConferenciaService {
           novoStatus = 'AGUARDANDO_CONFERENCIA_DESTINO'
         } else {
           // Recebimento direto (mesma filial) - volumes OK, aguardando conferência de itens
-          novoStatus = 'AGUARDANDO_CONFERENCIA'
+          novoStatus = 'VOLUMES_CONFERIDOS'
         }
       } else {
         novoStatus = 'VOLUMES_DIVERGENTES'
