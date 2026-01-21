@@ -3,6 +3,9 @@ import { z } from 'zod'
 import multipart from '@fastify/multipart'
 import { NotaFiscalService } from '../services/nota-fiscal.service.js'
 import { authMiddleware } from '../middlewares/auth.js'
+import { uploadDanf } from '../config/multer.js'
+import path from 'path'
+import fs from 'fs'
 
 const notaFiscalService = new NotaFiscalService()
 
@@ -357,6 +360,115 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         return reply.status(400).send({ error: error.message })
       }
       return reply.status(500).send({ error: 'Erro ao buscar estatísticas' })
+    }
+  })
+
+  // Upload de DANF secundário
+  app.post('/notas-fiscais/:id/upload-danf-secundario', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
+      
+      const data = await request.file()
+      
+      if (!data) {
+        return reply.status(400).send({ error: 'Nenhum arquivo enviado' })
+      }
+
+      // Validar tipo de arquivo
+      if (data.mimetype !== 'application/pdf') {
+        return reply.status(400).send({ error: 'Apenas arquivos PDF são permitidos' })
+      }
+
+      // Validar tamanho (10MB)
+      const buffer = await data.toBuffer()
+      if (buffer.length > 10 * 1024 * 1024) {
+        return reply.status(400).send({ error: 'Arquivo muito grande. Máximo 10MB' })
+      }
+
+      // Criar diretório se não existir
+      const uploadsDir = path.join(__dirname, '../../uploads/danf-secundarios')
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true })
+      }
+
+      // Gerar nome único do arquivo
+      const timestamp = Date.now()
+      const filename = `${id}-${timestamp}.pdf`
+      const filepath = path.join(uploadsDir, filename)
+
+      // Salvar arquivo
+      fs.writeFileSync(filepath, buffer)
+
+      // Atualizar banco de dados
+      const relativePath = `uploads/danf-secundarios/${filename}`
+      await notaFiscalService.update(id, { danfSecundario: relativePath })
+
+      return reply.send({ 
+        message: 'DANF secundário enviado com sucesso',
+        path: relativePath 
+      })
+    } catch (error) {
+      console.error('Erro ao fazer upload do DANF:', error)
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao fazer upload do DANF' })
+    }
+  })
+
+  // Servir arquivo DANF secundário
+  app.get('/uploads/danf-secundarios/:filename', async (request, reply) => {
+    try {
+      const { filename } = z.object({ filename: z.string() }).parse(request.params)
+      
+      const filepath = path.join(__dirname, '../../uploads/danf-secundarios', filename)
+      
+      if (!fs.existsSync(filepath)) {
+        return reply.status(404).send({ error: 'Arquivo não encontrado' })
+      }
+
+      const stream = fs.createReadStream(filepath)
+      reply.type('application/pdf')
+      return reply.send(stream)
+    } catch (error) {
+      console.error('Erro ao servir DANF:', error)
+      return reply.status(500).send({ error: 'Erro ao carregar arquivo' })
+    }
+  })
+
+  // Deletar DANF secundário
+  app.delete('/notas-fiscais/:id/danf-secundario', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
+      
+      // Buscar NF para pegar caminho do arquivo
+      const nf = await notaFiscalService.findById(id)
+      
+      if (nf.danfSecundario) {
+        const filepath = path.join(__dirname, '../..', nf.danfSecundario)
+        
+        // Deletar arquivo se existir
+        if (fs.existsSync(filepath)) {
+          fs.unlinkSync(filepath)
+        }
+      }
+
+      // Atualizar banco removendo referência
+      await notaFiscalService.update(id, { danfSecundario: null })
+
+      return reply.send({ message: 'DANF secundário removido com sucesso' })
+    } catch (error) {
+      console.error('Erro ao deletar DANF:', error)
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao deletar DANF' })
     }
   })
 }

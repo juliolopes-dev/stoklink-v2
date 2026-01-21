@@ -143,6 +143,10 @@ export function NotaFiscalDetalhes() {
   const [transportadoraSearch, setTransportadoraSearch] = useState('')
   const [showTransportadoraDropdown, setShowTransportadoraDropdown] = useState(false)
   
+  // Upload de DANF secundário
+  const [uploadingDanf, setUploadingDanf] = useState(false)
+  const [danfFile, setDanfFile] = useState<File | null>(null)
+  
   // Conferência de itens inline
   const [conferindoItemId, setConferindoItemId] = useState<string | null>(null)
   const [quantidadeConferida, setQuantidadeConferida] = useState('')
@@ -361,6 +365,54 @@ export function NotaFiscalDetalhes() {
     }
   }
 
+  async function handleUploadDanf() {
+    if (!danfFile) return
+
+    setUploadingDanf(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', danfFile)
+
+      await api.post(`/notas-fiscais/${id}/upload-danf-secundario`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+
+      setDanfFile(null)
+      loadNota()
+      alert('Sucesso', 'DANF secundário enviado com sucesso', 'success')
+    } catch (error) {
+      console.error('Erro ao fazer upload do DANF:', error)
+      const err = error as { response?: { data?: { error?: string } } }
+      alert('Erro', err.response?.data?.error || 'Erro ao fazer upload do DANF', 'error')
+    } finally {
+      setUploadingDanf(false)
+    }
+  }
+
+  async function handleDeleteDanf() {
+    if (!window.confirm('Tem certeza que deseja remover o DANF secundário?')) {
+      return
+    }
+
+    try {
+      await api.delete(`/notas-fiscais/${id}/danf-secundario`)
+      loadNota()
+      alert('Sucesso', 'DANF secundário removido com sucesso', 'success')
+    } catch (error) {
+      console.error('Erro ao deletar DANF:', error)
+      alert('Erro', 'Erro ao remover DANF secundário', 'error')
+    }
+  }
+
+  function handleViewDanf() {
+    if (nota?.danfSecundario) {
+      const url = `${import.meta.env.VITE_API_URL}/${nota.danfSecundario}`
+      window.open(url, '_blank')
+    }
+  }
+
   async function toggleBloqueioMercadoria(bloqueada: boolean) {
     setLoadingBloqueio(true)
     try {
@@ -447,6 +499,16 @@ export function NotaFiscalDetalhes() {
           </p>
         </div>
         <div className="ml-auto flex items-center gap-3">
+          {nota.danfSecundario && (
+            <button
+              onClick={handleViewDanf}
+              className="h-9 flex items-center gap-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium transition-colors"
+              title="Visualizar DANF Secundário"
+            >
+              <FiFileText size={16} />
+              DANF Secundário
+            </button>
+          )}
           {(user?.perfil === 'ADMIN' || user?.perfil === 'COMPRAS') && (
             <button
               onClick={handleDelete}
@@ -1107,6 +1169,65 @@ export function NotaFiscalDetalhes() {
                   rows={2}
                   className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 />
+              </div>
+
+              {/* Upload de DANF Secundário */}
+              <div className="border-t pt-3">
+                <label className="block text-xs font-medium text-gray-700 mb-2">
+                  DANF da NF Secundária
+                </label>
+                
+                {nota?.danfSecundario ? (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleViewDanf}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-xs rounded-lg transition-colors"
+                    >
+                      <FiFileText size={14} />
+                      Ver DANF Atual
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDeleteDanf}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors"
+                    >
+                      <FiTrash2 size={14} />
+                      Remover
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) => setDanfFile(e.target.files?.[0] || null)}
+                      className="w-full text-sm border border-gray-300 rounded-lg file:mr-4 file:py-1.5 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-medium file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                    />
+                    {danfFile && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-600">
+                          {danfFile.name} ({(danfFile.size / 1024 / 1024).toFixed(2)} MB)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleUploadDanf}
+                          disabled={uploadingDanf}
+                          className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition-colors disabled:opacity-50"
+                        >
+                          {uploadingDanf ? 'Enviando...' : 'Enviar'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setDanfFile(null)}
+                          className="px-3 py-1 bg-gray-400 hover:bg-gray-500 text-white text-xs rounded-lg transition-colors"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end gap-3 pt-3">

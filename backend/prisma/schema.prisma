@@ -138,6 +138,7 @@ model NotaFiscal {
   updatedAt              DateTime            @updatedAt @map("updated_at")
   mercadoriaBloqueada    Boolean             @default(true) @map("mercadoria_bloqueada")
   entradaRp              Boolean?            @map("entrada_rp")
+  danfSecundario         String?             @map("danf_secundario")
   conferenciasItens      ConferenciaItem[]
   conferenciasVolumes    ConferenciaVolume[]
   distribuicoes          Distribuicao[]
