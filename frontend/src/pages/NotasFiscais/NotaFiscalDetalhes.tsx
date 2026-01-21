@@ -433,8 +433,18 @@ export function NotaFiscalDetalhes() {
           <FiArrowLeft size={20} />
         </button>
         <div>
-          <h1 className="text-lg font-semibold text-gray-800">NF {nota.numero}</h1>
-          <p className="text-gray-500 text-xs">{nota.fornecedorNome}</p>
+          <h1 className="text-lg font-semibold text-gray-800">
+            NF {nota.numero}
+            {nota.numeroSecundario && (
+              <span className="text-purple-600"> / {nota.numeroSecundario}</span>
+            )}
+          </h1>
+          <p className="text-gray-500 text-xs">
+            {nota.fornecedorNome}
+            {nota.fornecedorSecundario && (
+              <span className="text-purple-600"> / {nota.fornecedorSecundario.nome}</span>
+            )}
+          </p>
         </div>
         <div className="ml-auto flex items-center gap-3">
           {(user?.perfil === 'ADMIN' || user?.perfil === 'COMPRAS') && (
