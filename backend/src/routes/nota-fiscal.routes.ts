@@ -199,6 +199,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         fornecedorSecundarioId: z.string().uuid().optional().nullable(),
         filialRecebimentoId: z.string().uuid().optional().nullable(),
         filialDestinoId: z.string().uuid().optional().nullable(),
+        tipoMovimentacao: z.enum(['NORMAL', 'DISTRIBUICAO_IMEDIATA']).optional().nullable(),
         transportadora: z.string().optional().nullable(),
         observacoes: z.string().optional().nullable(),
         entradaRp: z.boolean().optional().nullable()
@@ -214,6 +215,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       if (body.fornecedorSecundarioId !== undefined) data.fornecedorSecundarioId = body.fornecedorSecundarioId
       if (body.filialRecebimentoId !== undefined) data.filialRecebimentoId = body.filialRecebimentoId
       if (body.filialDestinoId !== undefined) data.filialDestinoId = body.filialDestinoId
+      if (body.tipoMovimentacao !== undefined) data.tipoMovimentacao = body.tipoMovimentacao
       if (body.transportadora !== undefined) data.transportadora = body.transportadora || null
       if (body.observacoes !== undefined) data.observacoes = body.observacoes || null
       if (body.entradaRp !== undefined) data.entradaRp = body.entradaRp
