@@ -43,11 +43,10 @@ interface NotaFiscal {
 
 const statusOptions = [
   { value: '', label: 'Todos os status' },
-  { value: 'AGUARDANDO_CONFERENCIA', label: 'Aguardando Conferência' },
-  { value: 'AGUARDANDO_CONFERENCIA_DESTINO', label: 'Aguardando Conf. Destino' },
   { value: 'PENDENTE_TRANSFERENCIA', label: 'Em Trânsito' },
   { value: 'VOLUMES_CONFERIDOS', label: 'Volumes Conferidos' },
   { value: 'VOLUMES_DIVERGENTES', label: 'Volumes Divergentes' },
+  { value: 'AGUARDANDO_CONFERENCIA_DESTINO', label: 'Aguardando Conf. Destino' },
   { value: 'EM_CONFERENCIA', label: 'Em Conferência' },
   { value: 'CONFERIDO_OK', label: 'Conferido OK' },
   { value: 'CONFERIDO_DIVERGENCIA', label: 'Conferido c/ Divergência' },
@@ -432,40 +431,10 @@ export function NotasFiscais() {
                       <span className="text-xs text-gray-900">{nf.quantidadeVolumes}</span>
                     </td>
                     <td className="px-3 py-2">
-                      <div className="flex flex-col gap-1 items-start">
-                        <StatusBadge 
-                          status={nf.status} 
-                          filialRecebimento={nf.filialRecebimento?.nome}
-                        />
-                        
-                        {/* NF não chegou ainda - Conferência Pendente */}
-                        {nf.status === 'AGUARDANDO_CONFERENCIA' && !nf.filialRecebimento && (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            Conf. pendente
-                          </span>
-                        )}
-                        
-                        {/* NF chegou - Aguardando conferência de volumes */}
-                        {nf.status === 'AGUARDANDO_CONFERENCIA' && nf.filialRecebimento && (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            Conferir volumes
-                          </span>
-                        )}
-                        
-                        {/* NF com volumes conferidos - aguardando conferência de itens */}
-                        {nf.status === 'VOLUMES_CONFERIDOS' && (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                            Conferir itens
-                          </span>
-                        )}
-                        
-                        {/* NF INDIRETA - Chegou no destino, aguardando conferência */}
-                        {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                            Conferir volumes e itens
-                          </span>
-                        )}
-                      </div>
+                      <StatusBadge 
+                        status={nf.status} 
+                        filialRecebimento={nf.filialRecebimento?.nome}
+                      />
                     </td>
                     <td className="px-3 py-2 text-right">
                       <div className="flex items-center justify-end gap-2">

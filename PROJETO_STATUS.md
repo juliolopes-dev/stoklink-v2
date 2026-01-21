@@ -73,66 +73,70 @@
 ## 5. Ponto de Retomada
 **Iniciar por**: Telas de administração (CRUD Filiais e Usuários no frontend)
 
-## 6. Fluxo de Status - NF Direta vs Indireta
+## 6. Fluxo de Status Padronizado - NF Direta vs Indireta
 
-### A) NF INDIRETA (RECEBIMENTO_INDIRETO)
-**Passa por 2 filiais: Filial de Recebimento → Filial Destino**
+### Status Disponíveis (Padronizados):
+1. `PENDENTE_TRANSFERENCIA` - Em trânsito
+2. `VOLUMES_CONFERIDOS` - Volumes conferidos, aguardando conferência de itens
+3. `VOLUMES_DIVERGENTES` - Divergência em volumes
+4. `AGUARDANDO_CONFERENCIA_DESTINO` - Aguardando conferência na filial destino (apenas indireto)
+5. `EM_CONFERENCIA` - Conferência de itens em andamento
+6. `CONFERIDO_OK` - Conferência concluída sem divergências
+7. `CONFERIDO_DIVERGENCIA` - Conferência concluída com divergências
+8. `BLOQUEADO` - NF bloqueada para movimentação
 
-1. **NF Cadastrada - Mercadoria não chegou**
-   - Status: `AGUARDANDO_CONFERENCIA`
+### A) NF DIRETA (Filial Recebimento = Filial Destino)
+**Mercadoria vai direto para filial destino**
+
+1. **Em Trânsito**
+   - Status: `PENDENTE_TRANSFERENCIA`
    - filialRecebimento: null
-   - Badge: "Aguardando Recebimento" (amarelo)
-   - Tag: "Conf. pendente" (cinza)
+   - Badge: "Em Trânsito" (azul)
+   - Botão: "Receber"
 
-2. **Volumes conferidos na Filial de Recebimento**
-   - Status: `VOLUMES_CONFERIDOS` ou `PENDENTE_TRANSFERENCIA`
-   - filialRecebimento: definida
-   - Badge: "Em Trânsito" (roxo)
-   - Tag: "Aguardando chegada no destino" (roxo)
-   - Coluna Recebimento: data/hora da conferência
+2. **Volumes Conferidos**
+   - Status: `VOLUMES_CONFERIDOS`
+   - filialRecebimento: definida (= destino)
+   - Badge: "Volumes Conferidos" (azul claro)
+   - Botão: "Conferir" (laranja)
 
-3. **Chegou na Filial Destino**
-   - Status: `AGUARDANDO_CONFERENCIA_DESTINO`
-   - Badge: "Aguard. Destino" (índigo)
-   - Tag: "Conferir volumes e itens" (índigo)
-
-4. **Conferência Concluída no Destino**
+3. **Conferência Concluída**
    - Status: `CONFERIDO_OK` ou `CONFERIDO_DIVERGENCIA`
    - Badge: "Conferido" ou "Conferido c/ Divergência" (verde/vermelho)
-   - Coluna Destino: data/hora da conferência
 
-### B) NF DIRETA (RECEBIMENTO_DIRETO)
-**Vai direto para filial destino**
+### B) NF INDIRETA (Filial Recebimento ≠ Filial Destino)
+**Passa por 2 filiais: Filial de Recebimento → Filial Destino**
 
-1. **NF Cadastrada - Mercadoria não chegou**
-   - Status: `AGUARDANDO_CONFERENCIA`
+1. **Em Trânsito para Recebimento**
+   - Status: `PENDENTE_TRANSFERENCIA`
    - filialRecebimento: null
-   - Badge: "Aguardando Recebimento" (amarelo)
-   - Tag: "Conf. pendente" (cinza)
+   - Badge: "Em Trânsito" (azul)
+   - Botão: "Receber"
 
-2. **Chegou - Aguardando conferência de volumes**
-   - Status: `AGUARDANDO_CONFERENCIA`
-   - filialRecebimento: definida (= destino)
-   - Badge: "Aguardando Recebimento" (amarelo)
-   - Tag: "Conferir volumes" (azul)
+2. **Aguardando no Destino**
+   - Status: `AGUARDANDO_CONFERENCIA_DESTINO`
+   - filialRecebimento: definida (≠ destino)
+   - Badge: "Aguard. Destino" (roxo)
+   - Botão: "Conferir" (roxo)
 
-3. **Volumes conferidos - Aguardando conferência de itens**
+3. **Volumes Conferidos no Destino**
    - Status: `VOLUMES_CONFERIDOS`
-   - Badge: "Volumes Conferidos" (azul)
-   - Tag: "Conferir itens" (laranja)
+   - Badge: "Volumes Conferidos" (azul claro)
+   - Botão: "Conferir" (laranja)
 
 4. **Conferência Concluída**
    - Status: `CONFERIDO_OK` ou `CONFERIDO_DIVERGENCIA`
    - Badge: "Conferido" ou "Conferido c/ Divergência" (verde/vermelho)
 
 ### Regras Importantes:
+- **Interface Limpa**: Removidas tags complementares redundantes, mantendo apenas badge principal e botões de ação
+- **Fluxo Unificado**: Ambos os tipos começam com `PENDENTE_TRANSFERENCIA` (em trânsito)
 - **Filial Recebimento (NF Indireta)**: Confere APENAS volumes, não itens
 - **Filial Destino**: Confere volumes + itens (ambos os tipos de NF)
-- **Diferenciação**: Campo `tipoMovimentacao` determina o fluxo
 - **Bloqueio de Mercadoria**: Só pode ser desbloqueada após status `CONFERIDO_OK` ou `CONFERIDO_DIVERGENCIA`
 
 ## 7. Contexto Técnico Completo
-Sistema StokLink para controle de recebimento de mercadorias entre filiais. Backend 100% funcional com: Autenticação JWT, CRUD Filiais/Usuários, Importação XML NF-e, Cadastro manual NF, Conferência de Volumes/Itens com atualização automática de status, Registro de Divergências, Distribuição entre filiais. Usuários: Admin e Conferente. Status NF: AGUARDANDO_CONFERENCIA, VOLUMES_CONFERIDOS, VOLUMES_DIVERGENTES, BLOQUEADO, EM_CONFERENCIA, CONFERIDO_DIVERGENCIA, CONFERIDO_OK, PENDENTE_TRANSFERENCIA, AGUARDANDO_CONFERENCIA_DESTINO. Credenciais teste: admin@stoklink.com/admin123, conferente@stoklink.com/conferente123. PostgreSQL em 147.93.144.135:4154/stoklink-v2. Backend porta 3333, frontend porta 5173.
+Sistema StokLink para controle de recebimento de mercadorias entre filiais. Backend 100% funcional com: Autenticação JWT, CRUD Filiais/Usuários, Importação XML NF-e, Cadastro manual NF, Conferência de Volumes/Itens com atualização automática de status, Registro de Divergências, Distribuição entre filiais. Usuários: Admin e Conferente. Status NF (Padronizados): PENDENTE_TRANSFERENCIA, VOLUMES_CONFERIDOS, VOLUMES_DIVERGENTES, AGUARDANDO_CONFERENCIA_DESTINO, EM_CONFERENCIA, CONFERIDO_OK, CONFERIDO_DIVERGENCIA, BLOQUEADO. Credenciais teste: admin@stoklink.com/admin123, conferente@stoklink.com/conferente123. PostgreSQL em 147.93.144.135:4154/stoklink-v2. Backend porta 3333, frontend porta 5173.
 
 ## 8. Endpoints da API
 

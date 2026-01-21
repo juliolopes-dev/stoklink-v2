@@ -7,10 +7,10 @@ interface StatusBadgeProps {
 }
 
 const statusConfig: Record<string, { label: string; color: string; defaultTooltip?: string }> = {
-  AGUARDANDO_CONFERENCIA: {
-    label: 'Aguardando Recebimento',
-    color: 'bg-warning-100 text-warning-700',
-    defaultTooltip: 'Aguardando chegada da mercadoria'
+  PENDENTE_TRANSFERENCIA: {
+    label: 'Em Trânsito',
+    color: 'bg-primary-100 text-primary-700',
+    defaultTooltip: 'Mercadoria em trânsito'
   },
   VOLUMES_CONFERIDOS: {
     label: 'Volumes Conferidos',
@@ -18,38 +18,34 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
     defaultTooltip: 'Volumes conferidos, aguardando conferência de itens'
   },
   VOLUMES_DIVERGENTES: {
-    label: 'Divergência',
+    label: 'Divergência em Volumes',
     color: 'bg-warning-100 text-warning-700',
-    defaultTooltip: 'Divergência em volumes'
+    defaultTooltip: 'Divergência identificada na conferência de volumes'
   },
-  BLOQUEADO: {
-    label: 'Bloqueado',
-    color: 'bg-gray-100 text-gray-700'
+  AGUARDANDO_CONFERENCIA_DESTINO: {
+    label: 'Aguard. Destino',
+    color: 'bg-purple-100 text-purple-700',
+    defaultTooltip: 'Aguardando conferência na filial destino'
   },
   EM_CONFERENCIA: {
     label: 'Em Conferência',
     color: 'bg-info-100 text-info-700',
-    defaultTooltip: 'Conferência de produtos em andamento'
-  },
-  CONFERIDO_DIVERGENCIA: {
-    label: 'Conferido c/ Divergência',
-    color: 'bg-error-100 text-error-700',
-    defaultTooltip: 'Conferência concluída com divergências em produtos'
+    defaultTooltip: 'Conferência de itens em andamento'
   },
   CONFERIDO_OK: {
     label: 'Conferido',
     color: 'bg-success-100 text-success-700',
-    defaultTooltip: 'Conferência de volumes e produtos OK'
+    defaultTooltip: 'Conferência concluída sem divergências'
   },
-  PENDENTE_TRANSFERENCIA: {
-    label: 'Em Trânsito',
-    color: 'bg-primary-100 text-primary-700',
-    defaultTooltip: 'Volumes conferidos na filial de recebimento - Em trânsito para filial destino'
+  CONFERIDO_DIVERGENCIA: {
+    label: 'Conferido c/ Divergência',
+    color: 'bg-error-100 text-error-700',
+    defaultTooltip: 'Conferência concluída com divergências'
   },
-  AGUARDANDO_CONFERENCIA_DESTINO: {
-    label: 'Aguard. Destino',
-    color: 'bg-primary-100 text-primary-700',
-    defaultTooltip: 'Volumes conferidos - Aguardando conferência na filial destino'
+  BLOQUEADO: {
+    label: 'Bloqueado',
+    color: 'bg-gray-100 text-gray-700',
+    defaultTooltip: 'NF bloqueada para movimentação'
   }
 }
 

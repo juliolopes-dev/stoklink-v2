@@ -2,7 +2,7 @@ import { prisma } from '../lib/prisma.js'
 import { XmlParserService } from './xml-parser.service.js'
 import { fornecedorService } from './fornecedor.service.js'
 
-type StatusNotaFiscal = 'AGUARDANDO_CONFERENCIA' | 'PENDENTE_TRANSFERENCIA' | 'EM_CONFERENCIA' | 'VOLUMES_DIVERGENTES' | 'VOLUMES_CONFERIDOS' | 'BLOQUEADO' | 'CONFERIDO_DIVERGENCIA' | 'CONFERIDO_OK' | 'CONFERIDA' | 'FINALIZADA'
+type StatusNotaFiscal = 'PENDENTE_TRANSFERENCIA' | 'VOLUMES_CONFERIDOS' | 'VOLUMES_DIVERGENTES' | 'AGUARDANDO_CONFERENCIA_DESTINO' | 'EM_CONFERENCIA' | 'CONFERIDO_OK' | 'CONFERIDO_DIVERGENCIA' | 'BLOQUEADO'
 type TipoMovimentacao = 'NORMAL' | 'DISTRIBUICAO_IMEDIATA'
 
 interface ImportarXmlInput {
@@ -721,7 +721,7 @@ export class NotaFiscalService {
     // Estatísticas gerais
     const totalNotas = notas.length
     const notasConferidas = notas.filter(n => n.status === 'CONFERIDO_OK' || n.status === 'CONFERIDO_DIVERGENCIA').length
-    const notasPendentes = notas.filter(n => n.status === 'AGUARDANDO_CONFERENCIA' || n.status === 'AGUARDANDO_CONFERENCIA_DESTINO').length
+    const notasPendentes = notas.filter(n => n.status === 'PENDENTE_TRANSFERENCIA' || n.status === 'AGUARDANDO_CONFERENCIA_DESTINO' || n.status === 'VOLUMES_CONFERIDOS').length
 
     return {
       geral: {
