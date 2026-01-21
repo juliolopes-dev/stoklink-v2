@@ -19,6 +19,7 @@
     "@fastify/static": "^7.0.4",
     "@prisma/client": "^5.7.1",
     "@types/multer": "^2.0.0",
+    "axios": "^1.13.2",
     "bcryptjs": "^2.4.3",
     "dotenv": "^17.2.3",
     "fast-xml-parser": "^4.3.2",
