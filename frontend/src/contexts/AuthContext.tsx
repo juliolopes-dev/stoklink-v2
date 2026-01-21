@@ -34,8 +34,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     // Detectar se é um reload da página (F5, Ctrl+R, etc)
+    const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
     const isPageReload = performance.navigation.type === 1 || 
-                         performance.getEntriesByType('navigation')[0]?.type === 'reload'
+                         navigationEntry?.type === 'reload'
     
     if (isPageReload) {
       // Limpar sessão ao recarregar
