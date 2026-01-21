@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { FiPlus, FiEye, FiFilter, FiSearch, FiPackage, FiRefreshCw, FiCalendar } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Tooltip } from '../../components/Tooltip'
 import { useToast } from '../../contexts/ToastContext'
+import { useAuth } from '../../contexts/AuthContext'
 
 interface NotaFiscal {
   id: string
@@ -63,7 +64,31 @@ export function NotasFiscais() {
   const [refreshing, setRefreshing] = useState(false)
   const [dataFiltro, setDataFiltro] = useState('')
   const [bloqueadaFilter, setBloqueadaFilter] = useState('')
+  const [filialDestinoFilter, setFilialDestinoFilter] = useState('')
+  const [filiais, setFiliais] = useState<{ id: string; nome: string; codigo: string }[]>([])
+  const dateInputRef = useRef<HTMLInputElement>(null)
   const { showSuccess, showError } = useToast()
+  const { user } = useAuth()
+
+  // Pré-selecionar filial do usuário logado
+  useEffect(() => {
+    if (user?.filial) {
+      setFilialDestinoFilter(user.filial.id)
+    }
+  }, [user])
+
+  useEffect(() => {
+    loadFiliais()
+  }, [])
+
+  async function loadFiliais() {
+    try {
+      const response = await api.get('/filiais/ativas')
+      setFiliais(response.data)
+    } catch (error) {
+      console.error('Erro ao carregar filiais:', error)
+    }
+  }
 
   useEffect(() => {
     loadNotas()
@@ -123,6 +148,11 @@ export function NotasFiscais() {
     if (dataFiltro && nf.dataEmissao) {
       const nfDate = new Date(nf.dataEmissao).toISOString().split('T')[0]
       if (nfDate !== dataFiltro) return false
+    }
+
+    // Filtro por filial de destino
+    if (filialDestinoFilter && nf.filialDestino.id !== filialDestinoFilter) {
+      return false
     }
 
     // Filtro por mercadoria bloqueada
@@ -200,15 +230,15 @@ export function NotasFiscais() {
               <FiFilter className="text-gray-400" size={18} />
               <div className="relative">
                 <input
+                  ref={dateInputRef}
                   type="date"
-                  id="date-filter"
                   value={dataFiltro}
                   onChange={(e) => setDataFiltro(e.target.value)}
                   className="absolute opacity-0 pointer-events-none"
                 />
                 <button
                   type="button"
-                  onClick={() => document.getElementById('date-filter')?.click()}
+                  onClick={() => dateInputRef.current?.showPicker()}
                   className={`h-9 flex items-center gap-2 px-3 border rounded-md text-sm transition-colors ${
                     dataFiltro 
                       ? 'border-primary-500 bg-primary-50 text-primary-700' 
@@ -233,6 +263,18 @@ export function NotasFiscais() {
                   </button>
                 )}
               </div>
+              <select
+                value={filialDestinoFilter}
+                onChange={(e) => setFilialDestinoFilter(e.target.value)}
+                className="h-9 border border-gray-300 rounded-md px-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+              >
+                <option value="">Todas as Filiais</option>
+                {filiais.map(filial => (
+                  <option key={filial.id} value={filial.id}>
+                    {filial.nome}
+                  </option>
+                ))}
+              </select>
               <select
                 value={rpFilter}
                 onChange={(e) => setRpFilter(e.target.value)}
