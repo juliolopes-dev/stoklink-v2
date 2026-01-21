@@ -61,8 +61,8 @@ export function NotasFiscais() {
   const [searchTerm, setSearchTerm] = useState('')
   const [updating, setUpdating] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
-  const [dataInicio, setDataInicio] = useState('')
-  const [dataFim, setDataFim] = useState('')
+  const [dataFiltro, setDataFiltro] = useState('')
+  const [showDatePicker, setShowDatePicker] = useState(false)
   const [bloqueadaFilter, setBloqueadaFilter] = useState('')
   const { showSuccess, showError } = useToast()
 
@@ -121,16 +121,9 @@ export function NotasFiscais() {
     }
 
     // Filtro por data
-    if (dataInicio && nf.dataEmissao) {
-      const nfDate = new Date(nf.dataEmissao)
-      const startDate = new Date(dataInicio)
-      if (nfDate < startDate) return false
-    }
-    if (dataFim && nf.dataEmissao) {
-      const nfDate = new Date(nf.dataEmissao)
-      const endDate = new Date(dataFim)
-      endDate.setHours(23, 59, 59, 999)
-      if (nfDate > endDate) return false
+    if (dataFiltro && nf.dataEmissao) {
+      const nfDate = new Date(nf.dataEmissao).toISOString().split('T')[0]
+      if (nfDate !== dataFiltro) return false
     }
 
     // Filtro por mercadoria bloqueada
@@ -205,24 +198,46 @@ export function NotasFiscais() {
               />
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <FiFilter className="text-gray-400" size={20} />
-              <div className="flex items-center gap-1">
-                <FiCalendar className="text-gray-400" size={16} />
-                <input
-                  type="date"
-                  value={dataInicio}
-                  onChange={(e) => setDataInicio(e.target.value)}
-                  className="h-9 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
-                  title="Data inicial"
-                />
-                <span className="text-gray-400 text-sm">até</span>
-                <input
-                  type="date"
-                  value={dataFim}
-                  onChange={(e) => setDataFim(e.target.value)}
-                  className="h-9 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
-                  title="Data final"
-                />
+              <FiFilter className="text-gray-400" size={18} />
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowDatePicker(!showDatePicker)}
+                  className={`h-9 flex items-center gap-2 px-3 border rounded-md text-sm transition-colors ${
+                    dataFiltro 
+                      ? 'border-primary-500 bg-primary-50 text-primary-700' 
+                      : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                  }`}
+                  title="Filtrar por data"
+                >
+                  <FiCalendar size={16} />
+                  {dataFiltro ? new Date(dataFiltro + 'T12:00:00').toLocaleDateString('pt-BR') : 'Data'}
+                </button>
+                {showDatePicker && (
+                  <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-3 z-50">
+                    <input
+                      type="date"
+                      value={dataFiltro}
+                      onChange={(e) => {
+                        setDataFiltro(e.target.value)
+                        setShowDatePicker(false)
+                      }}
+                      className="h-9 border border-gray-300 rounded-md px-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    />
+                    {dataFiltro && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setDataFiltro('')
+                          setShowDatePicker(false)
+                        }}
+                        className="mt-2 w-full h-8 text-xs text-gray-500 hover:text-error-600 transition-colors"
+                      >
+                        Limpar filtro
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
               <select
                 value={rpFilter}
