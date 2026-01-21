@@ -12,6 +12,7 @@ import {
 } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
+import { Loading } from '../../components/Loading'
 import { useModal } from '../../contexts/ModalContext'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -120,6 +121,12 @@ export function NotaFiscalDetalhes() {
   const [filiaisDisponiveis, setFiliaisDisponiveis] = useState<FilialOption[]>([])
   const [transportadoras, setTransportadoras] = useState<Array<{ id: string; nome: string }>>([])
   
+  // Estados de loading para ações
+  const [loadingConferencia, setLoadingConferencia] = useState(false)
+  const [loadingItem, setLoadingItem] = useState(false)
+  const [loadingBloqueio, setLoadingBloqueio] = useState(false)
+  const [loadingDelete, setLoadingDelete] = useState(false)
+  
   // Modal de edição
   const [showEditModal, setShowEditModal] = useState(false)
   const [fornecedores, setFornecedores] = useState<FornecedorOption[]>([])
@@ -192,6 +199,7 @@ export function NotaFiscalDetalhes() {
       return
     }
 
+    setLoadingConferencia(true)
     try {
       await api.post(`/notas-fiscais/${id}/conferencia-volumes`, {
         volumesRecebidos: parseInt(volumesRecebidos),
@@ -204,6 +212,8 @@ export function NotaFiscalDetalhes() {
       loadNota()
     } catch (error) {
       console.error('Erro ao conferir volumes:', error)
+    } finally {
+      setLoadingConferencia(false)
     }
   }
 
@@ -225,6 +235,7 @@ export function NotaFiscalDetalhes() {
   async function handleConferirVolumesDestino() {
     if (!volumesRecebidos) return
 
+    setLoadingConferencia(true)
     try {
       await api.post(`/notas-fiscais/${id}/conferencia-volumes`, {
         volumesRecebidos: parseInt(volumesRecebidos),
@@ -235,12 +246,15 @@ export function NotaFiscalDetalhes() {
       loadNota()
     } catch (error) {
       console.error('Erro ao conferir volumes no destino:', error)
+    } finally {
+      setLoadingConferencia(false)
     }
   }
 
   async function handleConferirItem(itemId: string) {
     if (!quantidadeConferida) return
 
+    setLoadingItem(true)
     try {
       await api.post(`/notas-fiscais/${id}/itens/${itemId}/conferir`, {
         quantidadeConferida: parseFloat(quantidadeConferida)
@@ -250,6 +264,8 @@ export function NotaFiscalDetalhes() {
       loadNota()
     } catch (error) {
       console.error('Erro ao conferir item:', error)
+    } finally {
+      setLoadingItem(false)
     }
   }
 
@@ -270,6 +286,7 @@ export function NotaFiscalDetalhes() {
   }
 
   async function handleConfirmarTodos() {
+    setLoadingItem(true)
     try {
       await api.post(`/notas-fiscais/${id}/itens/conferir-todos`, { quantidades: quantidadesLote })
       setModoConferenciaLote(false)
@@ -277,6 +294,8 @@ export function NotaFiscalDetalhes() {
       loadNota()
     } catch (error) {
       console.error('Erro ao conferir todos os itens:', error)
+    } finally {
+      setLoadingItem(false)
     }
   }
 
@@ -343,13 +362,15 @@ export function NotaFiscalDetalhes() {
   }
 
   async function toggleBloqueioMercadoria(bloqueada: boolean) {
+    setLoadingBloqueio(true)
     try {
       await api.patch(`/notas-fiscais/${id}/mercadoria-bloqueada`, { bloqueada })
       loadNota()
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Erro ao alterar bloqueio:', error)
-      const err = error as { response?: { data?: { error?: string } } }
-      alert('Erro', err.response?.data?.error || 'Erro ao alterar bloqueio da mercadoria', 'error')
+      alert('Erro', 'Erro ao alterar bloqueio da mercadoria', 'error')
+    } finally {
+      setLoadingBloqueio(false)
     }
   }
 
@@ -358,13 +379,15 @@ export function NotaFiscalDetalhes() {
       return
     }
 
+    setLoadingDelete(true)
     try {
       await api.delete(`/notas-fiscais/${id}`)
       navigate('/notas-fiscais')
-    } catch (error: unknown) {
-      console.error('Erro ao excluir NF:', error)
-      const err = error as { response?: { data?: { error?: string } } }
-      alert('Erro', err.response?.data?.error || 'Erro ao excluir nota fiscal', 'error')
+    } catch (error) {
+      console.error('Erro ao excluir nota fiscal:', error)
+      alert('Erro', 'Erro ao excluir nota fiscal', 'error')
+    } finally {
+      setLoadingDelete(false)
     }
   }
 
@@ -388,11 +411,7 @@ export function NotaFiscalDetalhes() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
-    )
+    return <Loading size="lg" text="Carregando nota fiscal..." fullScreen />
   }
 
   if (!nota) return null
@@ -1224,6 +1243,22 @@ export function NotaFiscalDetalhes() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Loading Fullscreen para ações assíncronas */}
+      {(loadingConferencia || loadingItem || loadingBloqueio || loadingDelete || saving) && (
+        <Loading 
+          size="lg" 
+          text={
+            loadingConferencia ? 'Processando conferência...' :
+            loadingItem ? 'Conferindo itens...' :
+            loadingBloqueio ? 'Alterando bloqueio...' :
+            loadingDelete ? 'Excluindo nota fiscal...' :
+            saving ? 'Salvando alterações...' :
+            'Processando...'
+          }
+          fullScreen 
+        />
       )}
     </div>
   )
