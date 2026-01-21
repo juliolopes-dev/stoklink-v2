@@ -41,13 +41,14 @@ const createNotaFiscalSchema = z.object({
 
 const listFiltersSchema = z.object({
   status: z.enum([
-    'AGUARDANDO_CONFERENCIA',
+    'PENDENTE_TRANSFERENCIA',
     'VOLUMES_CONFERIDOS',
     'VOLUMES_DIVERGENTES',
-    'BLOQUEADO',
-    'CONFERIDO_DIVERGENCIA',
+    'AGUARDANDO_CONFERENCIA_DESTINO',
+    'EM_CONFERENCIA',
     'CONFERIDO_OK',
-    'PENDENTE_TRANSFERENCIA'
+    'CONFERIDO_DIVERGENCIA',
+    'BLOQUEADO'
   ]).optional(),
   filialRecebimentoId: z.string().uuid().optional(),
   filialDestinoId: z.string().uuid().optional(),
