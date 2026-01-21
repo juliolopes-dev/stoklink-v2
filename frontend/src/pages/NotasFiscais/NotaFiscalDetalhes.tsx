@@ -132,6 +132,8 @@ export function NotaFiscalDetalhes() {
     observacoes: ''
   })
   const [saving, setSaving] = useState(false)
+  const [transportadoraSearch, setTransportadoraSearch] = useState('')
+  const [showTransportadoraDropdown, setShowTransportadoraDropdown] = useState(false)
   
   // Conferência de itens inline
   const [conferindoItemId, setConferindoItemId] = useState<string | null>(null)
@@ -282,14 +284,16 @@ export function NotaFiscalDetalhes() {
     setQuantidadesLote({})
   }
 
-  async function openEditModal() {
+  async function abrirModalEdicao() {
     try {
-      const [fornecedoresRes, filiaisRes] = await Promise.all([
+      const [fornecedoresRes, filiaisRes, transportadorasRes] = await Promise.all([
         api.get('/fornecedores/ativos'),
-        api.get('/filiais/ativas')
+        api.get('/filiais/ativas'),
+        api.get('/transportadoras?ativos=true')
       ])
       setFornecedores(fornecedoresRes.data)
       setFiliaisDisponiveis(filiaisRes.data)
+      setTransportadoras(transportadorasRes.data)
       
       // Buscar transportadora da primeira conferência (recebimento)
       const primeiraConferencia = nota?.conferenciasVolumes?.[0]
@@ -303,6 +307,7 @@ export function NotaFiscalDetalhes() {
         transportadora: transportadoraAtual,
         observacoes: nota?.observacoes || ''
       })
+      setTransportadoraSearch(transportadoraAtual)
       setShowEditModal(true)
     } catch (error) {
       console.error('Erro ao carregar dados:', error)
@@ -421,7 +426,7 @@ export function NotaFiscalDetalhes() {
             </button>
           )}
           <button
-            onClick={openEditModal}
+            onClick={abrirModalEdicao}
             className="h-9 flex items-center gap-2 px-4 border border-gray-300 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors"
           >
             <FiEdit2 size={16} />
@@ -1000,17 +1005,47 @@ export function NotaFiscalDetalhes() {
                 </select>
               </div>
 
-              <div>
+              <div className="relative">
                 <label className="block text-xs font-medium text-gray-700 mb-1">
                   Transportadora
                 </label>
                 <input
                   type="text"
-                  value={editForm.transportadora}
-                  onChange={(e) => setEditForm({ ...editForm, transportadora: e.target.value })}
+                  value={transportadoraSearch}
+                  onChange={(e) => {
+                    setTransportadoraSearch(e.target.value)
+                    setEditForm({ ...editForm, transportadora: e.target.value })
+                    setShowTransportadoraDropdown(true)
+                  }}
+                  onFocus={() => setShowTransportadoraDropdown(true)}
                   className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                  placeholder="Nome da transportadora"
+                  placeholder="Digite para buscar ou selecionar"
                 />
+                {showTransportadoraDropdown && transportadoras.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {transportadoras
+                      .filter(t => t.nome.toLowerCase().includes(transportadoraSearch.toLowerCase()))
+                      .map((t) => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => {
+                            setTransportadoraSearch(t.nome)
+                            setEditForm({ ...editForm, transportadora: t.nome })
+                            setShowTransportadoraDropdown(false)
+                          }}
+                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors"
+                        >
+                          {t.nome}
+                        </button>
+                      ))}
+                    {transportadoras.filter(t => t.nome.toLowerCase().includes(transportadoraSearch.toLowerCase())).length === 0 && (
+                      <div className="px-3 py-2 text-sm text-gray-500">
+                        Nenhuma transportadora encontrada
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div>
