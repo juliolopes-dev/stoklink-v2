@@ -480,7 +480,7 @@ export function NotasFiscais() {
                         {!nf.filialRecebimento && (
                           <Link
                             to={`/notas-fiscais/${nf.id}`}
-                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-sm rounded-lg transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs rounded-lg transition-colors"
                           >
                             <FiPackage size={14} />
                             <span>Receber</span>
@@ -490,20 +490,20 @@ export function NotasFiscais() {
                         {nf.status === 'AGUARDANDO_CONFERENCIA_DESTINO' && (
                           <Link
                             to={`/notas-fiscais/${nf.id}`}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded-lg transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded-lg transition-colors"
                           >
-                            <FiPackage size={12} />
-                            <span>Conferir</span>
+                            <FiPackage size={14} />
+                            <span>Conferir Itens</span>
                           </Link>
                         )}
                         {/* Botão Conferência de Itens */}
                         {nf.filialRecebimento && ['VOLUMES_CONFERIDOS', 'PENDENTE_TRANSFERENCIA'].includes(nf.status) && (
                           <Link
                             to={`/notas-fiscais/${nf.id}`}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors"
+                            className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors"
                           >
-                            <FiPackage size={12} />
-                            <span>Conferir</span>
+                            <FiPackage size={14} />
+                            <span>Conferir Itens</span>
                           </Link>
                         )}
                         <Link
