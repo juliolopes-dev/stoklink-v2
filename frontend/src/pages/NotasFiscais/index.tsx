@@ -62,7 +62,6 @@ export function NotasFiscais() {
   const [updating, setUpdating] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [dataFiltro, setDataFiltro] = useState('')
-  const [showDatePicker, setShowDatePicker] = useState(false)
   const [bloqueadaFilter, setBloqueadaFilter] = useState('')
   const { showSuccess, showError } = useToast()
 
@@ -200,9 +199,16 @@ export function NotasFiscais() {
             <div className="flex items-center gap-2 flex-wrap">
               <FiFilter className="text-gray-400" size={18} />
               <div className="relative">
+                <input
+                  type="date"
+                  id="date-filter"
+                  value={dataFiltro}
+                  onChange={(e) => setDataFiltro(e.target.value)}
+                  className="absolute opacity-0 pointer-events-none"
+                />
                 <button
                   type="button"
-                  onClick={() => setShowDatePicker(!showDatePicker)}
+                  onClick={() => document.getElementById('date-filter')?.click()}
                   className={`h-9 flex items-center gap-2 px-3 border rounded-md text-sm transition-colors ${
                     dataFiltro 
                       ? 'border-primary-500 bg-primary-50 text-primary-700' 
@@ -213,30 +219,18 @@ export function NotasFiscais() {
                   <FiCalendar size={16} />
                   {dataFiltro ? new Date(dataFiltro + 'T12:00:00').toLocaleDateString('pt-BR') : 'Data'}
                 </button>
-                {showDatePicker && (
-                  <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-3 z-50">
-                    <input
-                      type="date"
-                      value={dataFiltro}
-                      onChange={(e) => {
-                        setDataFiltro(e.target.value)
-                        setShowDatePicker(false)
-                      }}
-                      className="h-9 border border-gray-300 rounded-md px-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                    />
-                    {dataFiltro && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDataFiltro('')
-                          setShowDatePicker(false)
-                        }}
-                        className="mt-2 w-full h-8 text-xs text-gray-500 hover:text-error-600 transition-colors"
-                      >
-                        Limpar filtro
-                      </button>
-                    )}
-                  </div>
+                {dataFiltro && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setDataFiltro('')
+                    }}
+                    className="absolute -top-2 -right-2 w-5 h-5 bg-error-500 hover:bg-error-600 text-white rounded-full flex items-center justify-center text-xs transition-colors"
+                    title="Limpar filtro"
+                  >
+                    ×
+                  </button>
                 )}
               </div>
               <select
