@@ -1020,7 +1020,6 @@ export function NotaFiscalDetalhes() {
                 >
                   <option value="">Selecione o tipo</option>
                   <option value="NORMAL">Normal</option>
-                  <option value="URGENCIA">Urgência</option>
                   <option value="DISTRIBUICAO_IMEDIATA">Distribuição Imediata</option>
                 </select>
               </div>
