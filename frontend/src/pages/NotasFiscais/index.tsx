@@ -364,8 +364,12 @@ export function NotasFiscais() {
                             </Tooltip>
                           )}
                           {nf.tipoMovimentacao === 'DISTRIBUICAO_IMEDIATA' && (
-                            <span className="px-2 py-0.5 bg-orange-500 text-white text-xs font-semibold rounded shadow-sm animate-pulse">
-                              ⚡ DISTRIBUIÇÃO IMEDIATA
+                            <span className="relative px-2 py-0.5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold rounded shadow-lg animate-pulse">
+                              <span className="absolute inset-0 bg-orange-400 rounded animate-ping opacity-75"></span>
+                              <span className="relative flex items-center gap-1">
+                                <span className="animate-bounce">⚡</span>
+                                DISTRIBUIÇÃO IMEDIATA
+                              </span>
                             </span>
                           )}
                         </div>
