@@ -1,9 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
-import multipart from '@fastify/multipart'
 import { NotaFiscalService } from '../services/nota-fiscal.service.js'
 import { authMiddleware } from '../middlewares/auth.js'
-import { uploadDanf } from '../config/multer.js'
 import path from 'path'
 import fs from 'fs'
 
