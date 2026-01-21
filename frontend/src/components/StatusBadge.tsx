@@ -33,9 +33,9 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
     defaultTooltip: 'Conferência de itens em andamento'
   },
   CONFERIDO_OK: {
-    label: 'Conferido',
+    label: 'Processo Finalizado',
     color: 'bg-success-100 text-success-700',
-    defaultTooltip: 'Conferência concluída sem divergências'
+    defaultTooltip: 'Conferência concluída - Processo finalizado'
   },
   CONFERIDO_DIVERGENCIA: {
     label: 'Conferido c/ Divergência',
