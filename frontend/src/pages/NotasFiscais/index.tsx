@@ -452,17 +452,10 @@ export function NotasFiscais() {
                           </span>
                         )}
                         
-                        {/* NF DIRETA - Volumes conferidos, aguardando conferência de itens */}
-                        {nf.tipoMovimentacao === 'RECEBIMENTO_DIRETO' && nf.status === 'VOLUMES_CONFERIDOS' && (
+                        {/* NF com volumes conferidos - aguardando conferência de itens */}
+                        {nf.status === 'VOLUMES_CONFERIDOS' && (
                           <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                             Conferir itens
-                          </span>
-                        )}
-                        
-                        {/* NF INDIRETA - Em trânsito para filial destino */}
-                        {nf.tipoMovimentacao === 'RECEBIMENTO_INDIRETO' && ['VOLUMES_CONFERIDOS', 'PENDENTE_TRANSFERENCIA'].includes(nf.status) && (
-                          <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            Aguardando chegada no destino
                           </span>
                         )}
                         
@@ -493,7 +486,7 @@ export function NotasFiscais() {
                             className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded-lg transition-colors"
                           >
                             <FiPackage size={14} />
-                            <span>Conferir Itens</span>
+                            <span>Conferir</span>
                           </Link>
                         )}
                         {/* Botão Conferência de Itens */}
@@ -503,7 +496,7 @@ export function NotasFiscais() {
                             className="inline-flex items-center gap-1 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg transition-colors"
                           >
                             <FiPackage size={14} />
-                            <span>Conferir Itens</span>
+                            <span>Conferir</span>
                           </Link>
                         )}
                         <Link
