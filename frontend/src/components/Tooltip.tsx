@@ -80,13 +80,13 @@ export function Tooltip({ children, content, position = 'top' }: TooltipProps) {
         {children}
       </span>
       {show && createPortal(
-        <span 
+        <div 
           style={getTooltipStyle()}
-          className="px-3 py-2 bg-gray-900 text-white text-xs rounded-md shadow-xl pointer-events-none"
+          className="px-3 py-2 bg-gray-900 text-white text-xs rounded-md shadow-xl pointer-events-none max-w-sm"
         >
-          <span className="whitespace-nowrap max-w-xs inline-block">{content}</span>
+          <span className="block">{content}</span>
           <span className={`absolute border-4 ${arrowClasses[position]}`}></span>
-        </span>,
+        </div>,
         document.body
       )}
     </>
