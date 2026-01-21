@@ -60,14 +60,7 @@ const idParamSchema = z.object({
 })
 
 export async function notaFiscalRoutes(app: FastifyInstance) {
-  // Registrar plugin multipart para upload de arquivos
-  await app.register(multipart, {
-    limits: {
-      fileSize: 10 * 1024 * 1024 // 10MB
-    }
-  })
-
-  // Preview XML (extrai dados sem salvar)
+  // Importar XML de NF-extrai dados sem salvar)
   app.post('/notas-fiscais/preview-xml', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
       const data = await request.file()
