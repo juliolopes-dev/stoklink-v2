@@ -132,6 +132,7 @@ export function NotasFiscais() {
       const matchSearch = nf.numero.toLowerCase().includes(search) ||
         nf.numeroSecundario?.toLowerCase().includes(search) ||
         nf.fornecedorNome.toLowerCase().includes(search) ||
+        nf.fornecedorSecundario?.nome.toLowerCase().includes(search) ||
         nf.transportadora?.toLowerCase().includes(search)
       if (!matchSearch) return false
     }
