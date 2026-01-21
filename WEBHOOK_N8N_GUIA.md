@@ -21,22 +21,76 @@ Ação na Aplicação → Backend envia dados → Webhook n8n → Automação
 
 ## 🔧 Configuração
 
-### 1. Criar Webhook no n8n
+Você pode configurar de **DUAS FORMAS**:
+
+---
+
+### ⭐ **OPÇÃO 1: URL ÚNICA (RECOMENDADO - MAIS SIMPLES)**
+
+**Vantagens:**
+- ✅ Apenas 1 webhook no n8n
+- ✅ Mais fácil de configurar
+- ✅ Mais fácil de gerenciar
+- ✅ Todos os eventos vão para o mesmo lugar
+
+#### 1. Criar Webhook no n8n
 
 1. Abra seu n8n
 2. Crie um novo workflow
 3. Adicione um nó **Webhook**
 4. Configure:
    - **Method**: POST
-   - **Path**: `/nota-criada` (ou qualquer nome)
-5. Copie a URL gerada (exemplo: `https://seu-n8n.com/webhook/nota-criada`)
+   - **Path**: `/stoklink` (ou qualquer nome)
+5. Copie a URL gerada (exemplo: `https://seu-n8n.com/webhook/stoklink`)
 
-### 2. Configurar Variáveis de Ambiente
+#### 2. Configurar Variável de Ambiente
 
 Adicione no arquivo `.env` do backend:
 
 ```env
-# Webhooks n8n
+# Webhook n8n - URL ÚNICA para todos os eventos
+WEBHOOK_N8N_URL=https://seu-n8n.com/webhook/stoklink
+```
+
+#### 3. Workflow n8n com Switch
+
+No n8n, adicione um nó **Switch** após o Webhook para direcionar cada evento:
+
+```
+Webhook → Switch (por evento) → Ações específicas
+```
+
+**Switch configuração:**
+- Modo: Rules
+- Regras:
+  - `{{$json.evento}}` = `nota_criada` → Rota 1
+  - `{{$json.evento}}` = `nota_conferida` → Rota 2
+  - `{{$json.evento}}` = `nota_bloqueada` → Rota 3
+  - etc.
+
+---
+
+### 🔀 **OPÇÃO 2: URLs SEPARADAS (MAIS ORGANIZADO)**
+
+**Vantagens:**
+- ✅ Workflows separados no n8n
+- ✅ Mais organizado para automações complexas
+- ✅ Fácil de desativar eventos específicos
+
+#### 1. Criar Webhooks no n8n
+
+Crie um webhook para cada evento que você quer monitorar:
+- `/nota-criada`
+- `/nota-conferida`
+- `/nota-bloqueada`
+- etc.
+
+#### 2. Configurar Variáveis de Ambiente
+
+Adicione no arquivo `.env` do backend:
+
+```env
+# Webhooks n8n - URLs separadas por evento
 WEBHOOK_N8N_NOTA_CRIADA=https://seu-n8n.com/webhook/nota-criada
 WEBHOOK_N8N_NOTA_CONFERIDA=https://seu-n8n.com/webhook/nota-conferida
 WEBHOOK_N8N_NOTA_BLOQUEADA=https://seu-n8n.com/webhook/nota-bloqueada
@@ -45,6 +99,19 @@ WEBHOOK_N8N_NOTA_EXCLUIDA=https://seu-n8n.com/webhook/nota-excluida
 ```
 
 **Importante:** Reinicie o backend após adicionar as variáveis.
+
+---
+
+### 🎯 **Qual Escolher?**
+
+| Critério | URL Única | URLs Separadas |
+|----------|-----------|----------------|
+| **Simplicidade** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Fácil configurar** | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| **Organização n8n** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+| **Workflows complexos** | ⭐⭐⭐ | ⭐⭐⭐⭐⭐ |
+
+**Recomendação:** Comece com **URL ÚNICA**. Se precisar de workflows muito complexos, migre para URLs separadas depois.
 
 ---
 
@@ -168,6 +235,27 @@ O webhook envia um JSON com a seguinte estrutura:
 ---
 
 ## 🎨 Exemplos de Workflows n8n
+
+### 📌 **Workflow com URL ÚNICA + Switch**
+
+```
+Webhook (recebe todos) 
+  → Switch (identifica evento)
+      → Rota 1: nota_criada → Slack
+      → Rota 2: nota_conferida → Email
+      → Rota 3: nota_bloqueada → WhatsApp
+      → Rota 4: divergencia_detectada → Criar Ticket
+```
+
+**Configuração do Switch:**
+- Campo: `{{$json.evento}}`
+- Regras:
+  - Se = `nota_criada` → Saída 0
+  - Se = `nota_conferida` → Saída 1
+  - Se = `nota_bloqueada` → Saída 2
+  - Se = `divergencia_detectada` → Saída 3
+
+---
 
 ### 1. Notificar no Slack quando NF for criada
 
