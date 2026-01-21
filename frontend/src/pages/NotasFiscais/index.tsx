@@ -364,11 +364,10 @@ export function NotasFiscais() {
                               <span className="text-xs text-purple-600">/ {nf.numeroSecundario}</span>
                             </Tooltip>
                           )}
-                          {nf.tipoMovimentacao === 'DISTRIBUICAO_URGENTE' && (
-                            <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-md shadow-sm">📦 Distribuição Imediata</span>
-                          )}
-                          {(nf.tipoMovimentacao === 'RECEBIMENTO_DIRETO' || nf.tipoMovimentacao === 'RECEBIMENTO_INDIRETO') && (
-                            <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded-md shadow-sm">✓ Fluxo Normal</span>
+                          {nf.tipoMovimentacao === 'DISTRIBUICAO_IMEDIATA' && (
+                            <span className="px-2 py-0.5 bg-orange-500 text-white text-xs font-semibold rounded shadow-sm animate-pulse">
+                              ⚡ DISTRIBUIÇÃO IMEDIATA
+                            </span>
                           )}
                         </div>
                         <Tooltip content={nf.fornecedorNome}>
