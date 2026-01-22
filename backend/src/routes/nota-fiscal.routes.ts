@@ -155,15 +155,19 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
 
       // Se houver arquivo TXT de itens secundários, processar e salvar
       if (txtFile && notaFiscal.id) {
+        console.log(`📄 Processando arquivo TXT: ${txtFile.filename}`)
         const txtContent = txtFile.buffer.toString('latin1') // Encoding para arquivos Windows
+        console.log(`📝 Tamanho do conteúdo: ${txtContent.length} caracteres`)
         
         // Validar TXT
         const validacao = validarTxtSecundario(txtContent)
+        console.log(`✅ Validação do TXT:`, validacao)
         if (!validacao.valido) {
           console.warn(`⚠️ TXT inválido: ${validacao.erro}`)
         } else {
           // Parsear itens do TXT
           const itensSecundarios = parseTxtSecundario(txtContent)
+          console.log(`📦 Itens encontrados no TXT: ${itensSecundarios.length}`)
           
           if (itensSecundarios.length > 0) {
             // Salvar TXT no disco
