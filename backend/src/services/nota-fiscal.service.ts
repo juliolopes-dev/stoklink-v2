@@ -267,8 +267,8 @@ export class NotaFiscalService {
     if (hasSearchTerm) {
       const search = filters.searchTerm!.toLowerCase()
       where.OR = [
-        { numero: { contains: search, mode: 'insensitive' } },
-        { numeroSecundario: { contains: search, mode: 'insensitive' } },
+        { numero: { startsWith: search, mode: 'insensitive' } },
+        { numeroSecundario: { startsWith: search, mode: 'insensitive' } },
         { fornecedorNome: { contains: search, mode: 'insensitive' } },
         { chaveAcesso: { contains: search, mode: 'insensitive' } }
       ]
