@@ -285,6 +285,18 @@ class WebhookService {
       notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
     }, usuarioId)
   }
+
+  async mercadoriaBloqueadaOuLiberada(notaFiscalId: string, bloqueada: boolean, usuarioId?: string) {
+    const nf = await this.buscarDadosNotaFiscal(notaFiscalId)
+    if (!nf) return
+
+    const evento = bloqueada ? 'mercadoria_bloqueada' : 'mercadoria_liberada'
+    await this.trigger(evento, {
+      acao: bloqueada ? 'BLOQUEIO' : 'LIBERACAO',
+      mercadoriaBloqueada: bloqueada,
+      notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
+    }, usuarioId)
+  }
 }
 
 export const webhookService = new WebhookService()

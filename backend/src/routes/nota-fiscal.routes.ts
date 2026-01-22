@@ -369,13 +369,14 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   app.patch('/notas-fiscais/:id/mercadoria-bloqueada', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
       const { id } = idParamSchema.parse(request.params)
+      const usuarioId = (request as any).user?.id
       
       const bodySchema = z.object({
         bloqueada: z.boolean()
       })
       const { bloqueada } = bodySchema.parse(request.body)
       
-      const notaFiscal = await notaFiscalService.toggleBloqueioMercadoria(id, bloqueada)
+      const notaFiscal = await notaFiscalService.toggleBloqueioMercadoria(id, bloqueada, usuarioId)
       return reply.send(notaFiscal)
     } catch (error) {
       if (error instanceof z.ZodError) {

@@ -1,6 +1,7 @@
 import { prisma } from '../lib/prisma.js'
 import { XmlParserService } from './xml-parser.service.js'
 import { fornecedorService } from './fornecedor.service.js'
+import { webhookService } from './webhook.service.js'
 
 type StatusNotaFiscal = 'PENDENTE_TRANSFERENCIA' | 'VOLUMES_CONFERIDOS' | 'VOLUMES_DIVERGENTES' | 'AGUARDANDO_CONFERENCIA_DESTINO' | 'EM_CONFERENCIA' | 'CONFERIDO_OK' | 'CONFERIDO_DIVERGENCIA' | 'BLOQUEADO'
 type TipoMovimentacao = 'NORMAL' | 'DISTRIBUICAO_IMEDIATA'
@@ -622,7 +623,7 @@ export class NotaFiscalService {
     })
   }
 
-  async toggleBloqueioMercadoria(id: string, bloqueada: boolean) {
+  async toggleBloqueioMercadoria(id: string, bloqueada: boolean, usuarioId?: string) {
     const notaFiscal = await prisma.notaFiscal.findUnique({
       where: { id }
     })
@@ -636,7 +637,7 @@ export class NotaFiscalService {
       throw new Error('A mercadoria só pode ser desbloqueada após a conclusão de todo o fluxo de conferência')
     }
 
-    return prisma.notaFiscal.update({
+    const result = await prisma.notaFiscal.update({
       where: { id },
       data: { mercadoriaBloqueada: bloqueada } as any,
       include: {
@@ -652,6 +653,11 @@ export class NotaFiscalService {
         }
       }
     })
+
+    // Disparar webhook de bloqueio/liberação de mercadoria
+    await webhookService.mercadoriaBloqueadaOuLiberada(id, bloqueada, usuarioId)
+
+    return result
   }
 
   async getByFilialRecebimento(filialId: string) {
