@@ -122,6 +122,41 @@ class WebhookService {
     }
   }
 
+  // Método auxiliar para montar objeto padrão da NF (sempre completo)
+  private montarDadosNotaFiscalPadrao(nf: NonNullable<Awaited<ReturnType<typeof this.buscarDadosNotaFiscal>>>) {
+    return {
+      id: nf.id,
+      numero: nf.numero,
+      numeroSecundario: nf.numeroSecundario,
+      chaveAcesso: nf.chaveAcesso,
+      fornecedor: {
+        nome: nf.fornecedorNome,
+        cnpj: nf.fornecedorCnpj
+      },
+      fornecedorSecundario: nf.fornecedorSecundario ? {
+        id: nf.fornecedorSecundario.id,
+        nome: nf.fornecedorSecundario.nome,
+        cnpj: nf.fornecedorSecundario.cnpj
+      } : null,
+      filialDestino: nf.filialDestino ? {
+        id: nf.filialDestino.id,
+        nome: nf.filialDestino.nome,
+        codigo: nf.filialDestino.codigo
+      } : null,
+      filialRecebimento: nf.filialRecebimento ? {
+        id: nf.filialRecebimento.id,
+        nome: nf.filialRecebimento.nome,
+        codigo: nf.filialRecebimento.codigo
+      } : null,
+      dataEmissao: nf.dataEmissao,
+      valorTotal: nf.valorTotal,
+      quantidadeVolumes: nf.quantidadeVolumes,
+      tipoMovimentacao: nf.tipoMovimentacao,
+      status: nf.status,
+      observacoes: nf.observacoes
+    }
+  }
+
   async trigger(evento: string, dados: Record<string, unknown>, usuarioId?: string, usuario?: { id: string; nome: string; email: string }) {
     // Se foi passado apenas o ID, buscar dados completos do usuário
     let usuarioCompleto = usuario
@@ -187,37 +222,7 @@ class WebhookService {
 
     await this.trigger('nota_criada', {
       ...dadosAdicionais,
-      notaFiscal: {
-        id: nf.id,
-        numero: nf.numero,
-        numeroSecundario: nf.numeroSecundario,
-        chaveAcesso: nf.chaveAcesso,
-        fornecedor: {
-          nome: nf.fornecedorNome,
-          cnpj: nf.fornecedorCnpj
-        },
-        fornecedorSecundario: nf.fornecedorSecundario ? {
-          id: nf.fornecedorSecundario.id,
-          nome: nf.fornecedorSecundario.nome,
-          cnpj: nf.fornecedorSecundario.cnpj
-        } : null,
-        filialDestino: nf.filialDestino ? {
-          id: nf.filialDestino.id,
-          nome: nf.filialDestino.nome,
-          codigo: nf.filialDestino.codigo
-        } : null,
-        filialRecebimento: nf.filialRecebimento ? {
-          id: nf.filialRecebimento.id,
-          nome: nf.filialRecebimento.nome,
-          codigo: nf.filialRecebimento.codigo
-        } : null,
-        dataEmissao: nf.dataEmissao,
-        valorTotal: nf.valorTotal,
-        quantidadeVolumes: nf.quantidadeVolumes,
-        tipoMovimentacao: nf.tipoMovimentacao,
-        status: nf.status,
-        observacoes: nf.observacoes
-      }
+      notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
     }, usuarioId)
   }
 
@@ -227,32 +232,7 @@ class WebhookService {
 
     await this.trigger('nota_alterada', {
       ...dadosAdicionais,
-      notaFiscal: {
-        id: nf.id,
-        numero: nf.numero,
-        numeroSecundario: nf.numeroSecundario,
-        fornecedor: {
-          nome: nf.fornecedorNome,
-          cnpj: nf.fornecedorCnpj
-        },
-        fornecedorSecundario: nf.fornecedorSecundario ? {
-          id: nf.fornecedorSecundario.id,
-          nome: nf.fornecedorSecundario.nome,
-          cnpj: nf.fornecedorSecundario.cnpj
-        } : null,
-        filialDestino: nf.filialDestino ? {
-          id: nf.filialDestino.id,
-          nome: nf.filialDestino.nome,
-          codigo: nf.filialDestino.codigo
-        } : null,
-        filialRecebimento: nf.filialRecebimento ? {
-          id: nf.filialRecebimento.id,
-          nome: nf.filialRecebimento.nome,
-          codigo: nf.filialRecebimento.codigo
-        } : null,
-        quantidadeVolumes: nf.quantidadeVolumes,
-        status: nf.status
-      }
+      notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
     }, usuarioId)
   }
 
@@ -262,31 +242,7 @@ class WebhookService {
 
     await this.trigger('nota_excluida', {
       ...dadosAdicionais,
-      notaFiscal: {
-        id: nf.id,
-        numero: nf.numero,
-        numeroSecundario: nf.numeroSecundario,
-        fornecedor: {
-          nome: nf.fornecedorNome,
-          cnpj: nf.fornecedorCnpj
-        },
-        fornecedorSecundario: nf.fornecedorSecundario ? {
-          id: nf.fornecedorSecundario.id,
-          nome: nf.fornecedorSecundario.nome,
-          cnpj: nf.fornecedorSecundario.cnpj
-        } : null,
-        filialDestino: nf.filialDestino ? {
-          id: nf.filialDestino.id,
-          nome: nf.filialDestino.nome,
-          codigo: nf.filialDestino.codigo
-        } : null,
-        filialRecebimento: nf.filialRecebimento ? {
-          id: nf.filialRecebimento.id,
-          nome: nf.filialRecebimento.nome,
-          codigo: nf.filialRecebimento.codigo
-        } : null,
-        quantidadeVolumes: nf.quantidadeVolumes
-      }
+      notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
     }, usuarioId)
   }
 
@@ -296,32 +252,7 @@ class WebhookService {
 
     await this.trigger('conferencia_volumes', {
       ...dadosConferencia,
-      notaFiscal: {
-        id: nf.id,
-        numero: nf.numero,
-        numeroSecundario: nf.numeroSecundario,
-        fornecedor: {
-          nome: nf.fornecedorNome,
-          cnpj: nf.fornecedorCnpj
-        },
-        fornecedorSecundario: nf.fornecedorSecundario ? {
-          id: nf.fornecedorSecundario.id,
-          nome: nf.fornecedorSecundario.nome,
-          cnpj: nf.fornecedorSecundario.cnpj
-        } : null,
-        filialDestino: nf.filialDestino ? {
-          id: nf.filialDestino.id,
-          nome: nf.filialDestino.nome,
-          codigo: nf.filialDestino.codigo
-        } : null,
-        filialRecebimento: nf.filialRecebimento ? {
-          id: nf.filialRecebimento.id,
-          nome: nf.filialRecebimento.nome,
-          codigo: nf.filialRecebimento.codigo
-        } : null,
-        quantidadeVolumes: nf.quantidadeVolumes,
-        status: nf.status
-      }
+      notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
     }, usuarioId)
   }
 
@@ -331,32 +262,7 @@ class WebhookService {
 
     await this.trigger('conferencia_itens', {
       ...dadosConferencia,
-      notaFiscal: {
-        id: nf.id,
-        numero: nf.numero,
-        numeroSecundario: nf.numeroSecundario,
-        fornecedor: {
-          nome: nf.fornecedorNome,
-          cnpj: nf.fornecedorCnpj
-        },
-        fornecedorSecundario: nf.fornecedorSecundario ? {
-          id: nf.fornecedorSecundario.id,
-          nome: nf.fornecedorSecundario.nome,
-          cnpj: nf.fornecedorSecundario.cnpj
-        } : null,
-        filialDestino: nf.filialDestino ? {
-          id: nf.filialDestino.id,
-          nome: nf.filialDestino.nome,
-          codigo: nf.filialDestino.codigo
-        } : null,
-        filialRecebimento: nf.filialRecebimento ? {
-          id: nf.filialRecebimento.id,
-          nome: nf.filialRecebimento.nome,
-          codigo: nf.filialRecebimento.codigo
-        } : null,
-        quantidadeVolumes: nf.quantidadeVolumes,
-        status: nf.status
-      }
+      notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
     }, usuarioId)
   }
 
@@ -366,26 +272,7 @@ class WebhookService {
 
     await this.trigger('nota_bloqueada', {
       ...dadosAdicionais,
-      notaFiscal: {
-        id: nf.id,
-        numero: nf.numero,
-        fornecedor: {
-          nome: nf.fornecedorNome,
-          cnpj: nf.fornecedorCnpj
-        },
-        filialDestino: nf.filialDestino ? {
-          id: nf.filialDestino.id,
-          nome: nf.filialDestino.nome,
-          codigo: nf.filialDestino.codigo
-        } : null,
-        filialRecebimento: nf.filialRecebimento ? {
-          id: nf.filialRecebimento.id,
-          nome: nf.filialRecebimento.nome,
-          codigo: nf.filialRecebimento.codigo
-        } : null,
-        quantidadeVolumes: nf.quantidadeVolumes,
-        status: nf.status
-      }
+      notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
     }, usuarioId)
   }
 
@@ -395,26 +282,7 @@ class WebhookService {
 
     await this.trigger('divergencia_detectada', {
       ...dadosDivergencia,
-      notaFiscal: {
-        id: nf.id,
-        numero: nf.numero,
-        fornecedor: {
-          nome: nf.fornecedorNome,
-          cnpj: nf.fornecedorCnpj
-        },
-        filialDestino: nf.filialDestino ? {
-          id: nf.filialDestino.id,
-          nome: nf.filialDestino.nome,
-          codigo: nf.filialDestino.codigo
-        } : null,
-        filialRecebimento: nf.filialRecebimento ? {
-          id: nf.filialRecebimento.id,
-          nome: nf.filialRecebimento.nome,
-          codigo: nf.filialRecebimento.codigo
-        } : null,
-        quantidadeVolumes: nf.quantidadeVolumes,
-        status: nf.status
-      }
+      notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
     }, usuarioId)
   }
 }
