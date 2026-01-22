@@ -263,14 +263,12 @@ export class NotaFiscalService {
       }
     }
 
-    // Adicionar busca por número, fornecedor ou chave de acesso
+    // Adicionar busca por número exato ou fornecedor
     if (hasSearchTerm) {
       const search = filters.searchTerm!.trim()
       where.OR = [
         { numero: search },
-        { numeroSecundario: search },
-        { fornecedorNome: { contains: search, mode: 'insensitive' } },
-        { chaveAcesso: { contains: search, mode: 'insensitive' } }
+        { numeroSecundario: search }
       ]
     }
 
