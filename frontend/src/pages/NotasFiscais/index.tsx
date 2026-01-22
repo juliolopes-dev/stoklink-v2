@@ -140,8 +140,8 @@ export function NotasFiscais() {
       if (nfDate !== dataFiltro) return false
     }
 
-    // Filtro por filial de destino
-    if (filialDestinoFilter && nf.filialDestino.id !== filialDestinoFilter) {
+    // Filtro por filial de destino - IGNORAR quando houver busca por número
+    if (filialDestinoFilter && !searchTerm && nf.filialDestino.id !== filialDestinoFilter) {
       return false
     }
 
