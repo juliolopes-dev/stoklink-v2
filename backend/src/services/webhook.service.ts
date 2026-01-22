@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { prisma } from '../lib/prisma.js'
 
 interface WebhookPayload {
   evento: string
@@ -61,12 +62,78 @@ class WebhookService {
     }
   }
 
-  async trigger(evento: string, dados: Record<string, unknown>, usuario?: { id: string; nome: string; email: string }) {
+  private async buscarUsuario(usuarioId: string): Promise<{ id: string; nome: string; email: string } | undefined> {
+    try {
+      const usuario = await prisma.usuario.findUnique({
+        where: { id: usuarioId },
+        select: { id: true, nome: true, email: true }
+      })
+      return usuario || undefined
+    } catch (error) {
+      console.error('Erro ao buscar usuário para webhook:', error)
+      return undefined
+    }
+  }
+
+  private async buscarDadosNotaFiscal(notaFiscalId: string) {
+    try {
+      const nf = await prisma.notaFiscal.findUnique({
+        where: { id: notaFiscalId },
+        select: {
+          id: true,
+          numero: true,
+          numeroSecundario: true,
+          chaveAcesso: true,
+          fornecedorNome: true,
+          fornecedorCnpj: true,
+          dataEmissao: true,
+          valorTotal: true,
+          quantidadeVolumes: true,
+          tipoMovimentacao: true,
+          status: true,
+          observacoes: true,
+          fornecedorSecundario: {
+            select: {
+              id: true,
+              nome: true,
+              cnpj: true
+            }
+          },
+          filialDestino: {
+            select: {
+              id: true,
+              nome: true,
+              codigo: true
+            }
+          },
+          filialRecebimento: {
+            select: {
+              id: true,
+              nome: true,
+              codigo: true
+            }
+          }
+        }
+      })
+      return nf
+    } catch (error) {
+      console.error('Erro ao buscar dados da nota fiscal para webhook:', error)
+      return null
+    }
+  }
+
+  async trigger(evento: string, dados: Record<string, unknown>, usuarioId?: string, usuario?: { id: string; nome: string; email: string }) {
+    // Se foi passado apenas o ID, buscar dados completos do usuário
+    let usuarioCompleto = usuario
+    if (usuarioId && !usuario) {
+      usuarioCompleto = await this.buscarUsuario(usuarioId)
+    }
+
     const payload: WebhookPayload = {
       evento,
       timestamp: new Date().toISOString(),
       dados,
-      usuario
+      usuario: usuarioCompleto
     }
 
     // Se houver URLs únicas, enviar para todas elas
@@ -114,24 +181,236 @@ class WebhookService {
   }
 
   // Métodos específicos para eventos comuns
-  async notaFiscalCriada(notaFiscal: Record<string, unknown>, usuario?: { id: string; nome: string; email: string }) {
-    await this.trigger('nota_criada', notaFiscal, usuario)
+  async notaFiscalCriada(notaFiscalId: string, dadosAdicionais: Record<string, unknown>, usuarioId?: string) {
+    const nf = await this.buscarDadosNotaFiscal(notaFiscalId)
+    if (!nf) return
+
+    await this.trigger('nota_criada', {
+      ...dadosAdicionais,
+      notaFiscal: {
+        id: nf.id,
+        numero: nf.numero,
+        numeroSecundario: nf.numeroSecundario,
+        chaveAcesso: nf.chaveAcesso,
+        fornecedor: {
+          nome: nf.fornecedorNome,
+          cnpj: nf.fornecedorCnpj
+        },
+        fornecedorSecundario: nf.fornecedorSecundario ? {
+          id: nf.fornecedorSecundario.id,
+          nome: nf.fornecedorSecundario.nome,
+          cnpj: nf.fornecedorSecundario.cnpj
+        } : null,
+        filialDestino: nf.filialDestino ? {
+          id: nf.filialDestino.id,
+          nome: nf.filialDestino.nome,
+          codigo: nf.filialDestino.codigo
+        } : null,
+        filialRecebimento: nf.filialRecebimento ? {
+          id: nf.filialRecebimento.id,
+          nome: nf.filialRecebimento.nome,
+          codigo: nf.filialRecebimento.codigo
+        } : null,
+        dataEmissao: nf.dataEmissao,
+        valorTotal: nf.valorTotal,
+        quantidadeVolumes: nf.quantidadeVolumes,
+        tipoMovimentacao: nf.tipoMovimentacao,
+        status: nf.status,
+        observacoes: nf.observacoes
+      }
+    }, usuarioId)
   }
 
-  async notaFiscalConferida(notaFiscal: Record<string, unknown>, usuario?: { id: string; nome: string; email: string }) {
-    await this.trigger('nota_conferida', notaFiscal, usuario)
+  async notaFiscalAlterada(notaFiscalId: string, dadosAdicionais: Record<string, unknown>, usuarioId?: string) {
+    const nf = await this.buscarDadosNotaFiscal(notaFiscalId)
+    if (!nf) return
+
+    await this.trigger('nota_alterada', {
+      ...dadosAdicionais,
+      notaFiscal: {
+        id: nf.id,
+        numero: nf.numero,
+        numeroSecundario: nf.numeroSecundario,
+        fornecedor: {
+          nome: nf.fornecedorNome,
+          cnpj: nf.fornecedorCnpj
+        },
+        fornecedorSecundario: nf.fornecedorSecundario ? {
+          id: nf.fornecedorSecundario.id,
+          nome: nf.fornecedorSecundario.nome,
+          cnpj: nf.fornecedorSecundario.cnpj
+        } : null,
+        filialDestino: nf.filialDestino ? {
+          id: nf.filialDestino.id,
+          nome: nf.filialDestino.nome,
+          codigo: nf.filialDestino.codigo
+        } : null,
+        filialRecebimento: nf.filialRecebimento ? {
+          id: nf.filialRecebimento.id,
+          nome: nf.filialRecebimento.nome,
+          codigo: nf.filialRecebimento.codigo
+        } : null,
+        status: nf.status
+      }
+    }, usuarioId)
   }
 
-  async notaFiscalBloqueada(notaFiscal: Record<string, unknown>, usuario?: { id: string; nome: string; email: string }) {
-    await this.trigger('nota_bloqueada', notaFiscal, usuario)
+  async notaFiscalExcluida(notaFiscalId: string, dadosAdicionais: Record<string, unknown>, usuarioId?: string) {
+    const nf = await this.buscarDadosNotaFiscal(notaFiscalId)
+    if (!nf) return
+
+    await this.trigger('nota_excluida', {
+      ...dadosAdicionais,
+      notaFiscal: {
+        id: nf.id,
+        numero: nf.numero,
+        numeroSecundario: nf.numeroSecundario,
+        fornecedor: {
+          nome: nf.fornecedorNome,
+          cnpj: nf.fornecedorCnpj
+        },
+        fornecedorSecundario: nf.fornecedorSecundario ? {
+          id: nf.fornecedorSecundario.id,
+          nome: nf.fornecedorSecundario.nome,
+          cnpj: nf.fornecedorSecundario.cnpj
+        } : null,
+        filialDestino: nf.filialDestino ? {
+          id: nf.filialDestino.id,
+          nome: nf.filialDestino.nome,
+          codigo: nf.filialDestino.codigo
+        } : null,
+        filialRecebimento: nf.filialRecebimento ? {
+          id: nf.filialRecebimento.id,
+          nome: nf.filialRecebimento.nome,
+          codigo: nf.filialRecebimento.codigo
+        } : null
+      }
+    }, usuarioId)
   }
 
-  async divergenciaDetectada(divergencia: Record<string, unknown>, usuario?: { id: string; nome: string; email: string }) {
-    await this.trigger('divergencia_detectada', divergencia, usuario)
+  async conferenciaVolumesRealizada(notaFiscalId: string, dadosConferencia: Record<string, unknown>, usuarioId?: string) {
+    const nf = await this.buscarDadosNotaFiscal(notaFiscalId)
+    if (!nf) return
+
+    await this.trigger('conferencia_volumes', {
+      ...dadosConferencia,
+      notaFiscal: {
+        id: nf.id,
+        numero: nf.numero,
+        numeroSecundario: nf.numeroSecundario,
+        fornecedor: {
+          nome: nf.fornecedorNome,
+          cnpj: nf.fornecedorCnpj
+        },
+        fornecedorSecundario: nf.fornecedorSecundario ? {
+          id: nf.fornecedorSecundario.id,
+          nome: nf.fornecedorSecundario.nome,
+          cnpj: nf.fornecedorSecundario.cnpj
+        } : null,
+        filialDestino: nf.filialDestino ? {
+          id: nf.filialDestino.id,
+          nome: nf.filialDestino.nome,
+          codigo: nf.filialDestino.codigo
+        } : null,
+        filialRecebimento: nf.filialRecebimento ? {
+          id: nf.filialRecebimento.id,
+          nome: nf.filialRecebimento.nome,
+          codigo: nf.filialRecebimento.codigo
+        } : null,
+        quantidadeVolumes: nf.quantidadeVolumes,
+        status: nf.status
+      }
+    }, usuarioId)
   }
 
-  async notaFiscalExcluida(notaFiscal: Record<string, unknown>, usuario?: { id: string; nome: string; email: string }) {
-    await this.trigger('nota_excluida', notaFiscal, usuario)
+  async conferenciaItensRealizada(notaFiscalId: string, dadosConferencia: Record<string, unknown>, usuarioId?: string) {
+    const nf = await this.buscarDadosNotaFiscal(notaFiscalId)
+    if (!nf) return
+
+    await this.trigger('conferencia_itens', {
+      ...dadosConferencia,
+      notaFiscal: {
+        id: nf.id,
+        numero: nf.numero,
+        numeroSecundario: nf.numeroSecundario,
+        fornecedor: {
+          nome: nf.fornecedorNome,
+          cnpj: nf.fornecedorCnpj
+        },
+        fornecedorSecundario: nf.fornecedorSecundario ? {
+          id: nf.fornecedorSecundario.id,
+          nome: nf.fornecedorSecundario.nome,
+          cnpj: nf.fornecedorSecundario.cnpj
+        } : null,
+        filialDestino: nf.filialDestino ? {
+          id: nf.filialDestino.id,
+          nome: nf.filialDestino.nome,
+          codigo: nf.filialDestino.codigo
+        } : null,
+        filialRecebimento: nf.filialRecebimento ? {
+          id: nf.filialRecebimento.id,
+          nome: nf.filialRecebimento.nome,
+          codigo: nf.filialRecebimento.codigo
+        } : null,
+        status: nf.status
+      }
+    }, usuarioId)
+  }
+
+  async notaFiscalBloqueada(notaFiscalId: string, dadosAdicionais: Record<string, unknown>, usuarioId?: string) {
+    const nf = await this.buscarDadosNotaFiscal(notaFiscalId)
+    if (!nf) return
+
+    await this.trigger('nota_bloqueada', {
+      ...dadosAdicionais,
+      notaFiscal: {
+        id: nf.id,
+        numero: nf.numero,
+        fornecedor: {
+          nome: nf.fornecedorNome,
+          cnpj: nf.fornecedorCnpj
+        },
+        filialDestino: nf.filialDestino ? {
+          id: nf.filialDestino.id,
+          nome: nf.filialDestino.nome,
+          codigo: nf.filialDestino.codigo
+        } : null,
+        filialRecebimento: nf.filialRecebimento ? {
+          id: nf.filialRecebimento.id,
+          nome: nf.filialRecebimento.nome,
+          codigo: nf.filialRecebimento.codigo
+        } : null,
+        status: nf.status
+      }
+    }, usuarioId)
+  }
+
+  async divergenciaDetectada(notaFiscalId: string, dadosDivergencia: Record<string, unknown>, usuarioId?: string) {
+    const nf = await this.buscarDadosNotaFiscal(notaFiscalId)
+    if (!nf) return
+
+    await this.trigger('divergencia_detectada', {
+      ...dadosDivergencia,
+      notaFiscal: {
+        id: nf.id,
+        numero: nf.numero,
+        fornecedor: {
+          nome: nf.fornecedorNome,
+          cnpj: nf.fornecedorCnpj
+        },
+        filialDestino: nf.filialDestino ? {
+          id: nf.filialDestino.id,
+          nome: nf.filialDestino.nome,
+          codigo: nf.filialDestino.codigo
+        } : null,
+        filialRecebimento: nf.filialRecebimento ? {
+          id: nf.filialRecebimento.id,
+          nome: nf.filialRecebimento.nome,
+          codigo: nf.filialRecebimento.codigo
+        } : null,
+        status: nf.status
+      }
+    }, usuarioId)
   }
 }
 

@@ -55,15 +55,28 @@
 - [x] Página de listagem e cadastro de transportadoras
 - [x] Validações e normalização de CNPJ
 
+### Fase 7 - NF Secundária com TXT ✅
+- [x] Parser para arquivo TXT de itens secundários (código, descrição, quantidade)
+- [x] Tabela `itens_nf_secundaria` no banco de dados
+- [x] Coluna `txt_secundario` na tabela `notas_fiscais`
+- [x] Upload de arquivo TXT na importação de NF (junto com XML)
+- [x] Validação e processamento do arquivo TXT
+- [x] Toggle na página de detalhes para alternar entre itens originais/secundários
+- [x] Tabela de itens secundários com visual diferenciado (azul)
+
 ## 3. Última Sessão
-- **Data**: 08/01/2026 (tarde)
+- **Data**: 22/01/2026 (manhã)
 - **Mudanças**: 
-  - Implementado sistema completo de cadastro de transportadoras
-  - Adicionado campo `entrada_rp` (booleano) para controle RP-SIM/RP-NÃO
-  - Conferência de volumes agora usa dropdown de transportadoras cadastradas
-  - Corrigido campo `contato` inexistente no modelo Fornecedor
-- **Deploy**: Build Docker validado e implantado com sucesso
-- **Migrations SQL**: Pendentes de execução no banco de produção (147.93.144.135:4154)
+  - Implementada funcionalidade de NF Secundária com upload de arquivo TXT
+  - Criado parser para arquivo TXT (código, descrição, quantidade) em `backend/src/utils/txtParser.ts`
+  - Criada tabela `itens_nf_secundaria` para armazenar itens do TXT
+  - Adicionada coluna `txt_secundario` na tabela `notas_fiscais`
+  - Atualizado endpoint `/notas-fiscais/importar-xml` para aceitar arquivo TXT
+  - Frontend: campo de upload TXT na importação de NF secundária
+  - Frontend: toggle para alternar entre lista de produtos original/secundária na página de detalhes
+  - Tabela de itens secundários com visual diferenciado (azul)
+- **Script de migração**: `backend/scripts/add-itens-nf-secundaria.ts` (já executado)
+- **Deploy**: Pendente - requer rebuild Docker
 
 ## 4. Próximos Passos (Priorizado)
 - [ ] Telas de Admin (Filiais, Usuários)

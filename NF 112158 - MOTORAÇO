@@ -1,0 +1,120 @@
+ 
+CD BEZERRA JUA                                  Relatório de NF de Entrada (Espelho da Nota Fiscal de Entrada)          Data de Emissão 01/01/1950 a 01/01/2999
+Resulth Business - v.29.12ad0                                                                                           Data de Entrada 01/01/1950 a 01/01/2999
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+Operação..: 030 COMPRA FORA UF (ESP) 2102/2403                           Nota Fiscal: 112158
+Fornecedor: 000178 MOTORACO COMERCIO DE AUTO PECAS LTDA                 Filial: 04 CD BEZERRA JUA 
+Prazo.....: Parcelas Manuais: 32/60/90 dias.
+Dt.Emissão: 18/12/2025                     Data Entrada: 09/01/2026         Total NF...: 45.054,90
+Total IPI.:       0,00                     Base Icms:          0,00         Total Icms:       0,00
+Frete.....:       0,00                     Valor Icms ST:      0,00
+Transp....: 0329 TW TRANSPORTES          Placa Veiculo..: 
+Nº. Conhec: 112158     Espécie..: CTR         CIF/FOB.: C   Série Conhec:    Vencimento..: 30/12/1899
+Vlr Frete.:   1.411,00     CFOP..: 2353              Total Nf. Conhec.:  45.054,90
+Base Icms.:       0,00     Aliq. Icms.:       0,00            Vlr Icms:       0,00
+Sit. Tribut: Isento                    Data Emissão: 18/12/2025
+Observacao: IMPOSTO/FRETE PESO 0,85
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+   PRODUTO DESCRIÇÃO                                         FABRICANTE      QUANTIDADE   VLR.UNIT.LIQ    SUBTOTAL   IPI%  ICMS% B.ICMS PENÚLTIMO$       CUSTO
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+   120634 AMORTECEDOR TRASEIRO SAVEIRO 83/97                 MOTORAÇO              9,00          78,13      703,17   0,00   0,00   0,00      78,13        85,70
+   118290 AMORTECEDOR TRASEIRO GOL 95/25 MAC29/MOTORAC       MOTORAÇO             23,00          76,86    1.767,78   0,00   0,00   0,00      76,86        84,31
+   120599 AMORTECEDOR DIANTEIRO L200 SPORT 04/ (GAS)         MOTORAÇO              5,00          73,35      366,75   0,00   0,00   0,00      73,35        80,46
+   125922 AMORTECEDOR TRASEIRO SW4 05/15                     MOTORAÇO              4,00          82,51      330,04   0,00   0,00   0,00       0,00        90,51
+   120578 AMORTECEDOR DIANTEIRO LD CITY 09/14 MAP141/MOTORAC MOTORAÇO              6,00         145,56      873,36   0,00   0,00   0,00     145,56       159,67
+   120579 AMORTECEDOR DIANTEIRO LE CITY 09/14 MAP146/MOTORAC MOTORAÇO              6,00         145,56      873,36   0,00   0,00   0,00     145,56       159,67
+   122413 AMORTECEDOR TRASEIRO FOCUS 08/12                   MOTORAÇO              5,00          94,89      474,45   0,00   0,00   0,00      94,89       104,09
+   118292 AMORTECEDOR TRASEIRO FOX 09/ MAP164/MOTORACO       MOTORAÇO             35,00          68,06    2.382,10   0,00   0,00   0,00      68,06        74,66
+   125924 AMORTECEDOR TRASEIRO KA 1.0/1.3/1.6 97/07          MOTORAÇO              4,00          86,87      347,48   0,00   0,00   0,00       0,00        95,29
+   122358 AMORTECEDOR DIANTEIRO LD PUNTO 07/                 MOTORAÇO              4,00         170,53      682,12   0,00   0,00   0,00     170,53       187,06
+   122357 AMORTECEDOR DIANTEIRO LE PUNTO 07/                 MOTORAÇO              4,00         170,53      682,12   0,00   0,00   0,00     170,53       187,06
+   120608 AMORTECEDOR DIANTEIRO LD UNO 10/ MAP247/MOTORACO   MOTORAÇO             11,00         136,73    1.504,03   0,00   0,00   0,00     136,73       149,99
+   120609 AMORTECEDOR DIANTEIRO LE UNO 10/16                 MOTORAÇO             23,00         136,73    3.144,79   0,00   0,00   0,00     136,73       149,99
+   125628 AMORTECEDOR TRASEIRO STRADA 99/12                  MOTORAÇO              9,00          90,67      816,03   0,00   0,00   0,00      90,67        99,46
+   120694 AMORTECEDOR TRASEIRO FIORINO 93/12 MAP301/MOTORAC  MOTORAÇO              5,00          73,90      369,50   0,00   0,00   0,00      73,90        81,06
+   125887 AMORTECEDOR TRASEIRO DUCATO 94/16                  MOTORAÇO              5,00          96,74      483,70   0,00   0,00   0,00      96,74       106,12
+   125925 AMORTECEDOR TRASEIRO HILUX 4X4 96/04               MOTORAÇO              2,00          80,59      161,18   0,00   0,00   0,00       0,00        88,40
+   125888 AMORTECEDOR TRASEIRO DOBLO CARGO 01/               MOTORAÇO              5,00          97,04      485,20   0,00   0,00   0,00      97,04       106,45
+   122431 AMORTECEDOR TRASEIRO DOBLO ADV 03/                 MOTORAÇO             11,00          92,91    1.022,01   0,00   0,00   0,00      92,91       101,92
+   120528 AMORTECEDOR TRASEIRO ECOSPORT 12/ MAP354/MOTORACO  MOTORAÇO              9,00          91,68      825,12   0,00   0,00   0,00      91,68       100,57
+   125889 AMORTECEDOR DIANTEIRO S10 18/                      COFAP                13,00         102,60    1.333,80   0,00   0,00   0,00     102,60       112,55
+   120632 AMORTECEDOR TRASEIRO RANGER 12/ MAP370/MOTORACO    MOTORAÇO             13,00          97,38    1.265,94   0,00   0,00   0,00      97,38       106,82
+   125893 AMORTECEDOR DIANTEIRO LD C3 13/                    MOTORAÇO              4,00         132,14      528,56   0,00   0,00   0,00     132,14       144,95
+   125894 AMORTECEDOR DIANTEIRO LE C3 13/                    MOTORAÇO              4,00         132,14      528,56   0,00   0,00   0,00     132,14       144,95
+   120576 AMORTECEDOR DIANTEIRO LD CERATO 09/13 MAP389/MOTOR MOTORAÇO              2,00         147,29      294,58   0,00   0,00   0,00       0,00       161,57
+   120577 AMORTECEDOR DIANTEIRO LE CERATO 09/13 MAP390/MOTOR MOTORAÇO              2,00         147,29      294,58   0,00   0,00   0,00       0,00       161,57
+   120636 AMORTECEDOR TRASEIRO LD/LE SOUL 09/14 MAP394/MOTOR MOTORAÇO              6,00          82,90      497,40   0,00   0,00   0,00      82,90        90,94
+   120521 AMORTECEDOR TRASEIRO LD COROLLA 92/02 MAP431/MOTOR MOTORAÇO              2,00         133,86      267,72   0,00   0,00   0,00       0,00       146,84
+   120522 AMORTECEDOR TRASEIRO LE COROLLA 92/02 MAP432/MOTOR MOTORAÇO              4,00         133,86      535,44   0,00   0,00   0,00       0,00       146,84
+   125926 AMORTECEDOR DIANTEIRO LD HB20X 12/15               MOTORAÇO              4,00         153,51      614,04   0,00   0,00   0,00       0,00       168,39
+   125896 AMORTECEDOR DIANTEIRO LE HB20X 12/15               MOTORAÇO              3,00         153,51      460,53   0,00   0,00   0,00     153,51       168,39
+   125897 AMORTECEDOR TRASEIRO HB20X 13/                     MOTORAÇO              3,00          84,46      253,38   0,00   0,00   0,00      84,46        92,65
+   125899 AMORTECEDOR DIANTEIRO OROCH 15/                    MOTORAÇO              5,00         146,39      731,95   0,00   0,00   0,00     146,39       160,58
+   120700 AMORTECEDOR TRASEIRO FOCUS 13/ MAP458/MOTORACO     MOTORAÇO              5,00         101,76      508,80   0,00   0,00   0,00     101,76       111,63
+   118321 AMORTECEDOR TRASEIRO KA 14/ NEW FIESTA MAP463/MOTO MOTORAÇO             17,00          77,58    1.318,86   0,00   0,00   0,00      77,58        85,10
+   125927 AMORTECEDOR DIANTEIRO FIT CITY 14/21 LD            MOTORAÇO              2,00         148,50      297,00   0,00   0,00   0,00       0,00       162,90
+   125928 AMORTECEDOR DIANTEIRO FIT CITY 14/21 LE            MOTORAÇO              2,00         148,50      297,00   0,00   0,00   0,00       0,00       162,90
+   120595 AMORTECEDOR DIANTEIRO LD HRV 15/ MAP486/MOTORACO   MOTORAÇO              4,00         186,61      746,44   0,00   0,00   0,00     186,61       204,70
+   120596 AMORTECEDOR DIANTEIRO LE HRV 15/ MAP487/MOTORACO   MOTORAÇO              4,00         186,61      746,44   0,00   0,00   0,00     186,61       204,70
+   118322 AMORTECEDOR TRASEIRO GOLF 99/12 MAP49/MOTORACO     MOTORAÇO             11,00          87,26      959,86   0,00   0,00   0,00      87,26        95,72
+   125900 AMORTECEDOR TRASEIRO JAC J3 11/17 LD               MOTORAÇO              3,00         164,11      492,33   0,00   0,00   0,00     164,11       180,02
+ 
+CD BEZERRA JUA                                  Relatório de NF de Entrada (Espelho da Nota Fiscal de Entrada)          Data de Emissão 01/01/1950 a 01/01/2999
+Resulth Business - v.29.12ad0                                                                                           Data de Entrada 01/01/1950 a 01/01/2999
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+   125902 AMORTECEDOR TRASEIRO LE JAC J3 11/17               MOTORAÇO              2,00         164,11      328,22   0,00   0,00   0,00     164,11       180,02
+   125903 AMORTECEDOR DIANTEIRO CLIO 1.0 12/                 MOTORAÇO              5,00         117,98      589,90   0,00   0,00   0,00     117,98       129,42
+   120702 AMORTECEDOR DIANTEIRO GOLF TSI 13/                 MOTORAÇO              2,00         153,20      306,40   0,00   0,00   0,00       0,00       168,05
+   122365 AMORTECEDOR TRASEIRO GOLF 1.4 13/                  MOTORAÇO              3,00          78,54      235,62   0,00   0,00   0,00      78,54        86,15
+   125929 AMORTECEDOR TRASEIRO FOCUS 00/08                   MOTORAÇO              2,00          80,59      161,18   0,00   0,00   0,00       0,00        88,40
+   125904 AMORTECEDOR DIANTEIRO LD TRACKER 13/               MOTORAÇO              3,00         160,38      481,14   0,00   0,00   0,00     160,38       175,93
+   125906 AMORTECEDOR DIANTEIRO LE TRACKER 13/               MOTORAÇO              5,00         160,38      801,90   0,00   0,00   0,00     160,38       175,93
+   120613 AMORTECEDOR DIANTEIRO VW UP 14/ MAP578/MOTORACO    MOTORAÇO              3,00         129,01      387,03   0,00   0,00   0,00     129,01       141,52
+   120637 AMORTECEDOR TRASEIRO SPRINTER 515 12/ MAP593/MOTOR MOTORAÇO              3,00          88,00      264,00   0,00   0,00   0,00      88,00        96,53
+   125930 AMORTECEDOR DIANTEIRO CIVIC 2.0 11/ LD             ALLEN                 1,00         140,98      140,98   0,00   0,00   0,00       0,00       154,65
+   125931 AMORTECEDOR DIANTEIRO CIVIC 2.0 11/ LE             MOTORAÇO              1,00         140,98      140,98   0,00   0,00   0,00       0,00       154,65
+   125911 AMORTECEDOR TRASEIRO POLO VIRTUS 18/               MOTORAÇO              3,00          91,45      274,35   0,00   0,00   0,00      91,45       100,32
+   122373 AMORTECEDOR DIANTEIRO JUMPY 17/24                  MOTORAÇO              2,00         174,68      349,36   0,00   0,00   0,00       0,00       191,61
+   120784 AMORTECEDOR TRASEIRO YARIS 19/ LD/LE MAP651/MOTORA MOTORAÇO              9,00          85,22      766,98   0,00   0,00   0,00      85,22        93,48
+   120603 AMORTECEDOR DIANTEIRO PALIO RST 07/16 MAP671/MOTOR MOTORAÇO              9,00         168,64    1.517,76   0,00   0,00   0,00     168,64       184,99
+   120602 AMORTECEDOR DIANTEIRO PALIO ADV 08/20              MOTORAÇO             11,00         165,04    1.815,44   0,00   0,00   0,00     165,04       181,04
+   120610 AMORTECEDOR DIANTEIRO LD UNO 10/21 S/BARRA         MOTORAÇO             11,00         149,76    1.647,36   0,00   0,00   0,00     149,76       164,28
+   120615 AMORTECEDOR TRAS ONIX LD/LE 20/22 MAP796/MOTORACO  MOTORAÇO              9,00          91,06      819,54   0,00   0,00   0,00      91,06        99,89
+   120709 AMORTECEDOR TRASEIRO JETTA 06/ MAP802/MOTORACO     MOTORAÇO              5,00          85,06      425,30   0,00   0,00   0,00      85,06        93,31
+   120573 AMORTECEDOR DIANTEIRO LD AIRCROSS 10/ MAP817/MOTOR MOTORAÇO              3,00         143,32      429,96   0,00   0,00   0,00     143,32       157,21
+   120574 AMORTECEDOR DIANTEIRO LE AIRCROSS 10/ MAP818/MOTOR MOTORAÇO              3,00         143,32      429,96   0,00   0,00   0,00     143,32       157,21
+   125912 AMORTECEDOR TRASEIRO COROLLA 08/14                 MOTORAÇO              7,00          82,34      576,38   0,00   0,00   0,00      82,34        90,32
+   125909 AMORTECEDOR DIANTEIRO KWID 17/                     MOTORAÇO              9,00          99,74      897,66   0,00   0,00   0,00      99,74       109,41
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+TOTAIS ...................                                                       409,00                  45.054,90                                     8.481,47
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

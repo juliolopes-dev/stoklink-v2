@@ -2,6 +2,9 @@ import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { NotaFiscalService } from '../services/nota-fiscal.service.js'
 import { authMiddleware } from '../middlewares/auth.js'
+import { webhookService } from '../services/webhook.service.js'
+import { parseTxtSecundario, validarTxtSecundario } from '../utils/txtParser.js'
+import { prisma } from '../lib/prisma.js'
 import path from 'path'
 import fs from 'fs'
 
@@ -89,6 +92,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       const parts = request.parts()
       let xmlContent = ''
       let danfFile: { filename: string; buffer: Buffer } | null = null
+      let txtFile: { filename: string; buffer: Buffer } | null = null
       const fields: Record<string, string> = {}
 
       // Processar todas as partes do multipart
@@ -99,6 +103,11 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
             xmlContent = buffer.toString('utf-8')
           } else if (part.fieldname === 'danfFile') {
             danfFile = {
+              filename: part.filename,
+              buffer
+            }
+          } else if (part.fieldname === 'txtFile') {
+            txtFile = {
               filename: part.filename,
               buffer
             }
@@ -144,6 +153,56 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         })
       }
 
+      // Se houver arquivo TXT de itens secundários, processar e salvar
+      if (txtFile && notaFiscal.id) {
+        const txtContent = txtFile.buffer.toString('latin1') // Encoding para arquivos Windows
+        
+        // Validar TXT
+        const validacao = validarTxtSecundario(txtContent)
+        if (!validacao.valido) {
+          console.warn(`⚠️ TXT inválido: ${validacao.erro}`)
+        } else {
+          // Parsear itens do TXT
+          const itensSecundarios = parseTxtSecundario(txtContent)
+          
+          if (itensSecundarios.length > 0) {
+            // Salvar TXT no disco
+            const uploadDir = path.join(process.cwd(), 'uploads', 'txt-secundarios')
+            if (!fs.existsSync(uploadDir)) {
+              fs.mkdirSync(uploadDir, { recursive: true })
+            }
+
+            const uniqueFilename = `${notaFiscal.id}-${Date.now()}.txt`
+            const filePath = path.join(uploadDir, uniqueFilename)
+            fs.writeFileSync(filePath, txtFile.buffer)
+
+            // Salvar itens no banco de dados
+            await prisma.itemNfSecundaria.createMany({
+              data: itensSecundarios.map(item => ({
+                notaFiscalId: notaFiscal.id,
+                codigo: item.codigo,
+                descricao: item.descricao,
+                quantidade: item.quantidade
+              }))
+            })
+
+            // Atualizar NF com caminho do TXT
+            await notaFiscalService.update(notaFiscal.id, {
+              txtSecundario: `uploads/txt-secundarios/${uniqueFilename}`
+            })
+
+            console.log(`✅ ${itensSecundarios.length} itens secundários importados do TXT`)
+          }
+        }
+      }
+
+      // Enviar webhook para n8n
+      await webhookService.notaFiscalCriada(
+        notaFiscal.id,
+        { origem: 'importacao_xml' },
+        request.user.id
+      )
+
       return reply.status(201).send(notaFiscal)
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -166,6 +225,13 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         empresaId: request.user.empresaId,
         usuarioId: request.user.id
       })
+
+      // Enviar webhook para n8n
+      await webhookService.notaFiscalCriada(
+        notaFiscal.id,
+        { origem: 'cadastro_manual' },
+        request.user.id
+      )
 
       return reply.status(201).send(notaFiscal)
     } catch (error) {
@@ -241,7 +307,16 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       if (body.transportadora !== undefined) data.transportadora = body.transportadora || null
       if (body.observacoes !== undefined) data.observacoes = body.observacoes || null
       if (body.entradaRp !== undefined) data.entradaRp = body.entradaRp
+      
       const notaFiscal = await notaFiscalService.update(id, data)
+
+      // Enviar webhook para n8n
+      await webhookService.notaFiscalAlterada(
+        id,
+        { alteracoes: Object.keys(data) },
+        request.user.id
+      )
+
       return reply.send(notaFiscal)
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -263,7 +338,16 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       }
 
       const { id } = idParamSchema.parse(request.params)
+      
+      // Enviar webhook ANTES de excluir para garantir que os dados existam
+      await webhookService.notaFiscalExcluida(
+        id,
+        {},
+        request.user.id
+      )
+
       await notaFiscalService.delete(id)
+
       return reply.status(204).send()
     } catch (error) {
       if (error instanceof z.ZodError) {

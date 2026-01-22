@@ -68,6 +68,7 @@ export function NovaNotaFiscal() {
   const [xmlNumeroSecundario, setXmlNumeroSecundario] = useState('')
   const [xmlFornecedorSecundarioId, setXmlFornecedorSecundarioId] = useState('')
   const [xmlDanfFile, setXmlDanfFile] = useState<File | null>(null)
+  const [xmlTxtFile, setXmlTxtFile] = useState<File | null>(null)
   const [fornecedores, setFornecedores] = useState<{ id: string; nome: string; cnpj?: string }[]>([])
 
   useEffect(() => {
@@ -207,6 +208,9 @@ export function NovaNotaFiscal() {
       }
       if (xmlDanfFile) {
         formData.append('danfFile', xmlDanfFile)
+      }
+      if (xmlTxtFile) {
+        formData.append('txtFile', xmlTxtFile)
       }
       
       await api.post('/notas-fiscais/importar-xml', formData, {
@@ -679,21 +683,40 @@ export function NovaNotaFiscal() {
                 </div>
               </div>
 
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  DANF da NF Secundária (PDF)
-                </label>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(e) => setXmlDanfFile(e.target.files?.[0] || null)}
-                  className="w-full text-sm border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-medium file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                />
-                {xmlDanfFile && (
-                  <p className="text-xs text-gray-600 mt-1">
-                    {xmlDanfFile.name} ({(xmlDanfFile.size / 1024 / 1024).toFixed(2)} MB)
-                  </p>
-                )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    DANF da NF Secundária (PDF)
+                  </label>
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={(e) => setXmlDanfFile(e.target.files?.[0] || null)}
+                    className="w-full text-sm border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-medium file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                  />
+                  {xmlDanfFile && (
+                    <p className="text-xs text-gray-600 mt-1">
+                      {xmlDanfFile.name} ({(xmlDanfFile.size / 1024 / 1024).toFixed(2)} MB)
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Itens NF Secundária (TXT)
+                  </label>
+                  <input
+                    type="file"
+                    accept=".txt,text/plain,*/*"
+                    onChange={(e) => setXmlTxtFile(e.target.files?.[0] || null)}
+                    className="w-full text-sm border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  {xmlTxtFile && (
+                    <p className="text-xs text-gray-600 mt-1">
+                      {xmlTxtFile.name} ({(xmlTxtFile.size / 1024).toFixed(2)} KB)
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-end gap-3 pt-3 border-t mt-4">

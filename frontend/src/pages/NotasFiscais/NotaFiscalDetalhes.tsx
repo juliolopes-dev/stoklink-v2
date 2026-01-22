@@ -26,6 +26,13 @@ interface ItemNF {
   conferido: boolean
 }
 
+interface ItemNFSecundaria {
+  id: string
+  codigo: string
+  descricao: string
+  quantidade: number
+}
+
 interface ConferenciaVolume {
   id: string
   tipo: 'RECEBIMENTO' | 'DESTINO'
@@ -90,6 +97,8 @@ interface NotaFiscalDetalhe {
   }
   createdAt: string
   itens: ItemNF[]
+  itensSecundarios: ItemNFSecundaria[]
+  txtSecundario: string | null
   conferenciasVolumes: ConferenciaVolume[]
   divergencias: Divergencia[]
 }
@@ -158,6 +167,9 @@ export function NotaFiscalDetalhes() {
   
   // Pesquisa de itens
   const [pesquisaItem, setPesquisaItem] = useState('')
+  
+  // Toggle para alternar entre itens originais e secundários
+  const [mostrarItensSecundarios, setMostrarItensSecundarios] = useState(false)
   
   // Modal de item extra
   const [showItemExtraModal, setShowItemExtraModal] = useState(false)
@@ -593,10 +605,36 @@ export function NotaFiscalDetalhes() {
 
           <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3 flex-1 flex flex-col min-h-0 overflow-hidden">
             <div className="flex items-center justify-between mb-3 flex-shrink-0 gap-3">
-              <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2 flex-shrink-0">
-                <FiPackage size={16} />
-                Itens ({nota.itens.length})
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-sm font-semibold text-gray-800 flex items-center gap-2 flex-shrink-0">
+                  <FiPackage size={16} />
+                  Itens ({mostrarItensSecundarios ? (nota.itensSecundarios?.length || 0) : nota.itens.length})
+                </h2>
+                {nota.itensSecundarios && nota.itensSecundarios.length > 0 && (
+                  <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+                    <button
+                      onClick={() => setMostrarItensSecundarios(false)}
+                      className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                        !mostrarItensSecundarios
+                          ? 'bg-white text-primary-700 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      NF Original
+                    </button>
+                    <button
+                      onClick={() => setMostrarItensSecundarios(true)}
+                      className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                        mostrarItensSecundarios
+                          ? 'bg-white text-blue-700 shadow-sm'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      NF Secundária ({nota.itensSecundarios.length})
+                    </button>
+                  </div>
+                )}
+              </div>
               <div className="flex-1 max-w-xs">
                 <input
                   type="text"
@@ -654,7 +692,46 @@ export function NotaFiscalDetalhes() {
                 </div>
               )}
             </div>
-            {nota.itens.length === 0 ? (
+            {mostrarItensSecundarios ? (
+              /* Tabela de itens da NF Secundária (apenas visualização) */
+              nota.itensSecundarios && nota.itensSecundarios.length > 0 ? (
+                <div className="flex-1 flex flex-col min-h-0 overflow-hidden border border-blue-200 rounded-lg bg-blue-50/30">
+                  <table className="w-full flex-shrink-0">
+                    <thead className="bg-blue-100">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-blue-700 uppercase w-24">Código</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-blue-700 uppercase">Descrição</th>
+                        <th className="px-3 py-2 text-right text-xs font-medium text-blue-700 uppercase w-24">Quantidade</th>
+                      </tr>
+                    </thead>
+                  </table>
+                  <div className="flex-1 overflow-y-auto">
+                    <table className="w-full">
+                      <tbody className="divide-y divide-blue-100">
+                        {nota.itensSecundarios
+                          .filter((item) => {
+                            if (!pesquisaItem.trim()) return true
+                            const termo = pesquisaItem.toLowerCase()
+                            return (
+                              item.codigo.toLowerCase().includes(termo) ||
+                              item.descricao.toLowerCase().includes(termo)
+                            )
+                          })
+                          .map((item) => (
+                            <tr key={item.id} className="hover:bg-blue-50">
+                              <td className="px-3 py-1.5 text-xs w-24 font-mono">{item.codigo}</td>
+                              <td className="px-3 py-1.5 text-xs">{item.descricao}</td>
+                              <td className="px-3 py-1.5 text-xs text-right w-24 font-medium">{item.quantidade}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-gray-500 text-center py-8">Nenhum item secundário cadastrado</p>
+              )
+            ) : nota.itens.length === 0 ? (
               <p className="text-gray-500 text-center py-8">Nenhum item cadastrado</p>
             ) : (
               <div className="flex-1 flex flex-col min-h-0 overflow-hidden border border-gray-200 rounded-lg">

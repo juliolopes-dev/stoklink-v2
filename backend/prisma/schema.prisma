@@ -139,11 +139,13 @@ model NotaFiscal {
   mercadoriaBloqueada    Boolean             @default(true) @map("mercadoria_bloqueada")
   entradaRp              Boolean?            @map("entrada_rp")
   danfSecundario         String?             @map("danf_secundario")
+  txtSecundario          String?             @map("txt_secundario")
   conferenciasItens      ConferenciaItem[]
   conferenciasVolumes    ConferenciaVolume[]
   distribuicoes          Distribuicao[]
   divergencias           Divergencia[]
   itens                  ItemNotaFiscal[]
+  itensSecundarios       ItemNfSecundaria[]
   empresa                Empresa             @relation(fields: [empresaId], references: [id])
   filialDestino          Filial              @relation("FilialDestino", fields: [filialDestinoId], references: [id])
   filialRecebimento      Filial?             @relation("FilialRecebimento", fields: [filialRecebimentoId], references: [id])
@@ -152,6 +154,19 @@ model NotaFiscal {
   usuarioCadastro        Usuario             @relation(fields: [usuarioCadastroId], references: [id])
 
   @@map("notas_fiscais")
+}
+
+model ItemNfSecundaria {
+  id           String     @id @default(uuid())
+  notaFiscalId String     @map("nota_fiscal_id")
+  codigo       String     @db.VarChar(50)
+  descricao    String
+  quantidade   Decimal    @db.Decimal(12, 3)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  notaFiscal   NotaFiscal @relation(fields: [notaFiscalId], references: [id], onDelete: Cascade)
+
+  @@map("itens_nf_secundaria")
 }
 
 model ItemNotaFiscal {

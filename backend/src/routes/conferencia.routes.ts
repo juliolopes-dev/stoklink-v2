@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { ConferenciaService } from '../services/conferencia.service.js'
 import { authMiddleware } from '../middlewares/auth.js'
+import { webhookService } from '../services/webhook.service.js'
 
 const conferenciaService = new ConferenciaService()
 
@@ -44,6 +45,20 @@ export async function conferenciaRoutes(app: FastifyInstance) {
         transportadora: data.transportadora,
         observacoes: data.observacoes
       })
+
+      // Enviar webhook para n8n
+      await webhookService.conferenciaVolumesRealizada(
+        id,
+        {
+          volumesEsperados: resultado.conferencia.volumesEsperados,
+          volumesRecebidos: resultado.conferencia.volumesRecebidos,
+          volumesBatendo: resultado.volumesBatendo,
+          transportadora: resultado.conferencia.transportadora,
+          tipo: resultado.conferencia.tipo,
+          novoStatus: resultado.novoStatus
+        },
+        request.user.id
+      )
 
       return reply.status(201).send(resultado)
     } catch (error) {
@@ -96,6 +111,17 @@ export async function conferenciaRoutes(app: FastifyInstance) {
         finalizada: data.finalizada,
         observacoes: data.observacoes
       })
+
+      // Enviar webhook para n8n
+      await webhookService.conferenciaItensRealizada(
+        id,
+        {
+          finalizada: data.finalizada,
+          novoStatus: resultado.novoStatus,
+          temDivergencia: resultado.temDivergencia
+        },
+        request.user.id
+      )
 
       return reply.status(201).send(resultado)
     } catch (error) {

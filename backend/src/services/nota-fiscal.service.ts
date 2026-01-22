@@ -298,6 +298,7 @@ export class NotaFiscalService {
       where: { id },
       include: {
         itens: true,
+        itensSecundarios: true,
         filialRecebimento: true,
         filialDestino: true,
         fornecedor: true,

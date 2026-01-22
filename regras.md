@@ -1,4 +1,4 @@
-# Regras de de Trabalo
+# Regras de Trabalho
 
 ### 1. Transparência Total e Confirmação
 - **SEMPRE PERGUNTE ANTES DE IMPLEMENTAR** quando eu fizer uma pergunta como "é possível...", "dá para...", "tem como...".
@@ -14,11 +14,16 @@
 - Sempre use nomes das tabelas e colunas do banco de dados em Portugues.
 - Sempre use timezone America/Sao_Paulo Brasil é UTC-3 em toda aplicação, incluido banco de dados.
 
-### 3. MCP
-- Use MCP quando for necessário.
+### 3. MCP (Model Context Protocol)
+- Use MCP para consultar bancos de dados (banco-bezerra, stoklink-v2, eisen-agente-banco-dados)
+- Use MCP para pesquisas na web (perplexity-ask) quando precisar de informações atualizadas
+- Use MCP para automações n8n (n8n-mcp) quando trabalhar com workflows
+- Use MCP para testes de interface (playwright) quando precisar validar UI
+- Use MCP para buscar documentação de bibliotecas (context7-docs) quando precisar de docs atualizadas
+- Sempre prefira MCP ao invés de comandos manuais quando disponível
 
 ### 4. Alterações
-- Sepre que precisar alterar algo não mexia no que ja esta dando certo apenas altere o que esta errado.
+- Sempre que precisar alterar algo, não mexa no que já está funcionando. Apenas altere o que está errado.
 
 ### 5. NUNCA FAÇA
 - ❌ Reescrever código funcional sem motivo claro
@@ -26,7 +31,10 @@
 - ❌ Assumir estruturas de banco de dados ou APIs
 - ❌ Deletar arquivos ou código sem confirmar
 - ❌ Ignorar erros ou warnings existentes
-- ❌ Criar soluções excessivamente complexas
+- ❌ Criar soluções excessivamente complexas (overengineering)
+- ❌ Repetir trechos de código (use funções/componentes reutilizáveis)
+- ❌ Colocar toda lógica em um único arquivo (separe responsabilidades)
+- ❌ Reinventar funcionalidades que já existem em bibliotecas consolidadas
 
 ### 6. Migrações de Banco de Dados
 - Para alterações de schema ou dados em produção, NUNCA use `prisma migrate` ou `prisma db push`
@@ -37,3 +45,31 @@
 - Execute via `npx tsx scripts/nome-do-script.ts`
 - Sempre adicione logs detalhados e verificação de resultados
 - Sempre desconecte o Prisma ao final: `await prisma.$disconnect()`
+
+### 7. Padrão de Desenvolvimento e Deploy
+- **Banco de dados**: Sempre fica na VPS (nunca local)
+- **Desenvolvimento**: Local, conectando no banco da VPS
+- **Deploy**: Dockerfile único que builda backend + frontend juntos
+- **Estrutura do Dockerfile**: Backend serve o frontend buildado (arquivos estáticos)
+- **Fluxo**: Dev local → Commit → Build Docker → Deploy na VPS
+
+### 8. Testes
+- Rodar testes antes de fazer commit em features importantes
+- Testar manualmente as funcionalidades alteradas antes de deploy
+- Em caso de bug em produção, primeiro reproduzir localmente antes de corrigir
+
+### 9. Git e Commits
+- Commits em português, descritivos e objetivos
+- Formato sugerido: `tipo: descrição` (ex: `fix: corrige cálculo de estoque`, `feat: adiciona filtro por data`)
+- Tipos: `feat` (nova feature), `fix` (correção), `refactor` (refatoração), `docs` (documentação), `style` (formatação)
+
+### 10. Tratamento de Erros
+- Backend: sempre retornar erros com estrutura padrão `{ success: false, error: "mensagem" }`
+- Logar erros importantes no console com contexto suficiente para debug
+- Nunca expor stack traces ou informações sensíveis para o frontend em produção
+
+### 11. Documentação de Projeto (PROJETO_STATUS.md)
+- **SEMPRE** atualizar `PROJETO_STATUS.md` após cada tarefa significativa concluída
+- **OBRIGATÓRIO** atualizar antes de encerrar a sessão de trabalho
+- Incluir no arquivo: o que foi feito, o que foi testado, próximos passos claros
+- Se o usuário pedir para lembrar de atualizar, faça imediatamente
