@@ -48,14 +48,17 @@ export class ConferenciaService {
         throw new Error('Esta nota fiscal não está aguardando conferência no destino')
       }
       
-      // Validar que o usuário pertence à filial de destino
+      // Validar que o usuário pertence à filial de destino (exceto ADMIN que pode tudo)
       const usuario = await prisma.usuario.findUnique({
         where: { id: input.usuarioId },
-        select: { filialId: true, nome: true }
+        select: { filialId: true, nome: true, perfil: true }
       })
       
-      if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
-        throw new Error('Apenas usuários da filial de destino podem realizar a conferência no destino')
+      // ADMIN pode fazer qualquer conferência
+      if (usuario?.perfil !== 'ADMIN') {
+        if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
+          throw new Error('Apenas usuários da filial de destino podem realizar a conferência no destino')
+        }
       }
     }
 
@@ -184,14 +187,17 @@ export class ConferenciaService {
       throw new Error('Esta nota fiscal não está em um status que permita conferência de itens')
     }
 
-    // Validar que o usuário pertence à filial de destino
+    // Validar que o usuário pertence à filial de destino (exceto ADMIN que pode tudo)
     const usuario = await prisma.usuario.findUnique({
       where: { id: input.usuarioId },
-      select: { filialId: true }
+      select: { filialId: true, perfil: true }
     })
     
-    if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
-      throw new Error('Apenas usuários da filial de destino podem realizar a conferência de itens')
+    // ADMIN pode fazer qualquer conferência
+    if (usuario?.perfil !== 'ADMIN') {
+      if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
+        throw new Error('Apenas usuários da filial de destino podem realizar a conferência de itens')
+      }
     }
 
     // Atualizar quantidades conferidas dos itens

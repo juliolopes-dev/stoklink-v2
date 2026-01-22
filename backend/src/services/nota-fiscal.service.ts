@@ -520,14 +520,17 @@ export class NotaFiscalService {
       throw new Error('Nota fiscal não encontrada')
     }
 
-    // Validar que o usuário pertence à filial de destino
+    // Validar que o usuário pertence à filial de destino (exceto ADMIN que pode tudo)
     const usuario = await prisma.usuario.findUnique({
       where: { id: usuarioId },
-      select: { filialId: true }
+      select: { filialId: true, perfil: true }
     })
     
-    if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
-      throw new Error('Apenas usuários da filial de destino podem realizar a conferência de itens')
+    // ADMIN pode fazer qualquer conferência
+    if (usuario?.perfil !== 'ADMIN') {
+      if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
+        throw new Error('Apenas usuários da filial de destino podem realizar a conferência de itens')
+      }
     }
 
     const item = await prisma.itemNotaFiscal.findFirst({
