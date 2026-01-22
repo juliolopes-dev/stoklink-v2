@@ -250,6 +250,7 @@ class WebhookService {
           nome: nf.filialRecebimento.nome,
           codigo: nf.filialRecebimento.codigo
         } : null,
+        quantidadeVolumes: nf.quantidadeVolumes,
         status: nf.status
       }
     }, usuarioId)
@@ -283,7 +284,8 @@ class WebhookService {
           id: nf.filialRecebimento.id,
           nome: nf.filialRecebimento.nome,
           codigo: nf.filialRecebimento.codigo
-        } : null
+        } : null,
+        quantidadeVolumes: nf.quantidadeVolumes
       }
     }, usuarioId)
   }
@@ -352,6 +354,7 @@ class WebhookService {
           nome: nf.filialRecebimento.nome,
           codigo: nf.filialRecebimento.codigo
         } : null,
+        quantidadeVolumes: nf.quantidadeVolumes,
         status: nf.status
       }
     }, usuarioId)
@@ -380,6 +383,7 @@ class WebhookService {
           nome: nf.filialRecebimento.nome,
           codigo: nf.filialRecebimento.codigo
         } : null,
+        quantidadeVolumes: nf.quantidadeVolumes,
         status: nf.status
       }
     }, usuarioId)
@@ -408,6 +412,7 @@ class WebhookService {
           nome: nf.filialRecebimento.nome,
           codigo: nf.filialRecebimento.codigo
         } : null,
+        quantidadeVolumes: nf.quantidadeVolumes,
         status: nf.status
       }
     }, usuarioId)
