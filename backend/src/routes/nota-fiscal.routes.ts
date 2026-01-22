@@ -56,7 +56,8 @@ const listFiltersSchema = z.object({
   filialRecebimentoId: z.string().uuid().optional(),
   filialDestinoId: z.string().uuid().optional(),
   dataInicio: z.coerce.date().optional(),
-  dataFim: z.coerce.date().optional()
+  dataFim: z.coerce.date().optional(),
+  searchTerm: z.string().optional()
 })
 
 const idParamSchema = z.object({

@@ -48,6 +48,7 @@ interface ListNotasFiscaisFilters {
   filialDestinoId?: string
   dataInicio?: Date
   dataFim?: Date
+  searchTerm?: string
 }
 
 export class NotaFiscalService {
@@ -239,12 +240,17 @@ export class NotaFiscalService {
       where.status = filters.status
     }
 
-    if (filters?.filialRecebimentoId) {
-      where.filialRecebimentoId = filters.filialRecebimentoId
-    }
+    // Se houver searchTerm (busca por número), ignorar filtros de filial
+    const hasSearchTerm = filters?.searchTerm && filters.searchTerm.trim().length > 0
+    
+    if (!hasSearchTerm) {
+      if (filters?.filialRecebimentoId) {
+        where.filialRecebimentoId = filters.filialRecebimentoId
+      }
 
-    if (filters?.filialDestinoId) {
-      where.filialDestinoId = filters.filialDestinoId
+      if (filters?.filialDestinoId) {
+        where.filialDestinoId = filters.filialDestinoId
+      }
     }
 
     if (filters?.dataInicio || filters?.dataFim) {
@@ -255,6 +261,17 @@ export class NotaFiscalService {
       if (filters.dataFim) {
         (where.dataRecebimento as Record<string, Date>).lte = filters.dataFim
       }
+    }
+
+    // Adicionar busca por número, fornecedor ou chave de acesso
+    if (hasSearchTerm) {
+      const search = filters.searchTerm!.toLowerCase()
+      where.OR = [
+        { numero: { contains: search, mode: 'insensitive' } },
+        { numeroSecundario: { contains: search, mode: 'insensitive' } },
+        { fornecedorNome: { contains: search, mode: 'insensitive' } },
+        { chaveAcesso: { contains: search, mode: 'insensitive' } }
+      ]
     }
 
     const notas = await prisma.notaFiscal.findMany({

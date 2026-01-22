@@ -88,7 +88,7 @@ export function NotasFiscais() {
 
   useEffect(() => {
     loadNotas()
-  }, [statusFilter])
+  }, [statusFilter, searchTerm])
 
   // Recarregar dados quando a página fica visível novamente
   useEffect(() => {
@@ -111,6 +111,7 @@ export function NotasFiscais() {
     try {
       const params = new URLSearchParams()
       if (statusFilter) params.append('status', statusFilter)
+      if (searchTerm) params.append('searchTerm', searchTerm)
       
       const response = await api.get(`/notas-fiscais?${params.toString()}`)
       setNotas(response.data)
@@ -123,16 +124,8 @@ export function NotasFiscais() {
   }
 
   const filteredNotas = notas.filter(nf => {
-    // Filtro de busca
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase()
-      const matchSearch = nf.numero.toLowerCase().includes(search) ||
-        nf.numeroSecundario?.toLowerCase().includes(search) ||
-        nf.fornecedorNome.toLowerCase().includes(search) ||
-        nf.fornecedorSecundario?.nome.toLowerCase().includes(search) ||
-        nf.transportadora?.toLowerCase().includes(search)
-      if (!matchSearch) return false
-    }
+    // Filtro de busca - agora feito no backend quando searchTerm existe
+    // Mantém apenas filtros locais que não são enviados ao backend
     
     // Filtro RP (Entrada no RP)
     if (rpFilter === 'SIM') {
