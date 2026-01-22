@@ -265,10 +265,10 @@ export class NotaFiscalService {
 
     // Adicionar busca por número, fornecedor ou chave de acesso
     if (hasSearchTerm) {
-      const search = filters.searchTerm!.toLowerCase()
+      const search = filters.searchTerm!.trim()
       where.OR = [
-        { numero: { equals: search, mode: 'insensitive' } },
-        { numeroSecundario: { equals: search, mode: 'insensitive' } },
+        { numero: search },
+        { numeroSecundario: search },
         { fornecedorNome: { contains: search, mode: 'insensitive' } },
         { chaveAcesso: { contains: search, mode: 'insensitive' } }
       ]
