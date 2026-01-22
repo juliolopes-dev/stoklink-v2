@@ -148,4 +148,67 @@ export async function conferenciaRoutes(app: FastifyInstance) {
       return reply.status(500).send({ error: 'Erro ao buscar conferências de itens' })
     }
   })
+
+  // ==================== CONFERÊNCIA DE ITENS SECUNDÁRIOS ====================
+
+  // Conferir um item secundário
+  app.post('/notas-fiscais/:id/conferir-item-secundario/:itemId', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const { id, itemId } = z.object({
+        id: z.string().uuid('ID da NF inválido'),
+        itemId: z.string().uuid('ID do item inválido')
+      }).parse(request.params)
+      
+      const { quantidadeConferida } = z.object({
+        quantidadeConferida: z.coerce.number().min(0, 'Quantidade deve ser maior ou igual a 0')
+      }).parse(request.body)
+
+      const resultado = await conferenciaService.conferirItemSecundario({
+        notaFiscalId: id,
+        itemId,
+        quantidadeConferida,
+        usuarioId: request.user.id
+      })
+
+      return reply.status(200).send(resultado)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao conferir item secundário' })
+    }
+  })
+
+  // Conferir todos os itens secundários de uma vez
+  app.post('/notas-fiscais/:id/conferir-todos-itens-secundarios', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const { id } = idParamSchema.parse(request.params)
+      
+      const { itensConferidos } = z.object({
+        itensConferidos: z.array(z.object({
+          itemId: z.string().uuid('ID do item inválido'),
+          quantidadeConferida: z.coerce.number().min(0, 'Quantidade deve ser maior ou igual a 0')
+        }))
+      }).parse(request.body)
+
+      const resultado = await conferenciaService.conferirTodosItensSecundarios({
+        notaFiscalId: id,
+        itensConferidos,
+        usuarioId: request.user.id
+      })
+
+      return reply.status(200).send(resultado)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao conferir itens secundários' })
+    }
+  })
 }

@@ -298,4 +298,61 @@ export class ConferenciaService {
       orderBy: { dataConferencia: 'desc' }
     })
   }
+
+  // ==================== CONFERÊNCIA DE ITENS SECUNDÁRIOS ====================
+
+  async conferirItemSecundario(input: {
+    notaFiscalId: string
+    itemId: string
+    quantidadeConferida: number
+    usuarioId: string
+  }) {
+    const item = await prisma.itemNfSecundaria.findFirst({
+      where: {
+        id: input.itemId,
+        notaFiscalId: input.notaFiscalId
+      }
+    })
+
+    if (!item) {
+      throw new Error('Item secundário não encontrado')
+    }
+
+    const itemAtualizado = await prisma.itemNfSecundaria.update({
+      where: { id: input.itemId },
+      data: {
+        quantidadeConferida: input.quantidadeConferida,
+        conferido: true
+      }
+    })
+
+    return {
+      success: true,
+      item: itemAtualizado
+    }
+  }
+
+  async conferirTodosItensSecundarios(input: {
+    notaFiscalId: string
+    itensConferidos: { itemId: string; quantidadeConferida: number }[]
+    usuarioId: string
+  }) {
+    const itensAtualizados = []
+
+    for (const itemConf of input.itensConferidos) {
+      const itemAtualizado = await prisma.itemNfSecundaria.update({
+        where: { id: itemConf.itemId },
+        data: {
+          quantidadeConferida: itemConf.quantidadeConferida,
+          conferido: true
+        }
+      })
+      itensAtualizados.push(itemAtualizado)
+    }
+
+    return {
+      success: true,
+      itensAtualizados: itensAtualizados.length
+    }
+  }
 }

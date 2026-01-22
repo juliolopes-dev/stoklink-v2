@@ -31,6 +31,8 @@ interface ItemNFSecundaria {
   codigo: string
   descricao: string
   quantidade: number
+  quantidadeConferida: number | null
+  conferido: boolean
 }
 
 interface ConferenciaVolume {
@@ -170,6 +172,12 @@ export function NotaFiscalDetalhes() {
   
   // Toggle para alternar entre itens originais e secundários
   const [mostrarItensSecundarios, setMostrarItensSecundarios] = useState(false)
+  
+  // Conferência de itens secundários
+  const [conferindoItemSecundarioId, setConferindoItemSecundarioId] = useState<string | null>(null)
+  const [quantidadeConferidaSecundario, setQuantidadeConferidaSecundario] = useState('')
+  const [modoConferenciaLoteSecundario, setModoConferenciaLoteSecundario] = useState(false)
+  const [quantidadesLoteSecundario, setQuantidadesLoteSecundario] = useState<Record<string, string>>({})
   
   // Modal de item extra
   const [showItemExtraModal, setShowItemExtraModal] = useState(false)
@@ -319,6 +327,62 @@ export function NotaFiscalDetalhes() {
   function handleCancelarLote() {
     setModoConferenciaLote(false)
     setQuantidadesLote({})
+  }
+
+  // ==================== CONFERÊNCIA DE ITENS SECUNDÁRIOS ====================
+  
+  function iniciarConferenciaItemSecundario(item: ItemNFSecundaria) {
+    setConferindoItemSecundarioId(item.id)
+    setQuantidadeConferidaSecundario(Number(item.quantidade).toString())
+  }
+
+  async function handleConferirItemSecundario(itemId: string) {
+    setLoadingItem(true)
+    try {
+      await api.post(`/notas-fiscais/${id}/conferir-item-secundario/${itemId}`, {
+        quantidadeConferida: parseFloat(quantidadeConferidaSecundario)
+      })
+      setConferindoItemSecundarioId(null)
+      setQuantidadeConferidaSecundario('')
+      loadNota()
+    } catch (error) {
+      console.error('Erro ao conferir item secundário:', error)
+    } finally {
+      setLoadingItem(false)
+    }
+  }
+
+  function handleSelecionarTodosSecundarios() {
+    if (!nota || !nota.itensSecundarios) return
+    const quantidades: Record<string, string> = {}
+    nota.itensSecundarios.filter(i => !i.conferido).forEach(item => {
+      quantidades[item.id] = Number(item.quantidade).toString()
+    })
+    setQuantidadesLoteSecundario(quantidades)
+    setModoConferenciaLoteSecundario(true)
+  }
+
+  async function handleConfirmarTodosSecundarios() {
+    setLoadingItem(true)
+    try {
+      const itensConferidos = Object.entries(quantidadesLoteSecundario).map(([itemId, qtd]) => ({
+        itemId,
+        quantidadeConferida: parseFloat(qtd)
+      }))
+      await api.post(`/notas-fiscais/${id}/conferir-todos-itens-secundarios`, { itensConferidos })
+      setModoConferenciaLoteSecundario(false)
+      setQuantidadesLoteSecundario({})
+      loadNota()
+    } catch (error) {
+      console.error('Erro ao conferir todos os itens secundários:', error)
+    } finally {
+      setLoadingItem(false)
+    }
+  }
+
+  function handleCancelarLoteSecundario() {
+    setModoConferenciaLoteSecundario(false)
+    setQuantidadesLoteSecundario({})
   }
 
   async function abrirModalEdicao() {
@@ -644,56 +708,93 @@ export function NotaFiscalDetalhes() {
                   className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 />
               </div>
-              {nota.itens.length > 0 && ['VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES', 'EM_CONFERENCIA', 'AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA'].includes(nota.status) && (
+              {['VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES', 'EM_CONFERENCIA', 'AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA'].includes(nota.status) && (
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button
-                    onClick={() => setShowItemExtraModal(true)}
-                    disabled={!podeConferirItens}
-                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${
-                      podeConferirItens 
-                        ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
-                    title={!podeConferirItens ? 'Apenas usuários da filial de destino podem adicionar itens extras' : 'Registrar item que chegou mas não está na NF'}
-                  >
-                    <FiAlertTriangle size={14} />
-                    Item Extra
-                  </button>
-                  {modoConferenciaLote ? (
-                    <>
-                      <button
-                        onClick={handleConfirmarTodos}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs transition-colors"
-                      >
-                        <FiCheckCircle size={14} />
-                        Confirmar Todos
-                      </button>
-                      <button
-                        onClick={handleCancelarLote}
-                        className="flex items-center gap-1 px-3 py-1.5 bg-gray-400 hover:bg-gray-500 text-white rounded-lg text-xs transition-colors"
-                      >
-                        Cancelar
-                      </button>
-                    </>
-                  ) : (
+                  {!mostrarItensSecundarios && (
                     <button
-                      onClick={handleSelecionarTodos}
+                      onClick={() => setShowItemExtraModal(true)}
                       disabled={!podeConferirItens}
                       className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${
                         podeConferirItens 
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                          ? 'bg-orange-600 hover:bg-orange-700 text-white' 
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
-                      title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
+                      title={!podeConferirItens ? 'Apenas usuários da filial de destino podem adicionar itens extras' : 'Registrar item que chegou mas não está na NF'}
                     >
-                      Selecionar Todos
+                      <FiAlertTriangle size={14} />
+                      Item Extra
                     </button>
+                  )}
+                  {mostrarItensSecundarios ? (
+                    /* Botões para itens secundários */
+                    modoConferenciaLoteSecundario ? (
+                      <>
+                        <button
+                          onClick={handleConfirmarTodosSecundarios}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs transition-colors"
+                        >
+                          <FiCheckCircle size={14} />
+                          Confirmar Todos
+                        </button>
+                        <button
+                          onClick={handleCancelarLoteSecundario}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-gray-400 hover:bg-gray-500 text-white rounded-lg text-xs transition-colors"
+                        >
+                          Cancelar
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={handleSelecionarTodosSecundarios}
+                        disabled={!podeConferirItens}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                          podeConferirItens 
+                            ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                        title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
+                      >
+                        Selecionar Todos
+                      </button>
+                    )
+                  ) : (
+                    /* Botões para itens originais */
+                    modoConferenciaLote ? (
+                      <>
+                        <button
+                          onClick={handleConfirmarTodos}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs transition-colors"
+                        >
+                          <FiCheckCircle size={14} />
+                          Confirmar Todos
+                        </button>
+                        <button
+                          onClick={handleCancelarLote}
+                          className="flex items-center gap-1 px-3 py-1.5 bg-gray-400 hover:bg-gray-500 text-white rounded-lg text-xs transition-colors"
+                        >
+                          Cancelar
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={handleSelecionarTodos}
+                        disabled={!podeConferirItens}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                          podeConferirItens 
+                            ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
+                        title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
+                      >
+                        Selecionar Todos
+                      </button>
+                    )
                   )}
                 </div>
               )}
             </div>
             {mostrarItensSecundarios ? (
-              /* Tabela de itens da NF Secundária (apenas visualização) */
+              /* Tabela de itens da NF Secundária com conferência */
               nota.itensSecundarios && nota.itensSecundarios.length > 0 ? (
                 <div className="flex-1 flex flex-col min-h-0 overflow-hidden border border-blue-200 rounded-lg bg-blue-50/30">
                   <table className="w-full flex-shrink-0">
@@ -701,7 +802,9 @@ export function NotaFiscalDetalhes() {
                       <tr>
                         <th className="px-3 py-2 text-left text-xs font-medium text-blue-700 uppercase w-24">Código</th>
                         <th className="px-3 py-2 text-left text-xs font-medium text-blue-700 uppercase">Descrição</th>
-                        <th className="px-3 py-2 text-right text-xs font-medium text-blue-700 uppercase w-24">Quantidade</th>
+                        <th className="px-3 py-2 text-right text-xs font-medium text-blue-700 uppercase w-20">Qtd NF</th>
+                        <th className="px-3 py-2 text-right text-xs font-medium text-blue-700 uppercase w-28">Qtd Conf.</th>
+                        <th className="px-3 py-2 text-center text-xs font-medium text-blue-700 uppercase w-20">Ação</th>
                       </tr>
                     </thead>
                   </table>
@@ -717,13 +820,81 @@ export function NotaFiscalDetalhes() {
                               item.descricao.toLowerCase().includes(termo)
                             )
                           })
-                          .map((item) => (
-                            <tr key={item.id} className="hover:bg-blue-50">
-                              <td className="px-3 py-1.5 text-xs w-24 font-mono">{item.codigo}</td>
-                              <td className="px-3 py-1.5 text-xs">{item.descricao}</td>
-                              <td className="px-3 py-1.5 text-xs text-right w-24 font-medium">{item.quantidade}</td>
-                            </tr>
-                          ))}
+                          .map((item) => {
+                            const emEdicaoSecundario = conferindoItemSecundarioId === item.id
+                            const emLoteSecundario = modoConferenciaLoteSecundario && !item.conferido
+                            
+                            return (
+                              <tr key={item.id} className={`hover:bg-blue-50 ${emEdicaoSecundario || emLoteSecundario ? 'bg-blue-100' : ''}`}>
+                                <td className="px-3 py-1.5 text-xs w-24 font-mono">{item.codigo}</td>
+                                <td className="px-3 py-1.5 text-xs">{item.descricao}</td>
+                                <td className="px-3 py-1.5 text-xs text-right w-20">{Number(item.quantidade)}</td>
+                                <td className="px-3 py-1.5 text-xs text-right w-28">
+                                  {emEdicaoSecundario ? (
+                                    <input
+                                      type="number"
+                                      value={quantidadeConferidaSecundario}
+                                      onChange={(e) => setQuantidadeConferidaSecundario(e.target.value)}
+                                      className="w-20 px-2 py-1 border border-blue-300 rounded text-right text-xs"
+                                      autoFocus
+                                      min="0"
+                                      step="0.01"
+                                    />
+                                  ) : emLoteSecundario ? (
+                                    <input
+                                      type="number"
+                                      value={quantidadesLoteSecundario[item.id] || ''}
+                                      onChange={(e) => setQuantidadesLoteSecundario(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                      className="w-20 px-2 py-1 border border-blue-300 rounded text-right text-xs bg-blue-50"
+                                      min="0"
+                                      step="0.01"
+                                    />
+                                  ) : item.conferido ? (
+                                    <span className={Number(item.quantidadeConferida) !== Number(item.quantidade) ? 'text-red-600 font-medium' : 'text-green-600'}>
+                                      {item.quantidadeConferida}
+                                    </span>
+                                  ) : '-'}
+                                </td>
+                                <td className="px-3 py-1.5 text-center w-20">
+                                  {emEdicaoSecundario ? (
+                                    <div className="flex items-center justify-center gap-1">
+                                      <button
+                                        onClick={() => handleConferirItemSecundario(item.id)}
+                                        className="p-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs"
+                                        title="Confirmar"
+                                      >
+                                        <FiCheckCircle size={12} />
+                                      </button>
+                                      <button
+                                        onClick={() => { setConferindoItemSecundarioId(null); setQuantidadeConferidaSecundario(''); }}
+                                        className="p-1 bg-gray-400 hover:bg-gray-500 text-white rounded text-xs"
+                                        title="Cancelar"
+                                      >
+                                        ✕
+                                      </button>
+                                    </div>
+                                  ) : emLoteSecundario ? (
+                                    <span className="text-blue-600 text-xs">Em lote</span>
+                                  ) : item.conferido ? (
+                                    <span className="text-green-600"><FiCheckCircle size={14} /></span>
+                                  ) : (
+                                    <button
+                                      onClick={() => iniciarConferenciaItemSecundario(item)}
+                                      disabled={!podeConferirItens}
+                                      className={`px-2 py-0.5 rounded text-xs ${
+                                        podeConferirItens 
+                                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                      }`}
+                                      title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
+                                    >
+                                      Conferir
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            )
+                          })}
                       </tbody>
                     </table>
                   </div>
