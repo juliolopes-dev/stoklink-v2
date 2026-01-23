@@ -64,18 +64,38 @@
 - [x] Toggle na página de detalhes para alternar entre itens originais/secundários
 - [x] Tabela de itens secundários com visual diferenciado (azul)
 
+### Fase 8 - Performance e Permissões ✅
+- [x] React Query (TanStack Query) para gerenciamento de estado e cache
+- [x] Paginação no backend (50 itens por página)
+- [x] Todos os filtros processados no backend (não mais no frontend)
+- [x] Debounce de 400ms na busca por NF
+- [x] Admin com permissões completas (pode conferir em qualquer filial)
+- [x] Webhook para mercadoria bloqueada/liberada
+- [x] Hook customizado `useNotasFiscais` com cache e revalidação
+
 ## 3. Última Sessão
-- **Data**: 22/01/2026 (manhã)
+- **Data**: 22/01/2026 (noite)
 - **Mudanças**: 
-  - Implementada funcionalidade de NF Secundária com upload de arquivo TXT
-  - Criado parser para arquivo TXT (código, descrição, quantidade) em `backend/src/utils/txtParser.ts`
-  - Criada tabela `itens_nf_secundaria` para armazenar itens do TXT
-  - Adicionada coluna `txt_secundario` na tabela `notas_fiscais`
-  - Atualizado endpoint `/notas-fiscais/importar-xml` para aceitar arquivo TXT
-  - Frontend: campo de upload TXT na importação de NF secundária
-  - Frontend: toggle para alternar entre lista de produtos original/secundária na página de detalhes
-  - Tabela de itens secundários com visual diferenciado (azul)
-- **Script de migração**: `backend/scripts/add-itens-nf-secundaria.ts` (já executado)
+  - **ADMIN com permissões completas**: Admin pode fazer qualquer conferência (volumes e itens) independente da filial
+  - **Webhook mercadoria bloqueada/liberada**: Implementado webhook que dispara ao bloquear/liberar mercadoria
+  - **React Query + Paginação**: Instalado TanStack Query no frontend com cache e revalidação automática
+  - **Filtros no backend**: Todos os filtros movidos para o backend (status, dataEmissao, filialDestino, entradaRp, mercadoriaBloqueada)
+  - **Paginação**: API retorna `{ data, pagination }` com 50 itens por página
+  - **Debounce 400ms**: Busca por NF com debounce para reduzir requisições
+  - **Hook useNotasFiscais**: Criado em `frontend/src/hooks/useNotasFiscais.ts`
+  - **Fix Dashboard/Conferências**: Corrigido para usar nova estrutura de dados paginada
+
+- **Arquivos modificados**:
+  - `backend/src/services/nota-fiscal.service.ts` - Filtros + paginação
+  - `backend/src/services/conferencia.service.ts` - Admin bypass de filial
+  - `backend/src/services/webhook.service.ts` - Novo método mercadoriaBloqueadaOuLiberada
+  - `backend/src/routes/nota-fiscal.routes.ts` - Novos query params
+  - `frontend/src/App.tsx` - QueryClientProvider
+  - `frontend/src/hooks/useNotasFiscais.ts` - Hook com debounce + React Query
+  - `frontend/src/pages/NotasFiscais/index.tsx` - Refatorado com paginação
+  - `frontend/src/pages/Dashboard.tsx` - Fix API paginada
+  - `frontend/src/pages/Conferencias/index.tsx` - Fix API paginada
+
 - **Deploy**: Pendente - requer rebuild Docker
 
 ## 4. Próximos Passos (Priorizado)
@@ -84,7 +104,7 @@
 - [ ] Testes e ajustes finais
 
 ## 5. Ponto de Retomada
-**Iniciar por**: Telas de administração (CRUD Filiais e Usuários no frontend)
+**Iniciar por**: Deploy das melhorias de performance e permissões do admin
 
 ## 6. Fluxo de Status Padronizado - NF Direta vs Indireta
 
