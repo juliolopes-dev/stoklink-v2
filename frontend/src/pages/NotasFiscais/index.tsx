@@ -1,45 +1,12 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { FiPlus, FiEye, FiFilter, FiSearch, FiPackage, FiRefreshCw, FiCalendar } from 'react-icons/fi'
+import { FiPlus, FiEye, FiFilter, FiSearch, FiPackage, FiRefreshCw, FiCalendar, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Tooltip } from '../../components/Tooltip'
 import { useToast } from '../../contexts/ToastContext'
 import { useAuth } from '../../contexts/AuthContext'
-
-interface NotaFiscal {
-  id: string
-  numero: string
-  numeroSecundario: string | null
-  serie: string | null
-  fornecedorNome: string
-  fornecedorSecundario: {
-    id: string
-    nome: string
-  } | null
-  dataEmissao: string | null
-  dataRecebimento: string | null
-  quantidadeVolumes: number
-  status: string
-  tipoMovimentacao: string
-  transportadora: string | null
-  mercadoriaBloqueada: boolean
-  entradaRp: boolean | null
-  filialRecebimento: {
-    id: string
-    nome: string
-    codigo: string
-  } | null
-  filialDestino: {
-    id: string
-    nome: string
-    codigo: string
-  }
-  _count: {
-    itens: number
-    divergencias: number
-  }
-}
+import { useNotasFiscais } from '../../hooks/useNotasFiscais'
 
 const statusOptions = [
   { value: '', label: 'Todos os status' },
@@ -51,20 +18,33 @@ const statusOptions = [
 ]
 
 export function NotasFiscais() {
-  const [notas, setNotas] = useState<NotaFiscal[]>([])
-  const [loading, setLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('')
   const [rpFilter, setRpFilter] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [updating, setUpdating] = useState(false)
-  const [refreshing, setRefreshing] = useState(false)
   const [dataFiltro, setDataFiltro] = useState('')
   const [bloqueadaFilter, setBloqueadaFilter] = useState('')
   const [filialDestinoFilter, setFilialDestinoFilter] = useState('')
   const [filiais, setFiliais] = useState<{ id: string; nome: string; codigo: string }[]>([])
+  const [page, setPage] = useState(1)
   const dateInputRef = useRef<HTMLInputElement>(null)
   const { showSuccess, showError } = useToast()
   const { user } = useAuth()
+
+  // React Query hook com todos os filtros no backend
+  const { data, isLoading, isFetching, refetch } = useNotasFiscais({
+    status: statusFilter || undefined,
+    searchTerm: searchTerm || undefined,
+    dataEmissao: dataFiltro || undefined,
+    filialDestinoId: (!searchTerm && filialDestinoFilter) ? filialDestinoFilter : undefined,
+    entradaRp: rpFilter === 'SIM' ? 'true' : rpFilter === 'NAO' ? 'false' : undefined,
+    mercadoriaBloqueada: bloqueadaFilter === 'SIM' ? 'true' : bloqueadaFilter === 'NAO' ? 'false' : undefined,
+    page,
+    limit: 50
+  })
+
+  const notas = data?.data || []
+  const pagination = data?.pagination
 
   // Pré-selecionar filial do usuário logado
   useEffect(() => {
@@ -86,74 +66,10 @@ export function NotasFiscais() {
     }
   }
 
+  // Resetar página quando filtros mudam
   useEffect(() => {
-    loadNotas()
-  }, [statusFilter, searchTerm])
-
-  // Recarregar dados quando a página fica visível novamente
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        loadNotas()
-      }
-    }
-
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
-  }, [statusFilter])
-
-  async function loadNotas(showRefresh = false) {
-    if (showRefresh) {
-      setRefreshing(true)
-    } else {
-      setLoading(true)
-    }
-    try {
-      const params = new URLSearchParams()
-      if (statusFilter) params.append('status', statusFilter)
-      if (searchTerm) params.append('searchTerm', searchTerm)
-      
-      const response = await api.get(`/notas-fiscais?${params.toString()}`)
-      setNotas(response.data)
-    } catch (error) {
-      console.error('Erro ao carregar notas fiscais:', error)
-    } finally {
-      setLoading(false)
-      setRefreshing(false)
-    }
-  }
-
-  const filteredNotas = notas.filter(nf => {
-    // Filtro de busca - agora feito no backend quando searchTerm existe
-    // Mantém apenas filtros locais que não são enviados ao backend
-    
-    // Filtro RP (Entrada no RP)
-    if (rpFilter === 'SIM') {
-      if (!nf.entradaRp) return false
-    } else if (rpFilter === 'NAO') {
-      if (nf.entradaRp) return false
-    }
-
-    // Filtro por data
-    if (dataFiltro && nf.dataEmissao) {
-      const nfDate = new Date(nf.dataEmissao).toISOString().split('T')[0]
-      if (nfDate !== dataFiltro) return false
-    }
-
-    // Filtro por filial de destino - IGNORAR quando houver busca por número
-    if (filialDestinoFilter && !searchTerm && nf.filialDestino.id !== filialDestinoFilter) {
-      return false
-    }
-
-    // Filtro por mercadoria bloqueada
-    if (bloqueadaFilter === 'SIM') {
-      if (!nf.mercadoriaBloqueada) return false
-    } else if (bloqueadaFilter === 'NAO') {
-      if (nf.mercadoriaBloqueada) return false
-    }
-    
-    return true
-  })
+    setPage(1)
+  }, [statusFilter, searchTerm, dataFiltro, filialDestinoFilter, rpFilter, bloqueadaFilter])
 
   async function handleRpChange(nfId: string, value: string) {
     setUpdating(true)
@@ -161,7 +77,7 @@ export function NotasFiscais() {
       await api.put(`/notas-fiscais/${nfId}`, {
         entradaRp: value === 'SIM'
       })
-      await loadNotas()
+      await refetch()
       showSuccess('Entrada RP atualizada!')
     } catch (error) {
       console.error('Erro ao atualizar RP:', error)
@@ -189,12 +105,12 @@ export function NotasFiscais() {
             <h1 className="text-lg font-semibold text-gray-800">Notas Fiscais</h1>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => loadNotas(true)}
-                disabled={refreshing}
+                onClick={() => refetch()}
+                disabled={isFetching}
                 className="h-9 flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 rounded-md transition-colors text-sm disabled:opacity-50"
                 title="Atualizar lista"
               >
-                <FiRefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
+                <FiRefreshCw size={16} className={isFetching ? 'animate-spin' : ''} />
               </button>
               <Link
                 to="/notas-fiscais/nova"
@@ -298,11 +214,11 @@ export function NotasFiscais() {
           </div>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
           </div>
-        ) : filteredNotas.length === 0 ? (
+        ) : notas.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500">
             <FiPackage size={48} className="mb-4" />
             <p>Nenhuma nota fiscal encontrada</p>
@@ -336,7 +252,7 @@ export function NotasFiscais() {
                 </tr>
               </thead>
               <tbody>
-                {filteredNotas.map((nf) => (
+                {notas.map((nf) => (
                   <tr key={nf.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
                     <td className="px-3 py-2 max-w-[250px]">
                       <div>
@@ -476,8 +392,37 @@ export function NotasFiscais() {
             </table>
           </div>
         )}
-      </div>
 
+        {/* Paginação */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="p-3 border-t border-gray-200 flex items-center justify-between flex-shrink-0">
+            <div className="text-sm text-gray-600">
+              Mostrando {((page - 1) * pagination.limit) + 1} - {Math.min(page * pagination.limit, pagination.total)} de {pagination.total} notas
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={page === 1 || isFetching}
+                className="h-8 px-3 flex items-center gap-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <FiChevronLeft size={16} />
+                Anterior
+              </button>
+              <span className="text-sm text-gray-600">
+                Página {page} de {pagination.totalPages}
+              </span>
+              <button
+                onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                disabled={!pagination.hasMore || isFetching}
+                className="h-8 px-3 flex items-center gap-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Próxima
+                <FiChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

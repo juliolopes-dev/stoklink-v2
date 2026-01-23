@@ -57,7 +57,12 @@ const listFiltersSchema = z.object({
   filialDestinoId: z.string().uuid().optional(),
   dataInicio: z.coerce.date().optional(),
   dataFim: z.coerce.date().optional(),
-  searchTerm: z.string().optional()
+  dataEmissao: z.string().optional(),
+  searchTerm: z.string().optional(),
+  entradaRp: z.enum(['true', 'false']).transform(v => v === 'true').optional(),
+  mercadoriaBloqueada: z.enum(['true', 'false']).transform(v => v === 'true').optional(),
+  page: z.coerce.number().int().positive().optional(),
+  limit: z.coerce.number().int().positive().max(100).optional()
 })
 
 const idParamSchema = z.object({

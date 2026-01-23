@@ -49,7 +49,23 @@ interface ListNotasFiscaisFilters {
   filialDestinoId?: string
   dataInicio?: Date
   dataFim?: Date
+  dataEmissao?: string
   searchTerm?: string
+  entradaRp?: boolean
+  mercadoriaBloqueada?: boolean
+  page?: number
+  limit?: number
+}
+
+interface PaginatedResult<T> {
+  data: T[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    hasMore: boolean
+  }
 }
 
 export class NotaFiscalService {
@@ -234,8 +250,11 @@ export class NotaFiscalService {
     return notaFiscal
   }
 
-  async findAll(filters?: ListNotasFiscaisFilters) {
+  async findAll(filters?: ListNotasFiscaisFilters): Promise<PaginatedResult<any>> {
     const where: Record<string, unknown> = {}
+    const page = filters?.page || 1
+    const limit = filters?.limit || 50
+    const skip = (page - 1) * limit
 
     if (filters?.status) {
       where.status = filters.status
@@ -254,6 +273,7 @@ export class NotaFiscalService {
       }
     }
 
+    // Filtro por data de recebimento (range)
     if (filters?.dataInicio || filters?.dataFim) {
       where.dataRecebimento = {}
       if (filters.dataInicio) {
@@ -264,7 +284,27 @@ export class NotaFiscalService {
       }
     }
 
-    // Adicionar busca por número exato ou fornecedor
+    // Filtro por data de emissão (dia específico)
+    if (filters?.dataEmissao) {
+      const dataInicio = new Date(filters.dataEmissao + 'T00:00:00.000Z')
+      const dataFim = new Date(filters.dataEmissao + 'T23:59:59.999Z')
+      where.dataEmissao = {
+        gte: dataInicio,
+        lte: dataFim
+      }
+    }
+
+    // Filtro por entrada RP
+    if (filters?.entradaRp !== undefined) {
+      where.entradaRp = filters.entradaRp
+    }
+
+    // Filtro por mercadoria bloqueada
+    if (filters?.mercadoriaBloqueada !== undefined) {
+      where.mercadoriaBloqueada = filters.mercadoriaBloqueada
+    }
+
+    // Busca por número exato
     if (hasSearchTerm) {
       const search = filters.searchTerm!.trim()
       where.OR = [
@@ -273,40 +313,59 @@ export class NotaFiscalService {
       ]
     }
 
-    const notas = await prisma.notaFiscal.findMany({
-      where,
-      include: {
-        filialRecebimento: {
-          select: { id: true, nome: true, codigo: true }
+    // Executar count e query em paralelo para performance
+    const [total, notas] = await Promise.all([
+      prisma.notaFiscal.count({ where }),
+      prisma.notaFiscal.findMany({
+        where,
+        include: {
+          filialRecebimento: {
+            select: { id: true, nome: true, codigo: true }
+          },
+          filialDestino: {
+            select: { id: true, nome: true, codigo: true }
+          },
+          fornecedorSecundario: {
+            select: { id: true, nome: true }
+          },
+          usuarioCadastro: {
+            select: { id: true, nome: true }
+          },
+          conferenciasVolumes: {
+            select: { transportadora: true } as any,
+            where: { transportadora: { not: null } } as any,
+            take: 1,
+            orderBy: { dataConferencia: 'asc' } as any
+          },
+          _count: {
+            select: { itens: true, divergencias: true }
+          }
         },
-        filialDestino: {
-          select: { id: true, nome: true, codigo: true }
-        },
-        fornecedorSecundario: {
-          select: { id: true, nome: true }
-        },
-        usuarioCadastro: {
-          select: { id: true, nome: true }
-        },
-        conferenciasVolumes: {
-          select: { transportadora: true } as any,
-          where: { transportadora: { not: null } } as any,
-          take: 1,
-          orderBy: { dataConferencia: 'asc' } as any
-        },
-        _count: {
-          select: { itens: true, divergencias: true }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit
+      })
+    ])
+
+    const totalPages = Math.ceil(total / limit)
 
     // Mapear para incluir transportadora no nível da nota
-    return notas.map((nota: any) => ({
+    const data = notas.map((nota: any) => ({
       ...nota,
       transportadora: nota.conferenciasVolumes[0]?.transportadora || null,
       conferenciasVolumes: undefined
     }))
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasMore: page < totalPages
+      }
+    }
   }
 
   async findById(id: string) {
