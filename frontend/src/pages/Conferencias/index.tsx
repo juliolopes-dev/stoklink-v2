@@ -37,9 +37,10 @@ export function Conferencias() {
   async function loadNotas() {
     setLoading(true)
     try {
-      const response = await api.get('/notas-fiscais')
+      const response = await api.get('/notas-fiscais?limit=100')
       // Filtrar apenas NFs que podem ter volumes conferidos
-      const pendentes = response.data.filter((nf: NotaFiscal) => 
+      const nfs = response.data.data || []
+      const pendentes = nfs.filter((nf: NotaFiscal) => 
         ['AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA', 'VOLUMES_DIVERGENTES'].includes(nf.status)
       )
       setNotas(pendentes)

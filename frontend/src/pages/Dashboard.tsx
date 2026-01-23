@@ -31,7 +31,8 @@ export function Dashboard() {
           api.get('/distribuicoes/resumo')
         ])
 
-        const nfs = nfsRes.data
+        const nfs = nfsRes.data.data || []
+        const totalNfs = nfsRes.data.pagination?.total || nfs.length
         const aguardando = nfs.filter((nf: { status: string }) => 
           ['AGUARDANDO_CONFERENCIA', 'VOLUMES_CONFERIDOS', 'BLOQUEADO'].includes(nf.status)
         ).length
@@ -41,7 +42,7 @@ export function Dashboard() {
 
         setResumo({
           notasFiscais: {
-            total: nfs.length,
+            total: totalNfs,
             aguardando,
             conferidas
           },
