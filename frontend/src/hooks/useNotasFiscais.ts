@@ -8,6 +8,11 @@ interface NotaFiscal {
   numeroSecundario: string | null
   serie: string | null
   fornecedorNome: string
+  fornecedor: {
+    id: string
+    nome: string
+    codigo: string | null
+  } | null
   fornecedorSecundario: {
     id: string
     nome: string
