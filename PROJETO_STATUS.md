@@ -85,32 +85,36 @@
 - [x] `findOrCreate` modificado para exigir fornecedor cadastrado previamente
 
 ## 3. Última Sessão
-- **Data**: 25/01/2026 (noite)
+- **Data**: 26/01/2026 (madrugada)
 - **Mudanças**: 
-  - **Códigos de Fornecedores**: Migrados 845 códigos do sistema antigo via CSV
-  - **Validação de CNPJ**: Importação de XML agora exige CNPJ obrigatório
-  - **Bloqueio de criação automática**: Fornecedores devem ser cadastrados antes da importação
-  - **Script de comparação**: Criado script TypeScript para mapear fornecedores (CNPJ + Nome)
-  - **Cadastro de faltantes**: 6 fornecedores do CSV cadastrados automaticamente
-  - **Atualização de duplicados**: 23 registros duplicados receberam códigos corretos
-  - **Taxa de sucesso**: 849/853 fornecedores com código (99,5%)
-  - **Schema Prisma**: Adicionado campo `codigo` opcional no model Fornecedor
+  - **Código de Reserva**: Implementado cálculo automático (2 últimos dígitos do fornecedor + número NF)
+  - **Modal de NFs por Fornecedor**: Clique no número de NFs abre modal com detalhes completos
+  - **Identificação de NFs Secundárias**: Badge roxo "Secundária" para fácil identificação
+  - **Limpeza de Duplicados**: Removidos 9 fornecedores duplicados sem NFs
+  - **Mesclagem de Fornecedor**: MHT IND. COM. mesclado (2 cadastros → 1 com 5 NFs)
+  - **Coluna Código de Reserva**: Adicionada na lista de NFs (exibe quando status = CONFERIDO_OK)
+  - **Contagem de NFs**: Agora inclui NFs secundárias na lista de fornecedores
+  - **Campo fornecedor**: Incluído no backend da lista de NFs para exibir código
 
 - **Arquivos modificados**:
-  - `backend/prisma/schema.prisma` - Adicionado campo `codigo` no model Fornecedor
-  - `backend/src/services/fornecedor.service.ts` - Modificado `findOrCreate` para exigir CNPJ e bloquear criação automática
-  - `backend/scripts/comparar-codigos-fornecedores.ts` - Script de análise e comparação CSV vs Banco
-  - `backend/scripts/adicionar-codigos-fornecedores.ts` - Script de migração dos códigos
-  - `backend/scripts/cadastrar-fornecedores-faltantes.ts` - Script para cadastrar 6 fornecedores faltantes
-  - `backend/scripts/adicionar-codigos-faltantes.ts` - Script para adicionar códigos aos duplicados
+  - `backend/src/services/fornecedor.service.ts` - Adicionado `numeroSecundario` no select, incluído `notasFiscaisSecundario` no findById
+  - `backend/src/services/nota-fiscal.service.ts` - Adicionado campo `fornecedor` no findAll
+  - `frontend/src/pages/Fornecedores/index.tsx` - Modal de NFs, cálculo de código de reserva, badge secundária
+  - `frontend/src/pages/NotasFiscais/index.tsx` - Coluna código de reserva, exibição condicional
+  - `frontend/src/hooks/useNotasFiscais.ts` - Interface NotaFiscal com campo fornecedor
+  - `backend/scripts/limpar-fornecedores-duplicados.ts` - Script de limpeza de duplicados
+  - `backend/scripts/mesclar-fornecedor-duplicado.ts` - Script de mesclagem do MHT
+  - `backend/scripts/listar-fornecedores-sem-cnpj-com-nfs.ts` - Script de análise
+  - `ATUALIZACAO_26-01-2026.md` - Documentação das melhorias
 
 - **Impacto**: 
-  - ✅ Elimina duplicação de fornecedores na importação de XML
-  - ✅ Garante integridade dos dados (CNPJ obrigatório)
-  - ✅ Mantém compatibilidade com sistema antigo (códigos migrados)
-  - ⚠️ Usuários devem cadastrar fornecedores antes de importar XMLs
+  - ✅ Rastreabilidade facilitada com código de reserva
+  - ✅ Banco de dados limpo (853 → 841 fornecedores)
+  - ✅ Informações completas sobre NFs de cada fornecedor
+  - ✅ Identificação visual de NFs secundárias
+  - ✅ Acesso rápido aos detalhes das NFs
 
-- **Deploy**: Pendente - requer rebuild Docker + regenerar Prisma Client
+- **Deploy**: ✅ Concluído - commit ffa8cb8 + fix 03ad9e1
 
 ## 4. Próximos Passos (Priorizado)
 - [ ] Telas de Admin (Filiais, Usuários)

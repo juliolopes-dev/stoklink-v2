@@ -107,6 +107,11 @@ stoklink_v2/
 - [x] Validação e normalização de CNPJ
 - [x] Listagem de fornecedores ativos
 - [x] Resumo de fornecedores
+- [x] Campo codigo (importado de sistema legado)
+- [x] Modal de NFs por fornecedor (clicável na lista)
+- [x] Contagem de NFs principais + secundárias
+- [x] Limpeza de fornecedores duplicados
+- [x] Identificação visual de NFs secundárias
 
 ### ✅ Gestão de Transportadoras
 - [x] CRUD completo de transportadoras
@@ -127,6 +132,8 @@ stoklink_v2/
 - [x] Toggle entre itens originais/secundários
 - [x] Campo entrada_rp (RP-SIM/RP-NÃO)
 - [x] Bloqueio/liberação de mercadoria
+- [x] Código de Reserva (2 últimos dígitos do fornecedor + número NF)
+- [x] Exibição de código de reserva quando status = CONFERIDO_OK
 
 ### ✅ Conferência de Volumes
 - [x] Conferência de volumes recebidos
@@ -713,8 +720,11 @@ Parser de TXT, tabela de itens secundários, upload de arquivo, toggle de visual
 ### Fase 8 - Performance e Permissões (Completa)
 React Query, paginação, filtros no backend, debounce, permissões admin, webhooks de bloqueio.
 
+### Fase 9 - Códigos de Fornecedores e Código de Reserva (Completa)
+Campo codigo nos fornecedores, código de reserva nas NFs, modal de NFs por fornecedor, limpeza de duplicados, identificação de NFs secundárias.
+
 ---
 
-**Última Atualização**: 25/01/2026
-**Versão**: 2.0
-**Status**: Em produção (deploy pendente da Fase 8)
+**Última Atualização**: 26/01/2026
+**Versão**: 2.1
+**Status**: Em produção
