@@ -73,30 +73,44 @@
 - [x] Webhook para mercadoria bloqueada/liberada
 - [x] Hook customizado `useNotasFiscais` com cache e revalidação
 
+### Fase 9 - Códigos de Fornecedores e Validação de CNPJ ✅
+- [x] Adicionada coluna `codigo` na tabela `fornecedores`
+- [x] Criado índice `idx_fornecedores_codigo` para busca rápida
+- [x] Migração de 845 códigos do sistema antigo (CSV)
+- [x] Script de comparação e mapeamento de fornecedores (CNPJ + Nome)
+- [x] Cadastro automático de 6 fornecedores faltantes do CSV
+- [x] 849 de 853 fornecedores com código (99,5%)
+- [x] Validação obrigatória de CNPJ na importação de XML
+- [x] Bloqueio de criação automática de fornecedores
+- [x] `findOrCreate` modificado para exigir fornecedor cadastrado previamente
+
 ## 3. Última Sessão
-- **Data**: 22/01/2026 (noite)
+- **Data**: 25/01/2026 (noite)
 - **Mudanças**: 
-  - **ADMIN com permissões completas**: Admin pode fazer qualquer conferência (volumes e itens) independente da filial
-  - **Webhook mercadoria bloqueada/liberada**: Implementado webhook que dispara ao bloquear/liberar mercadoria
-  - **React Query + Paginação**: Instalado TanStack Query no frontend com cache e revalidação automática
-  - **Filtros no backend**: Todos os filtros movidos para o backend (status, dataEmissao, filialDestino, entradaRp, mercadoriaBloqueada)
-  - **Paginação**: API retorna `{ data, pagination }` com 50 itens por página
-  - **Debounce 400ms**: Busca por NF com debounce para reduzir requisições
-  - **Hook useNotasFiscais**: Criado em `frontend/src/hooks/useNotasFiscais.ts`
-  - **Fix Dashboard/Conferências**: Corrigido para usar nova estrutura de dados paginada
+  - **Códigos de Fornecedores**: Migrados 845 códigos do sistema antigo via CSV
+  - **Validação de CNPJ**: Importação de XML agora exige CNPJ obrigatório
+  - **Bloqueio de criação automática**: Fornecedores devem ser cadastrados antes da importação
+  - **Script de comparação**: Criado script TypeScript para mapear fornecedores (CNPJ + Nome)
+  - **Cadastro de faltantes**: 6 fornecedores do CSV cadastrados automaticamente
+  - **Atualização de duplicados**: 23 registros duplicados receberam códigos corretos
+  - **Taxa de sucesso**: 849/853 fornecedores com código (99,5%)
+  - **Schema Prisma**: Adicionado campo `codigo` opcional no model Fornecedor
 
 - **Arquivos modificados**:
-  - `backend/src/services/nota-fiscal.service.ts` - Filtros + paginação
-  - `backend/src/services/conferencia.service.ts` - Admin bypass de filial
-  - `backend/src/services/webhook.service.ts` - Novo método mercadoriaBloqueadaOuLiberada
-  - `backend/src/routes/nota-fiscal.routes.ts` - Novos query params
-  - `frontend/src/App.tsx` - QueryClientProvider
-  - `frontend/src/hooks/useNotasFiscais.ts` - Hook com debounce + React Query
-  - `frontend/src/pages/NotasFiscais/index.tsx` - Refatorado com paginação
-  - `frontend/src/pages/Dashboard.tsx` - Fix API paginada
-  - `frontend/src/pages/Conferencias/index.tsx` - Fix API paginada
+  - `backend/prisma/schema.prisma` - Adicionado campo `codigo` no model Fornecedor
+  - `backend/src/services/fornecedor.service.ts` - Modificado `findOrCreate` para exigir CNPJ e bloquear criação automática
+  - `backend/scripts/comparar-codigos-fornecedores.ts` - Script de análise e comparação CSV vs Banco
+  - `backend/scripts/adicionar-codigos-fornecedores.ts` - Script de migração dos códigos
+  - `backend/scripts/cadastrar-fornecedores-faltantes.ts` - Script para cadastrar 6 fornecedores faltantes
+  - `backend/scripts/adicionar-codigos-faltantes.ts` - Script para adicionar códigos aos duplicados
 
-- **Deploy**: Pendente - requer rebuild Docker
+- **Impacto**: 
+  - ✅ Elimina duplicação de fornecedores na importação de XML
+  - ✅ Garante integridade dos dados (CNPJ obrigatório)
+  - ✅ Mantém compatibilidade com sistema antigo (códigos migrados)
+  - ⚠️ Usuários devem cadastrar fornecedores antes de importar XMLs
+
+- **Deploy**: Pendente - requer rebuild Docker + regenerar Prisma Client
 
 ## 4. Próximos Passos (Priorizado)
 - [ ] Telas de Admin (Filiais, Usuários)

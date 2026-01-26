@@ -3,10 +3,12 @@ import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiPhone, FiMail } from 'react-icon
 import { api } from '../../services/api'
 import { useAuth } from '../../contexts/AuthContext'
 import { useModal } from '../../contexts/ModalContext'
+import { StatusBadge } from '../../components/StatusBadge'
 
 interface Fornecedor {
   id: string
   nome: string
+  codigo: string | null
   cnpj: string | null
   email: string | null
   telefone: string | null
@@ -17,11 +19,13 @@ interface Fornecedor {
   ativo: boolean
   _count: {
     notasFiscais: number
+    notasFiscaisSecundario: number
   }
 }
 
 interface FornecedorForm {
   nome: string
+  codigo: string
   cnpj: string
   email: string
   telefone: string
@@ -33,6 +37,7 @@ interface FornecedorForm {
 
 const initialForm: FornecedorForm = {
   nome: '',
+  codigo: '',
   cnpj: '',
   email: '',
   telefone: '',
@@ -55,6 +60,10 @@ export function Fornecedores() {
   const [form, setForm] = useState<FornecedorForm>(initialForm)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [showNfsModal, setShowNfsModal] = useState(false)
+  const [selectedFornecedor, setSelectedFornecedor] = useState<Fornecedor | null>(null)
+  const [nfsList, setNfsList] = useState<any[]>([])
+  const [loadingNfs, setLoadingNfs] = useState(false)
 
   useEffect(() => {
     loadFornecedores()
@@ -77,6 +86,7 @@ export function Fornecedores() {
       setEditingId(fornecedor.id)
       setForm({
         nome: fornecedor.nome,
+        codigo: fornecedor.codigo || '',
         cnpj: fornecedor.cnpj || '',
         email: fornecedor.email || '',
         telefone: fornecedor.telefone || '',
@@ -136,6 +146,49 @@ export function Fornecedores() {
     }
   }
 
+  async function handleShowNfs(fornecedor: Fornecedor) {
+    const totalNfs = fornecedor._count.notasFiscais + fornecedor._count.notasFiscaisSecundario
+    if (totalNfs === 0) return
+
+    setSelectedFornecedor(fornecedor)
+    setShowNfsModal(true)
+    setLoadingNfs(true)
+
+    try {
+      const response = await api.get(`/fornecedores/${fornecedor.id}`)
+      const codigoFornecedor = response.data.codigo || ''
+      const ultimosDigitos = codigoFornecedor.slice(-2) // Pega os 2 últimos dígitos do código
+      
+      const nfsPrincipais = (response.data.notasFiscais || []).map((nf: any) => {
+        // Se tem numeroSecundario, usa ele. Senão, usa o numero original
+        const numeroParaReserva = nf.numeroSecundario || nf.numero
+        const codigoReserva = ultimosDigitos + numeroParaReserva
+        return { ...nf, isSecundaria: false, codigoReserva }
+      })
+      
+      const nfsSecundarias = (response.data.notasFiscaisSecundario || []).map((nf: any) => {
+        // Se tem numeroSecundario, usa ele. Senão, usa o numero original
+        const numeroParaReserva = nf.numeroSecundario || nf.numero
+        const codigoReserva = ultimosDigitos + numeroParaReserva
+        return { ...nf, isSecundaria: true, codigoReserva }
+      })
+      
+      // Combinar as duas listas e ordenar por data
+      const todasNfs = [...nfsPrincipais, ...nfsSecundarias].sort((a, b) => {
+        const dateA = a.dataRecebimento ? new Date(a.dataRecebimento).getTime() : 0
+        const dateB = b.dataRecebimento ? new Date(b.dataRecebimento).getTime() : 0
+        return dateB - dateA // Mais recente primeiro
+      })
+      
+      setNfsList(todasNfs)
+    } catch (error) {
+      console.error('Erro ao carregar NFs:', error)
+      setNfsList([])
+    } finally {
+      setLoadingNfs(false)
+    }
+  }
+
   const filteredFornecedores = fornecedores.filter(f => {
     if (!searchTerm) return true
     const search = searchTerm.toLowerCase()
@@ -192,13 +245,14 @@ export function Fornecedores() {
             <table className="w-full border-collapse flex-shrink-0">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Nome</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">CNPJ</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Contato</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">NFs</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-[30%]">Nome</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-[8%]">Código</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-[12%]">CNPJ</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-[20%]">Contato</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase w-[8%]">NFs</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase w-[10%]">Status</th>
                   {canManage && (
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Ações</th>
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase w-[12%]">Ações</th>
                   )}
                 </tr>
               </thead>
@@ -208,16 +262,19 @@ export function Fornecedores() {
                 <tbody>
                   {filteredFornecedores.map((fornecedor) => (
                   <tr key={fornecedor.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 w-[30%]">
                       <p className="font-medium text-gray-900">{fornecedor.nome}</p>
                       {fornecedor.cidade && (
                         <p className="text-sm text-gray-500">{fornecedor.cidade}{fornecedor.uf ? ` - ${fornecedor.uf}` : ''}</p>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600 w-[8%]">
+                      {fornecedor.codigo || '-'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600 w-[12%]">
                       {fornecedor.cnpj || '-'}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 w-[20%]">
                       <div className="space-y-1">
                         {fornecedor.email && (
                           <div className="flex items-center gap-1 text-sm text-gray-600">
@@ -236,12 +293,20 @@ export function Fornecedores() {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="px-2 py-1 bg-gray-100 rounded text-sm">
-                        {fornecedor._count.notasFiscais}
-                      </span>
+                    <td className="px-4 py-3 text-center w-[8%]">
+                      <button
+                        onClick={() => handleShowNfs(fornecedor)}
+                        disabled={fornecedor._count.notasFiscais + fornecedor._count.notasFiscaisSecundario === 0}
+                        className={`px-2 py-1 rounded text-sm transition-colors ${
+                          fornecedor._count.notasFiscais + fornecedor._count.notasFiscaisSecundario > 0
+                            ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 cursor-pointer'
+                            : 'bg-gray-100 text-gray-600 cursor-default'
+                        }`}
+                      >
+                        {fornecedor._count.notasFiscais + fornecedor._count.notasFiscaisSecundario}
+                      </button>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center w-[10%]">
                       <button
                         onClick={() => canManage && handleToggleAtivo(fornecedor)}
                         disabled={!canManage}
@@ -255,7 +320,7 @@ export function Fornecedores() {
                       </button>
                     </td>
                     {canManage && (
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-3 text-right w-[12%]">
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => openModal(fornecedor)}
@@ -309,6 +374,16 @@ export function Fornecedores() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Código</label>
+                  <input
+                    type="text"
+                    value={form.codigo}
+                    onChange={(e) => setForm({ ...form, codigo: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    placeholder="Ex: 000001"
+                  />
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNPJ</label>
                   <input
@@ -399,6 +474,85 @@ export function Fornecedores() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showNfsModal && selectedFornecedor && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
+            <div className="p-6 border-b border-gray-200 flex-shrink-0">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Notas Fiscais - {selectedFornecedor.nome}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Total: {selectedFornecedor._count.notasFiscais + selectedFornecedor._count.notasFiscaisSecundario} nota(s)
+              </p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-6">
+              {loadingNfs ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                </div>
+              ) : nfsList.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  Nenhuma nota fiscal encontrada
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {nfsList.map((nf) => (
+                    <div
+                      key={nf.id}
+                      className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-gray-900">NF {nf.numero}</p>
+                          {nf.isSecundaria && (
+                            <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-medium rounded">
+                              Secundária
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 mt-1">
+                          {nf.dataRecebimento && (
+                            <p className="text-sm text-gray-500">
+                              Recebida em: {new Date(nf.dataRecebimento).toLocaleDateString('pt-BR')}
+                            </p>
+                          )}
+                          {nf.codigoReserva && (
+                            <p className="text-sm font-medium text-blue-600">
+                              Cód. Reserva: {nf.codigoReserva}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        {nf.valorTotal && (
+                          <span className="text-sm font-medium text-gray-700">
+                            {new Intl.NumberFormat('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL'
+                            }).format(nf.valorTotal)}
+                          </span>
+                        )}
+                        <StatusBadge status={nf.status} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex-shrink-0">
+              <button
+                onClick={() => setShowNfsModal(false)}
+                className="w-full px-6 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
+              >
+                Fechar
+              </button>
+            </div>
           </div>
         </div>
       )}

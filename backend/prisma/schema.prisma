@@ -35,6 +35,7 @@ model Fornecedor {
   empresaId              String       @map("empresa_id")
   nome                   String
   cnpj                   String?
+  codigo                 String?
   email                  String?
   telefone               String?
   endereco               String?

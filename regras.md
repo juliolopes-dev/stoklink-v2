@@ -14,13 +14,7 @@
 - Sempre use nomes das tabelas e colunas do banco de dados em Portugues.
 - Sempre use timezone America/Sao_Paulo Brasil é UTC-3 em toda aplicação, incluido banco de dados.
 
-### 3. MCP (Model Context Protocol)
-- Use MCP para consultar bancos de dados (banco-bezerra, stoklink-v2, eisen-agente-banco-dados)
-- Use MCP para pesquisas na web (perplexity-ask) quando precisar de informações atualizadas
-- Use MCP para automações n8n (n8n-mcp) quando trabalhar com workflows
-- Use MCP para testes de interface (playwright) quando precisar validar UI
-- Use MCP para buscar documentação de bibliotecas (context7-docs) quando precisar de docs atualizadas
-- Sempre prefira MCP ao invés de comandos manuais quando disponível
+
 
 ### 4. Alterações
 - Sempre que precisar alterar algo, não mexa no que já está funcionando. Apenas altere o que está errado.

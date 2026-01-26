@@ -246,6 +246,9 @@ export function NotasFiscais() {
                   <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
+                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">
+                    Cód. Reserva
+                  </th>
                   <th className="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">
                     Ações
                   </th>
@@ -345,6 +348,13 @@ export function NotasFiscais() {
                         status={nf.status} 
                         filialRecebimento={nf.filialRecebimento?.nome}
                       />
+                    </td>
+                    <td className="px-3 py-2">
+                      {nf.status === 'CONFERIDO_OK' && nf.fornecedor?.codigo && (
+                        <span className="text-sm font-medium text-blue-600">
+                          {nf.fornecedor.codigo.slice(-2)}{nf.numeroSecundario || nf.numero}
+                        </span>
+                      )}
                     </td>
                     <td className="px-3 py-2 text-right">
                       <div className="flex items-center justify-end gap-2">

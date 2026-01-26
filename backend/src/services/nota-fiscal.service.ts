@@ -325,6 +325,9 @@ export class NotaFiscalService {
           filialDestino: {
             select: { id: true, nome: true, codigo: true }
           },
+          fornecedor: {
+            select: { id: true, nome: true, codigo: true }
+          },
           fornecedorSecundario: {
             select: { id: true, nome: true }
           },

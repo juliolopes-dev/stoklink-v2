@@ -36,7 +36,8 @@ export const fornecedorService = {
       include: {
         _count: {
           select: {
-            notasFiscais: true
+            notasFiscais: true,
+            notasFiscaisSecundario: true
           }
         }
       }
@@ -48,11 +49,22 @@ export const fornecedorService = {
       where: { id, empresaId },
       include: {
         notasFiscais: {
-          take: 10,
           orderBy: { createdAt: 'desc' },
           select: {
             id: true,
             numero: true,
+            numeroSecundario: true,
+            dataRecebimento: true,
+            status: true,
+            valorTotal: true
+          }
+        },
+        notasFiscaisSecundario: {
+          orderBy: { createdAt: 'desc' },
+          select: {
+            id: true,
+            numero: true,
+            numeroSecundario: true,
             dataRecebimento: true,
             status: true,
             valorTotal: true
@@ -60,7 +72,8 @@ export const fornecedorService = {
         },
         _count: {
           select: {
-            notasFiscais: true
+            notasFiscais: true,
+            notasFiscaisSecundario: true
           }
         }
       }
@@ -77,22 +90,29 @@ export const fornecedorService = {
   async findOrCreate(empresaId: string, nome: string, cnpj?: string) {
     const cnpjNormalizado = normalizeCnpj(cnpj)
     
-    // Se tem CNPJ, tenta encontrar por CNPJ
-    if (cnpjNormalizado) {
-      const existente = await prisma.fornecedor.findFirst({
-        where: { cnpj: cnpjNormalizado, empresaId }
-      })
-      if (existente) return existente
+    // CNPJ é obrigatório para importação de notas fiscais
+    if (!cnpjNormalizado) {
+      throw new Error(
+        `Fornecedor "${nome}" não possui CNPJ no XML. ` +
+        `Não é possível importar notas fiscais sem CNPJ do fornecedor.`
+      )
     }
 
-    // Cria novo fornecedor
-    return prisma.fornecedor.create({
-      data: {
-        empresaId,
-        nome,
-        cnpj: cnpjNormalizado
-      }
+    // Busca fornecedor por CNPJ
+    const existente = await prisma.fornecedor.findFirst({
+      where: { cnpj: cnpjNormalizado, empresaId }
     })
+
+    // Se não encontrou, retorna erro - não cria automaticamente
+    if (!existente) {
+      throw new Error(
+        `Fornecedor não encontrado no banco de dados. ` +
+        `CNPJ: ${cnpj} - Nome: ${nome}. ` +
+        `Cadastre o fornecedor antes de importar a nota fiscal.`
+      )
+    }
+
+    return existente
   },
 
   async create(data: CreateFornecedorInput) {
