@@ -8,7 +8,8 @@ import {
   FiTruck,
   FiFileText,
   FiEdit2,
-  FiTrash2
+  FiTrash2,
+  FiDownload
 } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
@@ -158,6 +159,25 @@ export function NotaFiscalDetalhes() {
   // Upload de DANF secundário
   const [uploadingDanf, setUploadingDanf] = useState(false)
   const [danfFile, setDanfFile] = useState<File | null>(null)
+  
+  // Buscar itens secundários do BD-BEZERRA
+  const [loadingBuscarItens, setLoadingBuscarItens] = useState(false)
+  const [showFilialModal, setShowFilialModal] = useState(false)
+  const [filialSelecionada, setFilialSelecionada] = useState('')
+  
+  // Separação Finalizada (Distribuição Imediata)
+  const [loadingSeparacao, setLoadingSeparacao] = useState(false)
+  const [showConfirmSeparacao, setShowConfirmSeparacao] = useState(false)
+  
+  // Opções de filiais do BD-BEZERRA
+  const filiaisBezerra = [
+    { codigo: '00', nome: 'Petrolina' },
+    { codigo: '01', nome: 'Juazeiro' },
+    { codigo: '02', nome: 'Salgueiro' },
+    { codigo: '04', nome: 'Filial 04' },
+    { codigo: '05', nome: 'Bonfim' },
+    { codigo: '06', nome: 'Picos' }
+  ]
   
   // Conferência de itens inline
   const [conferindoItemId, setConferindoItemId] = useState<string | null>(null)
@@ -490,6 +510,38 @@ export function NotaFiscalDetalhes() {
     }
   }
 
+  function handleAbrirModalFilial() {
+    if (!nota?.numeroSecundario) {
+      alert('Erro', 'Esta NF não possui número secundário cadastrado', 'error')
+      return
+    }
+    setFilialSelecionada('')
+    setShowFilialModal(true)
+  }
+
+  async function handleBuscarItensSecundarios() {
+    if (!filialSelecionada) {
+      alert('Erro', 'Selecione uma filial', 'error')
+      return
+    }
+
+    setShowFilialModal(false)
+    setLoadingBuscarItens(true)
+    try {
+      const response = await api.post(`/notas-fiscais/${id}/buscar-itens-secundarios`, {
+        codFilial: filialSelecionada
+      })
+      alert('Sucesso', response.data.message, 'success')
+      loadNota()
+    } catch (error) {
+      console.error('Erro ao buscar itens secundários:', error)
+      const err = error as { response?: { data?: { error?: string } } }
+      alert('Erro', err.response?.data?.error || 'Erro ao buscar itens secundários', 'error')
+    } finally {
+      setLoadingBuscarItens(false)
+    }
+  }
+
   async function toggleBloqueioMercadoria(bloqueada: boolean) {
     setLoadingBloqueio(true)
     try {
@@ -500,6 +552,23 @@ export function NotaFiscalDetalhes() {
       alert('Erro', 'Erro ao alterar bloqueio da mercadoria', 'error')
     } finally {
       setLoadingBloqueio(false)
+    }
+  }
+
+  async function handleConfirmarSeparacao() {
+    setShowConfirmSeparacao(false)
+    setLoadingSeparacao(true)
+    try {
+      await api.patch(`/notas-fiscais/${id}/separacao-finalizada`)
+      alert('Sucesso', 'Separação marcada como finalizada!', 'success')
+      setShowEditModal(false)
+      loadNota()
+    } catch (error) {
+      console.error('Erro ao finalizar separação:', error)
+      const err = error as { response?: { data?: { error?: string } } }
+      alert('Erro', err.response?.data?.error || 'Erro ao finalizar separação', 'error')
+    } finally {
+      setLoadingSeparacao(false)
     }
   }
 
@@ -575,52 +644,75 @@ export function NotaFiscalDetalhes() {
             )}
           </p>
         </div>
-        <div className="ml-auto flex items-center gap-3">
-          {nota.danfSecundario && (
+        <div className="ml-auto flex items-center gap-2">
+          {/* Botões primários */}
+          <div className="flex items-center gap-2">
+            {nota.danfSecundario && (
+              <button
+                onClick={handleViewDanf}
+                className="h-8 flex items-center gap-1.5 px-3 bg-purple-600 hover:bg-purple-700 text-white rounded text-xs font-medium transition-colors shadow-sm"
+                title="Visualizar DANF Secundário"
+              >
+                <FiFileText size={14} />
+                DANF Secundário
+              </button>
+            )}
             <button
-              onClick={handleViewDanf}
-              className="h-9 flex items-center gap-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium transition-colors"
-              title="Visualizar DANF Secundário"
+              onClick={abrirModalEdicao}
+              className="h-8 flex items-center gap-1.5 px-3 border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-slate-700 rounded text-xs font-medium transition-colors"
             >
-              <FiFileText size={16} />
-              DANF Secundário
+              <FiEdit2 size={14} />
+              Editar
             </button>
-          )}
+          </div>
+
+          {/* Separador */}
+          <div className="w-px h-6 bg-slate-200" />
+
+          {/* Ações de status */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => toggleBloqueioMercadoria(!nota.mercadoriaBloqueada)}
+              disabled={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA'}
+              className={`h-8 flex items-center gap-1.5 px-3 rounded text-xs font-medium transition-colors shadow-sm ${
+                nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA'
+                  ? 'bg-slate-300 cursor-not-allowed text-slate-500'
+                  : nota.mercadoriaBloqueada
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                  : 'bg-red-600 hover:bg-red-700 text-white'
+              }`}
+              title={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA' ? 'A mercadoria só pode ser desbloqueada após a conclusão de todo o fluxo de conferência' : ''}
+            >
+              {nota.mercadoriaBloqueada ? 'Liberar Mercadoria' : 'Bloquear Mercadoria'}
+            </button>
+            
+            {nota.status === 'SEPARACAO_FINALIZADA' ? (
+              <div className="flex flex-col gap-1">
+                <StatusBadge status="CONFERIDO_OK" />
+                <StatusBadge status="SEPARACAO_FINALIZADA" />
+              </div>
+            ) : (
+              <StatusBadge 
+                status={nota.status} 
+                filialRecebimento={nota.filialRecebimento?.nome}
+              />
+            )}
+          </div>
+
+          {/* Separador */}
+          <div className="w-px h-6 bg-slate-200" />
+
+          {/* Ação destrutiva */}
           {(user?.perfil === 'ADMIN' || user?.perfil === 'COMPRAS') && (
             <button
               onClick={handleDelete}
-              className="h-9 flex items-center gap-2 px-4 bg-error-600 hover:bg-error-700 text-white rounded-md text-sm font-medium transition-colors"
+              className="h-8 flex items-center gap-1.5 px-3 border border-red-200 hover:border-red-300 hover:bg-red-50 text-red-600 rounded text-xs font-medium transition-colors"
               title="Excluir Nota Fiscal"
             >
-              <FiTrash2 size={16} />
+              <FiTrash2 size={14} />
               Excluir
             </button>
           )}
-          <button
-            onClick={abrirModalEdicao}
-            className="h-9 flex items-center gap-2 px-4 border border-gray-300 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors"
-          >
-            <FiEdit2 size={16} />
-            Editar
-          </button>
-          <button
-            onClick={() => toggleBloqueioMercadoria(!nota.mercadoriaBloqueada)}
-            disabled={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA'}
-            className={`h-9 flex items-center gap-2 px-4 rounded-md text-sm font-medium transition-colors ${
-              nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA'
-                ? 'bg-gray-400 cursor-not-allowed text-white'
-                : nota.mercadoriaBloqueada
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-red-600 hover:bg-red-700 text-white'
-            }`}
-            title={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' ? 'A mercadoria só pode ser desbloqueada após a conclusão de todo o fluxo de conferência' : ''}
-          >
-            {nota.mercadoriaBloqueada ? 'Liberar Mercadoria' : 'Bloquear Mercadoria'}
-          </button>
-          <StatusBadge 
-            status={nota.status} 
-            filialRecebimento={nota.filialRecebimento?.nome}
-          />
         </div>
       </div>
 
@@ -708,6 +800,25 @@ export function NotaFiscalDetalhes() {
                   className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 />
               </div>
+              {/* Botão para buscar itens secundários do BD-BEZERRA - apenas para ADMIN e COMPRAS */}
+              {nota.numeroSecundario && (user?.perfil === 'ADMIN' || user?.perfil === 'COMPRAS') && (
+                <button
+                  onClick={handleAbrirModalFilial}
+                  disabled={loadingBuscarItens}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Buscar itens da NF secundária no sistema legado"
+                >
+                  {loadingBuscarItens ? (
+                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                  ) : (
+                    <FiDownload size={14} />
+                  )}
+                  {loadingBuscarItens ? 'Buscando...' : 'Buscar Itens Secundários'}
+                </button>
+              )}
               {['VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES', 'EM_CONFERENCIA', 'AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA'].includes(nota.status) && (
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {!mostrarItensSecundarios && (
@@ -1479,6 +1590,31 @@ export function NotaFiscalDetalhes() {
                 )}
               </div>
 
+              {/* Botão Separação Finalizada - apenas para Distribuição Imediata com status Processo Finalizado */}
+              {nota.tipoMovimentacao === 'DISTRIBUICAO_IMEDIATA' && nota.status === 'CONFERIDO_OK' && (
+                <div className="border-t pt-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmSeparacao(true)}
+                    disabled={loadingSeparacao}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loadingSeparacao ? (
+                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <FiCheckCircle size={18} />
+                    )}
+                    {loadingSeparacao ? 'Finalizando...' : 'Marcar Separação como Finalizada'}
+                  </button>
+                  <p className="text-xs text-gray-500 text-center mt-1">
+                    Clique para indicar que a separação dos itens foi concluída
+                  </p>
+                </div>
+              )}
+
               <div className="flex justify-end gap-3 pt-3">
                 <button
                   type="button"
@@ -1618,6 +1754,100 @@ export function NotaFiscalDetalhes() {
                   className="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-colors disabled:opacity-50"
                 >
                   {savingItemExtra ? 'Registrando...' : 'Registrar Divergência'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de seleção de filial para buscar itens secundários */}
+      {showFilialModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Selecione a Filial de Origem
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                De qual filial deseja buscar os itens da NF secundária <strong>{nota.numeroSecundario}</strong>?
+              </p>
+              
+              <div className="space-y-2">
+                {filiaisBezerra.map((filial) => (
+                  <label
+                    key={filial.codigo}
+                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                      filialSelecionada === filial.codigo
+                        ? 'border-purple-500 bg-purple-50'
+                        : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="filialBezerra"
+                      value={filial.codigo}
+                      checked={filialSelecionada === filial.codigo}
+                      onChange={(e) => setFilialSelecionada(e.target.value)}
+                      className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                    />
+                    <span className="ml-3 text-sm font-medium text-gray-700">
+                      {filial.codigo} - {filial.nome}
+                    </span>
+                  </label>
+                ))}
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={() => setShowFilialModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleBuscarItensSecundarios}
+                  disabled={!filialSelecionada}
+                  className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Buscar Itens
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de confirmação: Separação Finalizada */}
+      {showConfirmSeparacao && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-emerald-100 rounded-lg">
+                  <FiCheckCircle className="text-emerald-600" size={24} />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Confirmar Separação Finalizada
+                </h3>
+              </div>
+              
+              <p className="text-sm text-gray-600 mb-6">
+                Confirma que a separação dos itens foi finalizada?
+              </p>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowConfirmSeparacao(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmarSeparacao}
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors"
+                >
+                  OK
                 </button>
               </div>
             </div>

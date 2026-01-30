@@ -14,6 +14,7 @@ const statusOptions = [
   { value: 'CONFERIDO_DIVERGENCIA', label: 'Conferido c/ Divergência' },
   { value: 'VOLUMES_CONFERIDOS', label: 'Volumes Conferidos' },
   { value: 'CONFERIDO_OK', label: 'Processo Finalizado' },
+  { value: 'SEPARACAO_FINALIZADA', label: 'Separação Finalizada' },
   { value: 'AGUARDANDO_CONFERENCIA_DESTINO', label: 'Aguard. Destino' },
 ]
 
@@ -344,13 +345,25 @@ export function NotasFiscais() {
                       <span className="text-xs text-gray-900">{nf.quantidadeVolumes}</span>
                     </td>
                     <td className="px-3 py-2">
-                      <StatusBadge 
-                        status={nf.status} 
-                        filialRecebimento={nf.filialRecebimento?.nome}
-                      />
+                      {nf.status === 'SEPARACAO_FINALIZADA' ? (
+                        <div className="flex flex-col gap-1">
+                          <StatusBadge 
+                            status="CONFERIDO_OK" 
+                            filialRecebimento={nf.filialRecebimento?.nome}
+                          />
+                          <StatusBadge 
+                            status="SEPARACAO_FINALIZADA" 
+                          />
+                        </div>
+                      ) : (
+                        <StatusBadge 
+                          status={nf.status} 
+                          filialRecebimento={nf.filialRecebimento?.nome}
+                        />
+                      )}
                     </td>
                     <td className="px-3 py-2">
-                      {nf.status === 'CONFERIDO_OK' && nf.fornecedor?.codigo && (
+                      {(nf.status === 'CONFERIDO_OK' || nf.status === 'SEPARACAO_FINALIZADA') && nf.fornecedor?.codigo && (
                         <span className="text-sm font-medium text-blue-600">
                           {nf.fornecedor.codigo.slice(-2)}{nf.numeroSecundario || nf.numero}
                         </span>

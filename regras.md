@@ -14,7 +14,7 @@
 - Sempre use nomes das tabelas e colunas do banco de dados em Portugues.
 - Sempre use timezone America/Sao_Paulo Brasil é UTC-3 em toda aplicação, incluido banco de dados.
 
-
+### 3.
 
 ### 4. Alterações
 - Sempre que precisar alterar algo, não mexa no que já está funcionando. Apenas altere o que está errado.

@@ -46,6 +46,11 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
     label: 'Bloqueado',
     color: 'bg-gray-100 text-gray-700',
     defaultTooltip: 'NF bloqueada para movimentação'
+  },
+  SEPARACAO_FINALIZADA: {
+    label: 'Separação Finalizada',
+    color: 'bg-blue-100 text-blue-700',
+    defaultTooltip: 'Separação dos itens finalizada - Distribuição Imediata'
   }
 }
 

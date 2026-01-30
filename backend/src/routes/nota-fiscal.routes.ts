@@ -4,6 +4,7 @@ import { NotaFiscalService } from '../services/nota-fiscal.service.js'
 import { authMiddleware } from '../middlewares/auth.js'
 import { webhookService } from '../services/webhook.service.js'
 import { parseTxtSecundario, validarTxtSecundario } from '../utils/txtParser.js'
+import { bdBezerraService } from '../services/bd-bezerra.service.js'
 import { prisma } from '../lib/prisma.js'
 import path from 'path'
 import fs from 'fs'
@@ -477,6 +478,45 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     }
   })
 
+  // Marcar separação como finalizada (Distribuição Imediata)
+  app.patch('/notas-fiscais/:id/separacao-finalizada', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
+      
+      // Buscar NF para validar
+      const nf = await notaFiscalService.findById(id)
+      
+      // Validar se é Distribuição Imediata
+      if (nf.tipoMovimentacao !== 'DISTRIBUICAO_IMEDIATA') {
+        return reply.status(400).send({ error: 'Esta ação só é permitida para NFs de Distribuição Imediata' })
+      }
+      
+      // Validar se está com status Processo Finalizado (CONFERIDO_OK)
+      if (nf.status !== 'CONFERIDO_OK') {
+        return reply.status(400).send({ error: 'A NF precisa estar com status "Processo Finalizado" para marcar a separação como finalizada' })
+      }
+      
+      // Atualizar status para SEPARACAO_FINALIZADA
+      await prisma.notaFiscal.update({
+        where: { id },
+        data: { status: 'SEPARACAO_FINALIZADA' }
+      })
+      
+      console.log(`✅ NF ${nf.numero} marcada como Separação Finalizada`)
+      
+      return reply.send({ message: 'Separação marcada como finalizada com sucesso' })
+    } catch (error) {
+      console.error('Erro ao finalizar separação:', error)
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao finalizar separação' })
+    }
+  })
+
   // Upload de DANF secundário
   app.post('/notas-fiscais/:id/upload-danf-secundario', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
@@ -583,6 +623,74 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         return reply.status(400).send({ error: error.message })
       }
       return reply.status(500).send({ error: 'Erro ao deletar DANF' })
+    }
+  })
+
+  // Buscar itens secundários no BD-BEZERRA pelo número da NF secundária
+  app.post('/notas-fiscais/:id/buscar-itens-secundarios', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
+      const { codFilial } = z.object({ codFilial: z.string().min(1, 'Código da filial é obrigatório') }).parse(request.body)
+      
+      // Buscar NF para pegar o número secundário
+      const nf = await notaFiscalService.findById(id)
+      
+      if (!nf.numeroSecundario) {
+        return reply.status(400).send({ error: 'Esta NF não possui número secundário cadastrado' })
+      }
+
+      console.log(`🔍 Buscando itens no BD-BEZERRA para NF secundária: ${nf.numeroSecundario} | Filial: ${codFilial}`)
+
+      // Buscar itens no banco BD-BEZERRA filtrando pela filial
+      const itensBezerra = await bdBezerraService.buscarItensNf(nf.numeroSecundario, codFilial)
+
+      if (itensBezerra.length === 0) {
+        return reply.status(404).send({ 
+          error: `Nenhum item encontrado no BD-BEZERRA para a NF ${nf.numeroSecundario}` 
+        })
+      }
+
+      console.log(`📦 Encontrados ${itensBezerra.length} itens no BD-BEZERRA`)
+
+      // Verificar se já existem itens secundários para esta NF
+      const itensExistentes = await prisma.itemNfSecundaria.count({
+        where: { notaFiscalId: id }
+      })
+
+      if (itensExistentes > 0) {
+        // Deletar itens existentes antes de inserir os novos
+        await prisma.itemNfSecundaria.deleteMany({
+          where: { notaFiscalId: id }
+        })
+        console.log(`🗑️ Removidos ${itensExistentes} itens secundários existentes`)
+      }
+
+      // Salvar itens no banco de dados
+      await prisma.itemNfSecundaria.createMany({
+        data: itensBezerra.map(item => ({
+          notaFiscalId: id,
+          codigo: item.cod_produto,
+          descricao: item.descricao,
+          quantidade: item.quantidade
+        }))
+      })
+
+      console.log(`✅ ${itensBezerra.length} itens secundários importados do BD-BEZERRA`)
+
+      return reply.send({ 
+        message: `${itensBezerra.length} itens importados com sucesso`,
+        quantidadeItens: itensBezerra.length,
+        itens: itensBezerra
+      })
+    } catch (error) {
+      console.error('Erro ao buscar itens secundários:', error)
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao buscar itens secundários no BD-BEZERRA' })
     }
   })
 }
