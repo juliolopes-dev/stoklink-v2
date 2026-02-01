@@ -23,6 +23,7 @@ import { fornecedorRoutes } from './routes/fornecedor.routes.js'
 import { empresaRoutes } from './routes/empresa.routes.js'
 import { transportadoraRoutes } from './routes/transportadora.routes.js'
 import { auditLogRoutes } from './routes/audit-log.routes.js'
+import { pedidoDrpRoutes } from './routes/pedido-drp.routes.js'
 
 const app = Fastify({
   logger: false,
@@ -89,6 +90,7 @@ app.register(fornecedorRoutes, { prefix: '/api' })
 app.register(empresaRoutes, { prefix: '/api' })
 app.register(transportadoraRoutes, { prefix: '/api' })
 app.register(auditLogRoutes, { prefix: '/api' })
+app.register(pedidoDrpRoutes, { prefix: '/api' })
 
 // Health check
 app.get('/health', async () => {
@@ -127,7 +129,8 @@ const start = async () => {
       divergencias: '/api/divergencias/*',
       distribuicoes: '/api/distribuicoes/*',
       fornecedores: '/api/fornecedores/*',
-      empresas: '/api/empresas/*'
+      empresas: '/api/empresas/*',
+      pedidosDrp: '/api/pedidos-drp/*'
     })
   } catch (err) {
     logger.error('Falha ao iniciar servidor', err)

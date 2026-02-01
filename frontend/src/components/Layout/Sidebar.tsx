@@ -21,9 +21,10 @@ import { api } from '../../services/api'
 const menuItems = [
   { path: '/', icon: FiHome, label: 'Dashboard' },
   { path: '/notas-fiscais', icon: FiFileText, label: 'Notas Fiscais' },
-  { path: '/conferencias', icon: FiPackage, label: 'Conferências' },
+  { path: '/pedidos-drp', icon: FiPackage, label: 'Pedidos DRP' },
+  // { path: '/conferencias', icon: FiPackage, label: 'Conferências' }, // Desativado temporariamente
   { path: '/divergencias', icon: FiAlertTriangle, label: 'Divergências' },
-  { path: '/relatorios', icon: FiBarChart2, label: 'Relatórios' },
+  // { path: '/relatorios', icon: FiBarChart2, label: 'Relatórios' }, // Desativado temporariamente
   // { path: '/distribuicoes', icon: FiTruck, label: 'Distribuições' }, // Desativado temporariamente
 ]
 
