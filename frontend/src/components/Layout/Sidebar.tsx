@@ -5,7 +5,6 @@ import {
   FiFileText, 
   FiPackage, 
   FiAlertTriangle, 
-  FiBarChart2,
   FiTruck,
   FiUsers,
   FiMapPin,

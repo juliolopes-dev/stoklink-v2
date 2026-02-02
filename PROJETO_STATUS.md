@@ -85,36 +85,24 @@
 - [x] `findOrCreate` modificado para exigir fornecedor cadastrado previamente
 
 ## 3. Última Sessão
-- **Data**: 26/01/2026 (madrugada)
-- **Mudanças**: 
-  - **Código de Reserva**: Implementado cálculo automático (2 últimos dígitos do fornecedor + número NF)
-  - **Modal de NFs por Fornecedor**: Clique no número de NFs abre modal com detalhes completos
-  - **Identificação de NFs Secundárias**: Badge roxo "Secundária" para fácil identificação
-  - **Limpeza de Duplicados**: Removidos 9 fornecedores duplicados sem NFs
-  - **Mesclagem de Fornecedor**: MHT IND. COM. mesclado (2 cadastros → 1 com 5 NFs)
-  - **Coluna Código de Reserva**: Adicionada na lista de NFs (exibe quando status = CONFERIDO_OK)
-  - **Contagem de NFs**: Agora inclui NFs secundárias na lista de fornecedores
-  - **Campo fornecedor**: Incluído no backend da lista de NFs para exibir código
+- **Data**: 02/02/2026 (manhã)
+- **Mudanças**:
+  - **Pedidos DRP**: adicionada coluna `numero_transferencia` (scripts em `backend/scripts/add-numero-transferencia-pedido-drp.{ts,sql}`)
+  - **Backend**: endpoint PUT `/api/pedidos-drp/:id` para status e número de transferência; endpoint DELETE `/api/pedidos-drp/:id` com transação removendo itens e pedido
+  - **Frontend**: listagem exibe Nº Transferência; detalhe permite editar Nº Transferência, finalizar separação e excluir pedido; status `SEPARACAO_FINALIZADA` com badge azul
+  - **Serviço BD Bezerra**: SELECTs de pedidos DRP retornam `numero_nf_origem` e `numero_transferencia`
 
-- **Arquivos modificados**:
-  - `backend/src/services/fornecedor.service.ts` - Adicionado `numeroSecundario` no select, incluído `notasFiscaisSecundario` no findById
-  - `backend/src/services/nota-fiscal.service.ts` - Adicionado campo `fornecedor` no findAll
-  - `frontend/src/pages/Fornecedores/index.tsx` - Modal de NFs, cálculo de código de reserva, badge secundária
-  - `frontend/src/pages/NotasFiscais/index.tsx` - Coluna código de reserva, exibição condicional
-  - `frontend/src/hooks/useNotasFiscais.ts` - Interface NotaFiscal com campo fornecedor
-  - `backend/scripts/limpar-fornecedores-duplicados.ts` - Script de limpeza de duplicados
-  - `backend/scripts/mesclar-fornecedor-duplicado.ts` - Script de mesclagem do MHT
-  - `backend/scripts/listar-fornecedores-sem-cnpj-com-nfs.ts` - Script de análise
-  - `ATUALIZACAO_26-01-2026.md` - Documentação das melhorias
+- **Arquivos modificados** (principais):
+  - `backend/src/services/bd-bezerra.service.ts` — métodos atualizar/excluir pedido DRP e SELECTs com novos campos
+  - `backend/src/routes/pedido-drp.routes.ts` — novas rotas PUT/DELETE
+  - `backend/scripts/add-numero-transferencia-pedido-drp.ts` e `.sql` — migração da coluna
+  - `frontend/src/pages/PedidosDRP/index.tsx` e `PedidoDRPDetalhes.tsx` — coluna Nº Transferência, edição, botão finalizar separação e botão excluir
+  - `frontend/src/components/Layout/Sidebar.tsx` — limpeza de import não usado
 
-- **Impacto**: 
-  - ✅ Rastreabilidade facilitada com código de reserva
-  - ✅ Banco de dados limpo (853 → 841 fornecedores)
-  - ✅ Informações completas sobre NFs de cada fornecedor
-  - ✅ Identificação visual de NFs secundárias
-  - ✅ Acesso rápido aos detalhes das NFs
-
-- **Deploy**: ✅ Concluído - commit ffa8cb8 + fix 03ad9e1
+- **Impacto**:
+  - ✅ Controle completo de status e transferência dos Pedidos DRP
+  - ✅ Exclusão segura (itens + pedido) com UI dedicada
+  - ✅ NF Origem e Nº Transferência exibidos corretamente na listagem e detalhes
 
 ## 4. Próximos Passos (Priorizado)
 - [ ] Telas de Admin (Filiais, Usuários)

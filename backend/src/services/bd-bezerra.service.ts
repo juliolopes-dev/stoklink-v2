@@ -33,6 +33,7 @@ export interface PedidoDRP {
   status: string | null
   usuario: string | null
   observacao: string | null
+  numero_transferencia: string | null
   total_itens: number | null
   total_quantidade: number | null
   created_at: Date | null
@@ -124,6 +125,7 @@ class BdBezerraService {
           id,
           numero_pedido,
           numero_nf_origem,
+          numero_transferencia,
           cod_filial_destino,
           nome_filial_destino,
           data_pedido,
@@ -178,6 +180,7 @@ class BdBezerraService {
         id: row.id,
         numero_pedido: row.numero_pedido,
         numero_nf_origem: row.numero_nf_origem,
+        numero_transferencia: row.numero_transferencia,
         cod_filial_destino: row.cod_filial_destino,
         nome_filial_destino: row.nome_filial_destino,
         data_pedido: row.data_pedido,
@@ -257,6 +260,7 @@ class BdBezerraService {
         status: row.status,
         usuario: row.usuario,
         observacao: row.observacao,
+        numero_transferencia: row.numero_transferencia,
         total_itens: row.total_itens,
         total_quantidade: row.total_quantidade ? parseFloat(row.total_quantidade) : null,
         created_at: row.created_at,
@@ -321,6 +325,79 @@ class BdBezerraService {
           quantidade: parseInt(r.quantidade)
         }))
       }
+    } finally {
+      client.release()
+    }
+  }
+
+  async atualizarPedidoDRP(id: number, dados: { status?: string; numero_transferencia?: string }): Promise<PedidoDRP> {
+    console.log(`📝 BD-BEZERRA: Atualizando Pedido DRP ${id}`, dados)
+    const client = await pool.connect()
+    
+    try {
+      const updates: string[] = []
+      const values: any[] = []
+      let paramIndex = 1
+
+      if (dados.status !== undefined) {
+        updates.push(`status = $${paramIndex}`)
+        values.push(dados.status)
+        paramIndex++
+      }
+
+      if (dados.numero_transferencia !== undefined) {
+        updates.push(`numero_transferencia = $${paramIndex}`)
+        values.push(dados.numero_transferencia)
+        paramIndex++
+      }
+
+      updates.push(`updated_at = NOW()`)
+      values.push(id)
+
+      const query = `
+        UPDATE auditoria_integracao."Pedido_DRP"
+        SET ${updates.join(', ')}
+        WHERE id = $${paramIndex}
+        RETURNING *
+      `
+
+      const result = await client.query(query, values)
+      
+      if (result.rows.length === 0) {
+        throw new Error(`Pedido DRP ${id} não encontrado`)
+      }
+
+      return result.rows[0]
+    } finally {
+      client.release()
+    }
+  }
+
+  async excluirPedidoDRP(id: number): Promise<void> {
+    console.log(`🗑️  BD-BEZERRA: Excluindo Pedido DRP ${id}`)
+    const client = await pool.connect()
+
+    try {
+      await client.query('BEGIN')
+
+      await client.query(
+        'DELETE FROM auditoria_integracao."Pedido_DRP_Itens" WHERE pedido_id = $1',
+        [id]
+      )
+
+      const deletePedido = await client.query(
+        'DELETE FROM auditoria_integracao."Pedido_DRP" WHERE id = $1',
+        [id]
+      )
+
+      if (deletePedido.rowCount === 0) {
+        throw new Error(`Pedido DRP ${id} não encontrado`)
+      }
+
+      await client.query('COMMIT')
+    } catch (error) {
+      await client.query('ROLLBACK')
+      throw error
     } finally {
       client.release()
     }
