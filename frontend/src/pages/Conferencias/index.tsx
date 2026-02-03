@@ -101,26 +101,26 @@ export function Conferencias() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
-      <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h1 className="text-lg font-semibold text-gray-800">Conferência de Volumes</h1>
-        <span className="text-sm text-gray-500">{notas.length} NF(s) pendente(s)</span>
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-3">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <h1 className="text-sm font-semibold text-gray-800">Conferência de Volumes</h1>
+        <span className="text-xs text-gray-500">{notas.length} NF(s) pendente(s)</span>
       </div>
 
       {notas.length === 0 ? (
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-12 text-center flex-1">
-          <FiCheckCircle size={48} className="mx-auto text-green-500 mb-4" />
-          <h2 className="text-xl font-medium text-gray-800 mb-2">Tudo conferido!</h2>
-          <p className="text-gray-500">Não há notas fiscais pendentes de conferência de volumes.</p>
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-8 text-center flex-1">
+          <FiCheckCircle size={36} className="mx-auto text-green-500 mb-3" />
+          <h2 className="text-sm font-medium text-gray-800 mb-2">Tudo conferido!</h2>
+          <p className="text-xs text-gray-500">Não há notas fiscais pendentes de conferência de volumes.</p>
         </div>
       ) : (
-        <div className="flex-1 overflow-auto space-y-4">
+        <div className="flex-1 overflow-auto space-y-3">
           {notas.map((nf) => (
-            <div key={nf.id} className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+            <div key={nf.id} className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
               {resultado?.id === nf.id && (
-                <div className={`mb-4 p-4 rounded-lg ${resultado.sucesso ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-                  <div className="flex items-center gap-2">
-                    {resultado.sucesso ? <FiCheckCircle /> : <FiAlertCircle />}
+                <div className={`mb-3 p-3 rounded-lg ${resultado.sucesso ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                  <div className="flex items-center gap-2 text-xs">
+                    {resultado.sucesso ? <FiCheckCircle size={14} /> : <FiAlertCircle size={14} />}
                     {resultado.mensagem}
                   </div>
                 </div>
@@ -128,42 +128,42 @@ export function Conferencias() {
 
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-800">NF {nf.numero}</h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-sm font-semibold text-gray-800">NF {nf.numero}</h3>
                     <StatusBadge status={nf.status} />
                   </div>
-                  <p className="text-gray-600 mb-1">{nf.fornecedorNome}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs text-gray-600 mb-1">{nf.fornecedorNome}</p>
+                  <p className="text-xs text-gray-500">
                     {nf.filialRecebimento ? `Recebido em ${nf.filialRecebimento.nome}` : 'Filial a definir'} • {formatDate(nf.dataRecebimento)}
                   </p>
                   {nf.filialRecebimento && nf.filialRecebimentoId !== nf.filialDestinoId && (
-                    <p className="text-sm text-purple-600 mt-1">
+                    <p className="text-xs text-purple-600 mt-1">
                       Destino: {nf.filialDestino.nome}
                     </p>
                   )}
                 </div>
 
                 <div className="text-right">
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-500">Volumes Esperados</p>
-                    <p className="text-3xl font-bold text-gray-800">{nf.quantidadeVolumes}</p>
+                  <div className="mb-3">
+                    <p className="text-xs text-gray-500">Volumes Esperados</p>
+                    <p className="text-xl font-bold text-gray-800">{nf.quantidadeVolumes}</p>
                   </div>
 
                   {conferindoId === nf.id ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <input
                         type="number"
                         value={volumesRecebidos}
                         onChange={(e) => setVolumesRecebidos(e.target.value)}
                         placeholder="Qtd"
-                        className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center"
+                        className="w-16 px-2 py-1 border border-gray-300 rounded-md text-center text-xs"
                         autoFocus
                         min="0"
                       />
                       <button
                         onClick={() => handleConferir(nf)}
                         disabled={!volumesRecebidos}
-                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                        className="h-7 px-3 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors disabled:opacity-50 text-xs"
                       >
                         OK
                       </button>
@@ -172,26 +172,26 @@ export function Conferencias() {
                           setConferindoId(null)
                           setVolumesRecebidos('')
                         }}
-                        className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+                        className="h-7 px-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors text-xs"
                       >
                         Cancelar
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => {
                           setConferindoId(nf.id)
                           setVolumesRecebidos(nf.quantidadeVolumes.toString())
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+                        className="flex items-center gap-1.5 h-7 px-3 bg-primary-600 hover:bg-primary-700 text-white rounded-md transition-colors text-xs"
                       >
-                        <FiPackage />
+                        <FiPackage size={12} />
                         Conferir
                       </button>
                       <Link
                         to={`/notas-fiscais/${nf.id}`}
-                        className="px-4 py-2 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
+                        className="h-7 px-3 border border-gray-300 hover:bg-gray-50 rounded-md transition-colors text-xs flex items-center"
                       >
                         Detalhes
                       </Link>

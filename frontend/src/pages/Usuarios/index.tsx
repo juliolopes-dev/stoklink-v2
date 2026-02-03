@@ -178,34 +178,34 @@ export function Usuarios() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
-      <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h1 className="text-lg font-semibold text-gray-800">Usuários</h1>
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-3">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <h1 className="text-sm font-semibold text-gray-800">Usuários</h1>
         <button
           onClick={() => openModal()}
-          className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md text-sm font-medium transition-colors"
+          className="h-7 flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white px-3 rounded-md text-xs font-medium transition-colors"
         >
-          <FiPlus size={16} />
+          <FiPlus size={14} />
           Novo Usuário
         </button>
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 flex-shrink-0">
+        <div className="p-3 border-b border-gray-200 flex-shrink-0">
           <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
             <input
               type="text"
               placeholder="Buscar por nome, email ou filial..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="w-full h-7 pl-8 pr-2 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
             />
           </div>
         </div>
 
         {filteredUsuarios.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
+          <div className="p-8 text-center text-xs text-gray-500">
             Nenhum usuário encontrado
           </div>
         ) : (
@@ -213,45 +213,45 @@ export function Usuarios() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Usuário</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Email</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Filial</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Perfil</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Status</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Ações</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase">Usuário</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase">Email</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase">Filial</th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-600 uppercase">Perfil</th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-600 uppercase">Status</th>
+                  <th className="px-2 py-1 text-right text-xs font-semibold text-gray-600 uppercase">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredUsuarios.map((usuario) => (
                   <tr key={usuario.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                          <FiUser className="text-primary-600" size={20} />
+                    <td className="px-2 py-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 bg-primary-100 rounded-full flex items-center justify-center">
+                          <FiUser className="text-primary-600" size={14} />
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">{usuario.nome}</p>
+                          <p className="font-medium text-xs text-gray-900">{usuario.nome}</p>
                           {usuario.id === user?.id && (
                             <span className="text-xs text-primary-600">(você)</span>
                           )}
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-2 py-1 text-xs text-gray-600">
                       {usuario.email}
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="text-sm text-gray-600">
+                    <td className="px-2 py-1">
+                      <span className="text-xs text-gray-600">
                         {usuario.filial?.nome || 'Sem filial'}
                       </span>
                       {usuario.filial && (
-                        <span className="ml-2 text-xs text-gray-400 font-mono">
+                        <span className="ml-1 text-xs text-gray-400 font-mono">
                           ({usuario.filial.codigo})
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    <td className="px-2 py-1 text-center">
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                         usuario.perfil === 'ADMIN'
                           ? 'bg-purple-100 text-purple-800'
                           : usuario.perfil === 'GERENTE'
@@ -265,11 +265,11 @@ export function Usuarios() {
                         {usuario.perfil === 'ADMIN' ? 'Administrador' : usuario.perfil === 'GERENTE' ? 'Gerente' : usuario.perfil === 'COMPRAS' ? 'Compras' : usuario.perfil === 'FINANCEIRO' ? 'Financeiro' : 'Conferente'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-2 py-1 text-center">
                       <button
                         onClick={() => handleToggleAtivo(usuario)}
                         disabled={usuario.id === user?.id}
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           usuario.ativo
                             ? 'bg-green-100 text-green-800'
                             : 'bg-gray-100 text-gray-800'
@@ -278,22 +278,22 @@ export function Usuarios() {
                         {usuario.ativo ? 'Ativo' : 'Inativo'}
                       </button>
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-2 py-1 text-right">
+                      <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => openModal(usuario)}
-                          className="p-2 hover:bg-gray-100 rounded-lg text-gray-600"
+                          className="p-1.5 hover:bg-gray-100 rounded-md text-gray-600"
                         >
-                          <FiEdit2 size={16} />
+                          <FiEdit2 size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(usuario.id)}
                           disabled={usuario.id === user?.id}
-                          className={`p-2 hover:bg-red-50 rounded-lg text-red-600 ${
+                          className={`p-1.5 hover:bg-red-50 rounded-md text-red-600 ${
                             usuario.id === user?.id ? 'cursor-not-allowed opacity-50' : ''
                           }`}
                         >
-                          <FiTrash2 size={16} />
+                          <FiTrash2 size={14} />
                         </button>
                       </div>
                     </td>
@@ -307,33 +307,33 @@ export function Usuarios() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-sm font-semibold text-gray-800">
                 {editingId ? 'Editar Usuário' : 'Novo Usuário'}
               </h2>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-4 space-y-3">
               {error && (
-                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm">
+                <div className="bg-red-50 text-red-600 px-3 py-2 rounded-md text-xs">
                   {error}
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Nome *</label>
                 <input
                   type="text"
                   value={form.nome}
                   onChange={(e) => setForm({ ...form, nome: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full h-7 px-2 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Email *</label>
                 <input
                   type="email"
                   value={form.email}

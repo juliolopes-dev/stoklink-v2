@@ -124,38 +124,38 @@ export function Transportadoras() {
   )
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
-      <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h1 className="text-lg font-semibold text-gray-800">Transportadoras</h1>
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-3">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <h1 className="text-sm font-semibold text-gray-800">Transportadoras</h1>
         {canManage && (
           <button
             onClick={() => openModal()}
-            className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md text-sm font-medium transition-colors"
+            className="h-7 flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white px-3 rounded-md text-xs font-medium transition-colors"
           >
-            <FiPlus size={16} />
+            <FiPlus size={14} />
             Nova Transportadora
           </button>
         )}
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 flex-shrink-0">
+        <div className="p-3 border-b border-gray-200 flex-shrink-0">
           <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <FiSearch className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400" size={14} />
             <input
               type="text"
               placeholder="Buscar por nome ou CNPJ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="w-full h-7 pl-8 pr-2 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
             />
           </div>
         </div>
 
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Carregando...</div>
+          <div className="p-8 text-center text-xs text-gray-500">Carregando...</div>
         ) : filteredTransportadoras.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">
+          <div className="p-8 text-center text-xs text-gray-500">
             {searchTerm ? 'Nenhuma transportadora encontrada' : 'Nenhuma transportadora cadastrada'}
           </div>
         ) : (
@@ -163,46 +163,46 @@ export function Transportadoras() {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CNPJ</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contato</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">CNPJ</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Contato</th>
+                    <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                     {canManage && (
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Ações</th>
+                      <th className="px-2 py-1 text-right text-xs font-medium text-gray-500 uppercase">Ações</th>
                     )}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filteredTransportadoras.map(transportadora => (
                     <tr key={transportadora.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900">{transportadora.nome}</div>
+                      <td className="px-2 py-1">
+                        <div className="font-medium text-xs text-gray-900">{transportadora.nome}</div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600">
+                      <td className="px-2 py-1 text-xs text-gray-600">
                         {transportadora.cnpj || '-'}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
+                      <td className="px-2 py-1">
+                        <div className="space-y-0.5">
                           {transportadora.telefone && (
-                            <div className="flex items-center gap-1 text-sm text-gray-600">
-                              <FiPhone size={14} />
+                            <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <FiPhone size={12} />
                               {transportadora.telefone}
                             </div>
                           )}
                           {transportadora.email && (
-                            <div className="flex items-center gap-1 text-sm text-gray-600">
-                              <FiMail size={14} />
+                            <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <FiMail size={12} />
                               {transportadora.email}
                             </div>
                           )}
-                          {!transportadora.telefone && !transportadora.email && '-'}
+                          {!transportadora.telefone && !transportadora.email && <span className="text-xs">-</span>}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-2 py-1">
                         {canManage ? (
                           <button
                             onClick={() => toggleStatus(transportadora.id, transportadora.ativo)}
-                            className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                               transportadora.ativo
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-gray-100 text-gray-800'
@@ -211,7 +211,7 @@ export function Transportadoras() {
                             {transportadora.ativo ? 'Ativo' : 'Inativo'}
                           </button>
                         ) : (
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                             transportadora.ativo
                               ? 'bg-green-100 text-green-800'
                               : 'bg-gray-100 text-gray-800'
@@ -221,21 +221,21 @@ export function Transportadoras() {
                         )}
                       </td>
                       {canManage && (
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex items-center justify-end gap-2">
+                        <td className="px-2 py-1 text-right">
+                          <div className="flex items-center justify-end gap-1">
                             <button
                               onClick={() => openModal(transportadora)}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                               title="Editar"
                             >
-                              <FiEdit2 size={18} />
+                              <FiEdit2 size={14} />
                             </button>
                             <button
                               onClick={() => handleDelete(transportadora.id, transportadora.nome)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
                               title="Excluir"
                             >
-                              <FiTrash2 size={18} />
+                              <FiTrash2 size={14} />
                             </button>
                           </div>
                         </td>

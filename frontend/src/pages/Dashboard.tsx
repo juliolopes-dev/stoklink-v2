@@ -74,72 +74,72 @@ export function Dashboard() {
   }
 
   return (
-    <div className="h-full p-4">
-      <h1 className="text-lg font-semibold text-gray-800 mb-4">Dashboard</h1>
+    <div className="h-full p-3">
+      <h1 className="text-sm font-semibold text-gray-800 mb-3">Dashboard</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary-100 rounded-md">
-              <FiFileText className="text-primary-600" size={20} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-primary-100 rounded-md">
+              <FiFileText className="text-primary-600" size={16} />
             </div>
             <div>
               <p className="text-xs text-gray-500">Notas Fiscais</p>
-              <p className="text-xl font-semibold text-gray-800">{resumo?.notasFiscais.total || 0}</p>
+              <p className="text-lg font-semibold text-gray-800">{resumo?.notasFiscais.total || 0}</p>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-gray-200">
+          <div className="mt-2 pt-2 border-t border-gray-200">
             <p className="text-xs text-gray-500">
               <span className="text-warning-600 font-medium">{resumo?.notasFiscais.aguardando || 0}</span> aguardando conferência
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-success-100 rounded-md">
-              <FiCheckCircle className="text-success-600" size={20} />
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-success-100 rounded-md">
+              <FiCheckCircle className="text-success-600" size={16} />
             </div>
             <div>
               <p className="text-xs text-gray-500">Conferidas</p>
-              <p className="text-xl font-semibold text-gray-800">{resumo?.notasFiscais.conferidas || 0}</p>
+              <p className="text-lg font-semibold text-gray-800">{resumo?.notasFiscais.conferidas || 0}</p>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-gray-200">
+          <div className="mt-2 pt-2 border-t border-gray-200">
             <p className="text-xs text-success-600">
               Notas finalizadas
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-error-100 rounded-md">
-              <FiAlertTriangle className="text-error-600" size={20} />
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-error-100 rounded-md">
+              <FiAlertTriangle className="text-error-600" size={16} />
             </div>
             <div>
               <p className="text-xs text-gray-500">Divergências</p>
-              <p className="text-xl font-semibold text-gray-800">{resumo?.divergencias.pendentes || 0}</p>
+              <p className="text-lg font-semibold text-gray-800">{resumo?.divergencias.pendentes || 0}</p>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-gray-200">
+          <div className="mt-2 pt-2 border-t border-gray-200">
             <p className="text-xs text-gray-500">
               <span className="text-error-600 font-medium">{resumo?.divergencias.pendentes || 0}</span> pendentes de resolução
             </p>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-warning-100 rounded-md">
-              <FiTruck className="text-warning-600" size={20} />
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-warning-100 rounded-md">
+              <FiTruck className="text-warning-600" size={16} />
             </div>
             <div>
               <p className="text-xs text-gray-500">Distribuições</p>
-              <p className="text-xl font-semibold text-gray-800">{resumo?.distribuicoes.pendentes || 0}</p>
+              <p className="text-lg font-semibold text-gray-800">{resumo?.distribuicoes.pendentes || 0}</p>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-gray-200">
+          <div className="mt-2 pt-2 border-t border-gray-200">
             <p className="text-xs text-gray-500">
               <span className="text-warning-600 font-medium">{resumo?.distribuicoes.urgentes || 0}</span> urgentes
             </p>

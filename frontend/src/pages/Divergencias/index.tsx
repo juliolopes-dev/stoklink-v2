@@ -104,23 +104,23 @@ export function Divergencias() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-3">
       {resumo && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 flex-shrink-0">
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3 flex-shrink-0">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
             <p className="text-xs text-gray-500">Total</p>
-            <p className="text-xl font-semibold text-gray-800">{resumo.total}</p>
+            <p className="text-lg font-semibold text-gray-800">{resumo.total}</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
             <p className="text-xs text-gray-500">Pendentes</p>
-            <p className="text-xl font-semibold text-error-600">{resumo.pendentes}</p>
+            <p className="text-lg font-semibold text-error-600">{resumo.pendentes}</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
             <p className="text-xs text-gray-500">Resolvidas</p>
-            <p className="text-xl font-semibold text-success-600">{resumo.resolvidas}</p>
+            <p className="text-lg font-semibold text-success-600">{resumo.resolvidas}</p>
           </div>
-          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-            <p className="text-sm text-gray-500">Por Tipo</p>
+          <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
+            <p className="text-xs text-gray-500">Por Tipo</p>
             <div className="flex gap-2 mt-1">
               {resumo.porTipo.map(t => (
                 <span key={t.tipo} className="text-xs bg-gray-100 px-2 py-1 rounded">
@@ -134,15 +134,15 @@ export function Divergencias() {
       )}
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 flex-shrink-0">
+        <div className="p-3 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-semibold text-gray-800">Divergências</h1>
-            <div className="flex items-center gap-2">
-              <FiFilter className="text-gray-400" size={16} />
+            <h1 className="text-sm font-semibold text-gray-800">Divergências</h1>
+            <div className="flex items-center gap-1.5">
+              <FiFilter className="text-gray-400" size={14} />
               <select
                 value={filtroResolvida}
                 onChange={(e) => setFiltroResolvida(e.target.value)}
-                className="h-9 border border-gray-300 rounded-md px-3 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="h-7 border border-gray-300 rounded-md px-2 text-xs focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               >
                 <option value="">Todas</option>
                 <option value="false">Pendentes</option>
@@ -153,17 +153,17 @@ export function Divergencias() {
         </div>
 
         {divergencias.length === 0 ? (
-          <div className="p-12 text-center">
-            <FiAlertTriangle size={48} className="mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">Nenhuma divergência encontrada</p>
+          <div className="p-8 text-center">
+            <FiAlertTriangle size={36} className="mx-auto text-gray-300 mb-3" />
+            <p className="text-xs text-gray-500">Nenhuma divergência encontrada</p>
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto">
             {divergencias.map((div) => (
-              <div key={div.id} className="p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors">
+              <div key={div.id} className="p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-2 mb-1">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         div.tipo === 'ITEM_EXTRA' 
                           ? 'bg-orange-100 text-orange-800'

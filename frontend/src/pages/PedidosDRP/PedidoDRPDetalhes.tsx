@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { FiArrowLeft, FiPackage, FiCalendar, FiMapPin, FiUser, FiHash, FiFileText, FiBox, FiEdit2, FiCheck, FiX, FiTrash2 } from 'react-icons/fi'
+import { FiArrowLeft, FiPackage, FiCalendar, FiMapPin, FiUser, FiHash, FiFileText, FiBox, FiEdit2, FiCheck, FiX, FiTrash2, FiPlay } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { Loading } from '../../components/Loading'
 
@@ -20,6 +20,8 @@ interface PedidoDRP {
   id: number
   numero_pedido: string
   numero_nf_origem: string
+  cod_fornecedor: string | null
+  nome_fornecedor: string | null
   cod_filial_destino: string
   nome_filial_destino: string | null
   data_pedido: string | null
@@ -37,6 +39,7 @@ interface PedidoDRP {
 const statusConfig: Record<string, { label: string; color: string }> = {
   'PENDENTE': { label: 'Pendente', color: 'bg-amber-100 text-amber-700' },
   'EM_PROCESSAMENTO': { label: 'Em Processamento', color: 'bg-blue-100 text-blue-700' },
+  'SEPARACAO_INICIADA': { label: 'Separação Iniciada', color: 'bg-indigo-100 text-indigo-700' },
   'SEPARACAO_FINALIZADA': { label: 'Separação Finalizada', color: 'bg-sky-100 text-sky-700' },
   'CONCLUIDO': { label: 'Concluído', color: 'bg-emerald-100 text-emerald-700' },
   'CANCELADO': { label: 'Cancelado', color: 'bg-red-100 text-red-700' },
@@ -174,6 +177,7 @@ export function PedidoDRPDetalhes() {
           </div>
           <p className="text-sm text-gray-500">
             NF Origem: {pedido.numero_nf_origem || '-'}
+            {pedido.nome_fornecedor && ` - ${pedido.nome_fornecedor}`}
           </p>
         </div>
 
@@ -188,8 +192,20 @@ export function PedidoDRPDetalhes() {
             Excluir
           </button>
 
+          {/* Botão Iniciar Separação */}
+          {pedido.status !== 'SEPARACAO_INICIADA' && pedido.status !== 'SEPARACAO_FINALIZADA' && pedido.status !== 'CONCLUIDO' && (
+            <button
+              onClick={() => alterarStatus('SEPARACAO_INICIADA')}
+              disabled={salvando}
+              className="h-9 px-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-md transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <FiPlay size={16} />
+              {salvando ? 'Salvando...' : 'Iniciar Separação'}
+            </button>
+          )}
+
           {/* Botão Finalizar Separação */}
-          {pedido.status !== 'SEPARACAO_FINALIZADA' && pedido.status !== 'CONCLUIDO' && (
+          {(pedido.status === 'SEPARACAO_INICIADA' || (pedido.status !== 'SEPARACAO_FINALIZADA' && pedido.status !== 'CONCLUIDO')) && (
             <button
               onClick={() => alterarStatus('SEPARACAO_FINALIZADA')}
               disabled={salvando}
@@ -203,52 +219,52 @@ export function PedidoDRPDetalhes() {
       </div>
 
       {/* Grid de informações */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4 flex-shrink-0">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-3 flex-shrink-0">
         {/* Dados do Pedido */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-          <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <FiFileText size={16} className="text-gray-500" />
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
+          <h2 className="text-xs font-semibold text-gray-800 mb-2 flex items-center gap-1.5">
+            <FiFileText size={14} className="text-gray-500" />
             Dados do Pedido
           </h2>
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <FiHash size={14} className="text-gray-400" />
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5">
+              <FiHash size={12} className="text-gray-400" />
               <div>
                 <p className="text-xs text-gray-500">Número do Pedido</p>
-                <p className="text-sm font-medium text-gray-900">{pedido.numero_pedido}</p>
+                <p className="text-xs font-medium text-gray-900">{pedido.numero_pedido}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <FiCalendar size={14} className="text-gray-400" />
+            <div className="flex items-center gap-1.5">
+              <FiCalendar size={12} className="text-gray-400" />
               <div>
                 <p className="text-xs text-gray-500">Data do Pedido</p>
-                <p className="text-sm font-medium text-gray-900">{formatDate(pedido.data_pedido)}</p>
+                <p className="text-xs font-medium text-gray-900">{formatDate(pedido.data_pedido)}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <FiUser size={14} className="text-gray-400" />
+            <div className="flex items-center gap-1.5">
+              <FiUser size={12} className="text-gray-400" />
               <div>
                 <p className="text-xs text-gray-500">Usuário</p>
-                <p className="text-sm font-medium text-gray-900">{pedido.usuario || '-'}</p>
+                <p className="text-xs font-medium text-gray-900">{pedido.usuario || '-'}</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Destino */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-          <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <FiMapPin size={16} className="text-gray-500" />
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
+          <h2 className="text-xs font-semibold text-gray-800 mb-2 flex items-center gap-1.5">
+            <FiMapPin size={14} className="text-gray-500" />
             Destino
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-2">
             <div>
               <p className="text-xs text-gray-500">Código Filial</p>
-              <p className="text-sm font-medium text-gray-900">{pedido.cod_filial_destino}</p>
+              <p className="text-xs font-medium text-gray-900">{pedido.cod_filial_destino}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500">Nome Filial</p>
-              <p className="text-sm font-medium text-gray-900">{pedido.nome_filial_destino || '-'}</p>
+              <p className="text-xs font-medium text-gray-900">{pedido.nome_filial_destino || '-'}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">Nº Transferência</p>
@@ -301,27 +317,27 @@ export function PedidoDRPDetalhes() {
         </div>
 
         {/* Resumo */}
-        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-4">
-          <h2 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
-            <FiBox size={16} className="text-gray-500" />
+        <div className="bg-white rounded-lg shadow-md border border-gray-200 p-3">
+          <h2 className="text-xs font-semibold text-gray-800 mb-2 flex items-center gap-1.5">
+            <FiBox size={14} className="text-gray-500" />
             Resumo
           </h2>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <p className="text-2xl font-bold text-gray-800">{pedido.total_itens || 0}</p>
+          <div className="grid grid-cols-2 gap-2">
+            <div className="text-center p-2 bg-gray-50 rounded-lg">
+              <p className="text-xl font-bold text-gray-800">{pedido.total_itens || 0}</p>
               <p className="text-xs text-gray-500">Itens</p>
             </div>
-            <div className="text-center p-3 bg-gray-50 rounded-lg">
-              <p className="text-2xl font-bold text-gray-800">
+            <div className="text-center p-2 bg-gray-50 rounded-lg">
+              <p className="text-xl font-bold text-gray-800">
                 {pedido.total_quantidade?.toLocaleString('pt-BR') || 0}
               </p>
               <p className="text-xs text-gray-500">Quantidade Total</p>
             </div>
           </div>
           {pedido.observacao && (
-            <div className="mt-3 pt-3 border-t border-gray-100">
+            <div className="mt-2 pt-2 border-t border-gray-100">
               <p className="text-xs text-gray-500">Observação</p>
-              <p className="text-sm text-gray-700">{pedido.observacao}</p>
+              <p className="text-xs text-gray-700">{pedido.observacao}</p>
             </div>
           )}
         </div>

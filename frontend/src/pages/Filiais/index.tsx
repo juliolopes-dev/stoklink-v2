@@ -149,36 +149,36 @@ export function Filiais() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
-      <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h1 className="text-lg font-semibold text-gray-800">Filiais</h1>
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-3">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <h1 className="text-sm font-semibold text-gray-800">Filiais</h1>
         {isAdmin && (
           <button
             onClick={() => openModal()}
-            className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md text-sm font-medium transition-colors"
+            className="h-7 flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white px-3 rounded-md text-xs font-medium transition-colors"
           >
-            <FiPlus size={16} />
+            <FiPlus size={14} />
             Nova Filial
           </button>
         )}
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 flex-shrink-0">
+        <div className="p-3 border-b border-gray-200 flex-shrink-0">
           <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
             <input
               type="text"
               placeholder="Buscar por nome, código ou cidade..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="w-full h-7 pl-8 pr-2 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
             />
           </div>
         </div>
 
         {filteredFiliais.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
+          <div className="p-8 text-center text-xs text-gray-500">
             Nenhuma filial encontrada
           </div>
         ) : (
@@ -186,39 +186,39 @@ export function Filiais() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Código</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Nome</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Localização</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Tipo</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Usuários</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase">Status</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase">Código</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase">Nome</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase">Localização</th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-600 uppercase">Tipo</th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-600 uppercase">Usuários</th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-600 uppercase">Status</th>
                   {isAdmin && (
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Ações</th>
+                    <th className="px-2 py-1 text-right text-xs font-semibold text-gray-600 uppercase">Ações</th>
                   )}
                 </tr>
               </thead>
               <tbody>
                 {filteredFiliais.map((filial) => (
                   <tr key={filial.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                    <td className="px-2 py-1">
+                      <span className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded">
                         {filial.codigo}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <p className="font-medium text-gray-900">{filial.nome}</p>
+                    <td className="px-2 py-1">
+                      <p className="font-medium text-xs text-gray-900">{filial.nome}</p>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-1">
                       {filial.cidade ? (
-                        <div className="flex items-center gap-1 text-sm text-gray-600">
-                          <FiMapPin size={14} />
+                        <div className="flex items-center gap-1 text-xs text-gray-600">
+                          <FiMapPin size={12} />
                           {filial.cidade}{filial.uf ? ` - ${filial.uf}` : ''}
                         </div>
                       ) : (
-                        <span className="text-gray-400">-</span>
+                        <span className="text-xs text-gray-400">-</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-2 py-1 text-center">
                       {filial.ehCD ? (
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
                           <FiBox size={12} />
@@ -230,16 +230,16 @@ export function Filiais() {
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className="px-2 py-1 bg-gray-100 rounded text-sm">
+                    <td className="px-2 py-1 text-center">
+                      <span className="px-1.5 py-0.5 bg-gray-100 rounded text-xs">
                         {filial._count?.usuarios || 0}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-2 py-1 text-center">
                       <button
                         onClick={() => isAdmin && handleToggleAtivo(filial)}
                         disabled={!isAdmin}
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           filial.ativo
                             ? 'bg-green-100 text-green-800'
                             : 'bg-gray-100 text-gray-800'
@@ -249,19 +249,19 @@ export function Filiais() {
                       </button>
                     </td>
                     {isAdmin && (
-                      <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-2 py-1 text-right">
+                        <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => openModal(filial)}
-                            className="p-2 hover:bg-gray-100 rounded-lg text-gray-600"
+                            className="p-1.5 hover:bg-gray-100 rounded-md text-gray-600"
                           >
-                            <FiEdit2 size={16} />
+                            <FiEdit2 size={14} />
                           </button>
                           <button
                             onClick={() => handleDelete(filial.id)}
-                            className="p-2 hover:bg-red-50 rounded-lg text-red-600"
+                            className="p-1.5 hover:bg-red-50 rounded-md text-red-600"
                           >
-                            <FiTrash2 size={16} />
+                            <FiTrash2 size={14} />
                           </button>
                         </div>
                       </td>
@@ -276,21 +276,21 @@ export function Filiais() {
 
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg mx-4">
+            <div className="p-4 border-b border-gray-200">
+              <h2 className="text-sm font-semibold text-gray-800">
                 {editingId ? 'Editar Filial' : 'Nova Filial'}
               </h2>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleSubmit} className="p-4 space-y-3">
               {error && (
-                <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm">
+                <div className="bg-red-50 text-red-600 px-3 py-2 rounded-md text-xs">
                   {error}
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Código *</label>
                   <input

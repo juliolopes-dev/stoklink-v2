@@ -126,44 +126,44 @@ export function Distribuicoes() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Distribuições</h1>
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-3">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <h1 className="text-sm font-semibold text-gray-800">Distribuições</h1>
       </div>
 
       {resumo && (
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <p className="text-sm text-gray-500">Total</p>
-            <p className="text-2xl font-bold text-gray-800">{resumo.total}</p>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3 flex-shrink-0">
+          <div className="bg-white rounded-lg shadow-sm p-3">
+            <p className="text-xs text-gray-500">Total</p>
+            <p className="text-lg font-bold text-gray-800">{resumo.total}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <p className="text-sm text-gray-500">Pendentes</p>
-            <p className="text-2xl font-bold text-yellow-600">{resumo.pendentes}</p>
+          <div className="bg-white rounded-lg shadow-sm p-3">
+            <p className="text-xs text-gray-500">Pendentes</p>
+            <p className="text-lg font-bold text-yellow-600">{resumo.pendentes}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <p className="text-sm text-gray-500">Em Trânsito</p>
-            <p className="text-2xl font-bold text-blue-600">{resumo.emTransito}</p>
+          <div className="bg-white rounded-lg shadow-sm p-3">
+            <p className="text-xs text-gray-500">Em Trânsito</p>
+            <p className="text-lg font-bold text-blue-600">{resumo.emTransito}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <p className="text-sm text-gray-500">Entregues</p>
-            <p className="text-2xl font-bold text-green-600">{resumo.entregues}</p>
+          <div className="bg-white rounded-lg shadow-sm p-3">
+            <p className="text-xs text-gray-500">Entregues</p>
+            <p className="text-lg font-bold text-green-600">{resumo.entregues}</p>
           </div>
-          <div className="bg-white rounded-xl shadow-sm p-4">
-            <p className="text-sm text-gray-500">Urgentes</p>
-            <p className="text-2xl font-bold text-red-600">{resumo.urgentes}</p>
+          <div className="bg-white rounded-lg shadow-sm p-3">
+            <p className="text-xs text-gray-500">Urgentes</p>
+            <p className="text-lg font-bold text-red-600">{resumo.urgentes}</p>
           </div>
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm">
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center gap-4">
-            <FiFilter className="text-gray-400" />
+      <div className="bg-white rounded-lg shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="p-3 border-b border-gray-200 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <FiFilter className="text-gray-400" size={14} />
             <select
               value={filtroStatus}
               onChange={(e) => setFiltroStatus(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="h-7 border border-gray-300 rounded-md px-2 text-xs focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
             >
               <option value="">Todos os status</option>
               <option value="PENDENTE">Pendente</option>
@@ -174,7 +174,7 @@ export function Distribuicoes() {
             <select
               value={filtroUrgente}
               onChange={(e) => setFiltroUrgente(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="h-7 border border-gray-300 rounded-md px-2 text-xs focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
             >
               <option value="">Todas</option>
               <option value="true">Urgentes</option>
@@ -184,37 +184,37 @@ export function Distribuicoes() {
         </div>
 
         {distribuicoes.length === 0 ? (
-          <div className="p-12 text-center">
-            <FiTruck size={48} className="mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">Nenhuma distribuição encontrada</p>
+          <div className="p-8 text-center">
+            <FiTruck size={36} className="mx-auto text-gray-300 mb-3" />
+            <p className="text-xs text-gray-500">Nenhuma distribuição encontrada</p>
           </div>
         ) : (
-          <div>
+          <div className="flex-1 overflow-y-auto">
             {distribuicoes.map((dist) => {
               const config = statusConfig[dist.status] || statusConfig.PENDENTE
 
               return (
-                <div key={dist.id} className={`p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors ${dist.urgente ? 'bg-red-50' : ''}`}>
+                <div key={dist.id} className={`p-3 border-b border-gray-100 hover:bg-gray-50 transition-colors ${dist.urgente ? 'bg-red-50' : ''}`}>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${config.color}`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
                           {config.label}
                         </span>
                         {dist.urgente && (
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                             URGENTE
                           </span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2 text-gray-800 mb-2">
+                      <div className="flex items-center gap-2 text-xs text-gray-800 mb-1">
                         <span className="font-medium">{dist.filialOrigem.nome}</span>
-                        <FiTruck className="text-gray-400" />
+                        <FiTruck className="text-gray-400" size={12} />
                         <span className="font-medium">{dist.filialDestino.nome}</span>
                       </div>
 
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-3 text-xs text-gray-500">
                         <Link
                           to={`/notas-fiscais/${dist.notaFiscal.id}`}
                           className="hover:text-primary-600"
@@ -229,21 +229,21 @@ export function Distribuicoes() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       {dist.status === 'PENDENTE' && (
                         <>
                           <button
                             onClick={() => handleEnviar(dist.id)}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
+                            className="flex items-center gap-1.5 h-7 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs"
                           >
-                            <FiSend />
+                            <FiSend size={12} />
                             Enviar
                           </button>
                           <button
                             onClick={() => handleCancelar(dist.id)}
-                            className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm"
+                            className="flex items-center gap-1.5 h-7 px-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md text-xs"
                           >
-                            <FiX />
+                            <FiX size={12} />
                             Cancelar
                           </button>
                         </>
@@ -251,17 +251,17 @@ export function Distribuicoes() {
                       {dist.status === 'EM_TRANSITO' && (
                         <button
                           onClick={() => handleReceber(dist.id)}
-                          className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm"
+                          className="flex items-center gap-1.5 h-7 px-3 bg-green-600 hover:bg-green-700 text-white rounded-md text-xs"
                         >
-                          <FiCheck />
+                          <FiCheck size={12} />
                           Confirmar Recebimento
                         </button>
                       )}
                       <Link
                         to={`/notas-fiscais/${dist.notaFiscal.id}`}
-                        className="p-2 hover:bg-gray-100 rounded-lg"
+                        className="p-1.5 hover:bg-gray-100 rounded-md"
                       >
-                        <FiEye />
+                        <FiEye size={14} />
                       </Link>
                     </div>
                   </div>

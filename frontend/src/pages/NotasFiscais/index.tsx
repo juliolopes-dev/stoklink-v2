@@ -99,42 +99,42 @@ export function NotasFiscais() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-2rem)] p-4 pb-4">
+    <div className="flex flex-col h-[calc(100vh-2rem)] p-3 pb-3">
       <div className="bg-white rounded-lg shadow-md border border-gray-200 flex flex-col flex-1 min-h-0 mb-0">
         <div className="p-3 border-b border-gray-200 flex-shrink-0">
-          <div className="flex items-center justify-between mb-3">
-            <h1 className="text-lg font-semibold text-gray-800">Notas Fiscais</h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-sm font-semibold text-gray-800">Notas Fiscais</h1>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => refetch()}
                 disabled={isFetching}
-                className="h-9 flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 rounded-md transition-colors text-sm disabled:opacity-50"
+                className="h-7 flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 rounded-md transition-colors text-xs disabled:opacity-50"
                 title="Atualizar lista"
               >
-                <FiRefreshCw size={16} className={isFetching ? 'animate-spin' : ''} />
+                <FiRefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />
               </button>
               <Link
                 to="/notas-fiscais/nova"
-                className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md transition-colors text-sm font-medium"
+                className="h-7 flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white px-3 rounded-md transition-colors text-xs font-medium"
               >
-                <FiPlus size={16} />
+                <FiPlus size={14} />
                 Nova NF
               </Link>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col md:flex-row gap-2">
             <div className="flex-1 relative">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+              <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
               <input
                 type="text"
                 placeholder="Buscar por número ou fornecedor..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full h-7 pl-8 pr-2 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
               />
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <FiFilter className="text-gray-400" size={18} />
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <FiFilter className="text-gray-400" size={14} />
               <div className="relative">
                 <input
                   ref={dateInputRef}
@@ -146,14 +146,14 @@ export function NotasFiscais() {
                 <button
                   type="button"
                   onClick={() => dateInputRef.current?.showPicker()}
-                  className={`h-9 flex items-center gap-2 px-3 border rounded-md text-sm transition-colors ${
+                  className={`h-7 flex items-center gap-1.5 px-2 border rounded-md text-xs transition-colors ${
                     dataFiltro 
                       ? 'border-primary-500 bg-primary-50 text-primary-700' 
                       : 'border-gray-300 text-gray-600 hover:bg-gray-50'
                   }`}
                   title="Filtrar por data"
                 >
-                  <FiCalendar size={16} />
+                  <FiCalendar size={12} />
                   {dataFiltro ? new Date(dataFiltro + 'T12:00:00').toLocaleDateString('pt-BR') : 'Data'}
                 </button>
                 {dataFiltro && (
@@ -173,7 +173,7 @@ export function NotasFiscais() {
               <select
                 value={filialDestinoFilter}
                 onChange={(e) => setFilialDestinoFilter(e.target.value)}
-                className="h-9 border border-gray-300 rounded-md px-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                className="h-7 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs"
               >
                 <option value="">Todas as Filiais</option>
                 {filiais.map(filial => (
@@ -185,7 +185,7 @@ export function NotasFiscais() {
               <select
                 value={rpFilter}
                 onChange={(e) => setRpFilter(e.target.value)}
-                className="h-9 border border-gray-300 rounded-md px-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                className="h-7 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs"
               >
                 <option value="">Todos RP</option>
                 <option value="SIM">RP-SIM</option>
@@ -194,7 +194,7 @@ export function NotasFiscais() {
               <select
                 value={bloqueadaFilter}
                 onChange={(e) => setBloqueadaFilter(e.target.value)}
-                className="h-9 border border-gray-300 rounded-md px-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                className="h-7 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs"
               >
                 <option value="">Bloqueio</option>
                 <option value="SIM">Bloqueada</option>
@@ -203,7 +203,7 @@ export function NotasFiscais() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="h-9 border border-gray-300 rounded-md px-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                className="h-7 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs"
               >
                 {statusOptions.map(option => (
                   <option key={option.value} value={option.value}>
@@ -229,28 +229,28 @@ export function NotasFiscais() {
             <table className="w-full border-collapse table-fixed">
               <thead className="sticky top-0 z-10 bg-gray-50">
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[22%]">
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[22%]">
                     NF / Fornecedor
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[14%]">
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[14%]">
                     Recebimento
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[12%]">
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[12%]">
                     Destino
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[12%]">
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[12%]">
                     Transportadora
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[6%]">
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[6%]">
                     Vol.
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">
                     Cód. Reserva
                   </th>
-                  <th className="px-3 py-2 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">
+                  <th className="px-2 py-1 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">
                     Ações
                   </th>
                 </tr>
@@ -258,10 +258,10 @@ export function NotasFiscais() {
               <tbody>
                 {notas.map((nf) => (
                   <tr key={nf.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="px-3 py-2 max-w-[250px]">
+                    <td className="px-2 py-1 max-w-[250px]">
                       <div>
                         <div className="flex items-center gap-1 flex-wrap">
-                          <p className="font-medium text-gray-900 text-sm">NF {nf.numero}</p>
+                          <p className="font-medium text-gray-900 text-xs">NF {nf.numero}</p>
                           {nf._count.divergencias > 0 && (
                             <Tooltip content={`${nf._count.divergencias} divergência(s) encontrada(s)`}>
                               <span className="flex items-center justify-center w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
@@ -284,7 +284,7 @@ export function NotasFiscais() {
                           )}
                         </div>
                         <Tooltip content={nf.fornecedorNome}>
-                          <p className="text-sm text-gray-500 truncate max-w-[200px]">{nf.fornecedorNome}</p>
+                          <p className="text-xs text-gray-500 truncate max-w-[200px]">{nf.fornecedorNome}</p>
                         </Tooltip>
                         {nf.dataEmissao && (
                           <p className="text-xs text-blue-600">Emissão: {formatDate(nf.dataEmissao)}</p>
@@ -298,7 +298,7 @@ export function NotasFiscais() {
                         )}
                       </div>
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-2 py-1">
                       <div>
                         <p className="text-xs text-gray-900">{nf.filialRecebimento?.nome || '-'}</p>
                         {nf.dataRecebimento && (
@@ -306,7 +306,7 @@ export function NotasFiscais() {
                         )}
                       </div>
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-2 py-1">
                       <div className="flex flex-col gap-1 items-start">
                         {/* Dropdown RP-SIM / RP-NÃO */}
                         <select
@@ -338,13 +338,13 @@ export function NotasFiscais() {
                         <p className="text-xs text-gray-900">{nf.filialDestino.nome}</p>
                       </div>
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-2 py-1">
                       <span className="text-xs text-gray-900">{nf.transportadora || '-'}</span>
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-2 py-1">
                       <span className="text-xs text-gray-900">{nf.quantidadeVolumes}</span>
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-2 py-1">
                       {nf.status === 'SEPARACAO_FINALIZADA' ? (
                         <div className="flex flex-col gap-1">
                           <StatusBadge 
@@ -362,15 +362,15 @@ export function NotasFiscais() {
                         />
                       )}
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-2 py-1">
                       {(nf.status === 'CONFERIDO_OK' || nf.status === 'SEPARACAO_FINALIZADA') && nf.fornecedor?.codigo && (
-                        <span className="text-sm font-medium text-blue-600">
+                        <span className="text-xs font-medium text-blue-600">
                           {nf.fornecedor.codigo.slice(-2)}{nf.numeroSecundario || nf.numero}
                         </span>
                       )}
                     </td>
-                    <td className="px-3 py-2 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-2 py-1 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
                         {/* Botão 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (
                           <Link

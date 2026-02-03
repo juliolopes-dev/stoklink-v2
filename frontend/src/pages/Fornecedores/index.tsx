@@ -208,36 +208,36 @@ export function Fornecedores() {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-4">
-      <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h1 className="text-lg font-semibold text-gray-800">Fornecedores</h1>
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-3">
+      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+        <h1 className="text-sm font-semibold text-gray-800">Fornecedores</h1>
         {canManage && (
           <button
             onClick={() => openModal()}
-            className="h-9 flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 rounded-md text-sm font-medium transition-colors"
+            className="h-7 flex items-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white px-3 rounded-md text-xs font-medium transition-colors"
           >
-            <FiPlus size={16} />
+            <FiPlus size={14} />
             Novo Fornecedor
           </button>
         )}
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
-        <div className="p-4 border-b border-gray-200 flex-shrink-0">
+        <div className="p-3 border-b border-gray-200 flex-shrink-0">
           <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
             <input
               type="text"
               placeholder="Buscar por nome, CNPJ ou email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-9 pl-10 pr-3 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="w-full h-7 pl-8 pr-2 border border-gray-300 rounded-md text-xs focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
             />
           </div>
         </div>
 
         {filteredFornecedores.length === 0 ? (
-          <div className="p-12 text-center text-gray-500">
+          <div className="p-8 text-center text-xs text-gray-500">
             Nenhum fornecedor encontrado
           </div>
         ) : (
@@ -245,14 +245,14 @@ export function Fornecedores() {
             <table className="w-full border-collapse flex-shrink-0">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-[30%]">Nome</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-[8%]">Código</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-[12%]">CNPJ</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase w-[20%]">Contato</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase w-[8%]">NFs</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase w-[10%]">Status</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase w-[30%]">Nome</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase w-[8%]">Código</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase w-[12%]">CNPJ</th>
+                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase w-[20%]">Contato</th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-600 uppercase w-[8%]">NFs</th>
+                  <th className="px-2 py-1 text-center text-xs font-semibold text-gray-600 uppercase w-[10%]">Status</th>
                   {canManage && (
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase w-[12%]">Ações</th>
+                    <th className="px-2 py-1 text-right text-xs font-semibold text-gray-600 uppercase w-[12%]">Ações</th>
                   )}
                 </tr>
               </thead>
@@ -262,42 +262,42 @@ export function Fornecedores() {
                 <tbody>
                   {filteredFornecedores.map((fornecedor) => (
                   <tr key={fornecedor.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 w-[30%]">
-                      <p className="font-medium text-gray-900">{fornecedor.nome}</p>
+                    <td className="px-2 py-1 w-[30%]">
+                      <p className="font-medium text-xs text-gray-900">{fornecedor.nome}</p>
                       {fornecedor.cidade && (
-                        <p className="text-sm text-gray-500">{fornecedor.cidade}{fornecedor.uf ? ` - ${fornecedor.uf}` : ''}</p>
+                        <p className="text-xs text-gray-500">{fornecedor.cidade}{fornecedor.uf ? ` - ${fornecedor.uf}` : ''}</p>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 w-[8%]">
+                    <td className="px-2 py-1 text-xs text-gray-600 w-[8%]">
                       {fornecedor.codigo || '-'}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600 w-[12%]">
+                    <td className="px-2 py-1 text-xs text-gray-600 w-[12%]">
                       {fornecedor.cnpj || '-'}
                     </td>
-                    <td className="px-4 py-3 w-[20%]">
-                      <div className="space-y-1">
+                    <td className="px-2 py-1 w-[20%]">
+                      <div className="space-y-0.5">
                         {fornecedor.email && (
-                          <div className="flex items-center gap-1 text-sm text-gray-600">
-                            <FiMail size={14} />
+                          <div className="flex items-center gap-1 text-xs text-gray-600">
+                            <FiMail size={12} />
                             {fornecedor.email}
                           </div>
                         )}
                         {fornecedor.telefone && (
-                          <div className="flex items-center gap-1 text-sm text-gray-600">
-                            <FiPhone size={14} />
+                          <div className="flex items-center gap-1 text-xs text-gray-600">
+                            <FiPhone size={12} />
                             {fornecedor.telefone}
                           </div>
                         )}
                         {!fornecedor.email && !fornecedor.telefone && (
-                          <span className="text-gray-400">-</span>
+                          <span className="text-xs text-gray-400">-</span>
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center w-[8%]">
+                    <td className="px-2 py-1 text-center w-[8%]">
                       <button
                         onClick={() => handleShowNfs(fornecedor)}
                         disabled={fornecedor._count.notasFiscais + fornecedor._count.notasFiscaisSecundario === 0}
-                        className={`px-2 py-1 rounded text-sm transition-colors ${
+                        className={`px-1.5 py-0.5 rounded text-xs transition-colors ${
                           fornecedor._count.notasFiscais + fornecedor._count.notasFiscaisSecundario > 0
                             ? 'bg-blue-50 text-blue-700 hover:bg-blue-100 cursor-pointer'
                             : 'bg-gray-100 text-gray-600 cursor-default'
@@ -306,11 +306,11 @@ export function Fornecedores() {
                         {fornecedor._count.notasFiscais + fornecedor._count.notasFiscaisSecundario}
                       </button>
                     </td>
-                    <td className="px-4 py-3 text-center w-[10%]">
+                    <td className="px-2 py-1 text-center w-[10%]">
                       <button
                         onClick={() => canManage && handleToggleAtivo(fornecedor)}
                         disabled={!canManage}
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                           fornecedor.ativo
                             ? 'bg-green-100 text-green-800'
                             : 'bg-gray-100 text-gray-800'
@@ -320,19 +320,19 @@ export function Fornecedores() {
                       </button>
                     </td>
                     {canManage && (
-                      <td className="px-4 py-3 text-right w-[12%]">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-2 py-1 text-right w-[12%]">
+                        <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => openModal(fornecedor)}
-                            className="p-2 hover:bg-gray-100 rounded-lg text-gray-600"
+                            className="p-1.5 hover:bg-gray-100 rounded-md text-gray-600"
                           >
-                            <FiEdit2 size={16} />
+                            <FiEdit2 size={14} />
                           </button>
                           <button
                             onClick={() => handleDelete(fornecedor.id)}
-                            className="p-2 hover:bg-red-50 rounded-lg text-red-600"
+                            className="p-1.5 hover:bg-red-50 rounded-md text-red-600"
                           >
-                            <FiTrash2 size={16} />
+                            <FiTrash2 size={14} />
                           </button>
                         </div>
                       </td>

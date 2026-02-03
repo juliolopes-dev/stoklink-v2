@@ -27,6 +27,8 @@ export interface PedidoDRP {
   id: number
   numero_pedido: string
   numero_nf_origem: string
+  cod_fornecedor: string | null
+  nome_fornecedor: string | null
   cod_filial_destino: string
   nome_filial_destino: string | null
   data_pedido: Date | null
@@ -125,6 +127,8 @@ class BdBezerraService {
           id,
           numero_pedido,
           numero_nf_origem,
+          cod_fornecedor,
+          nome_fornecedor,
           numero_transferencia,
           cod_filial_destino,
           nome_filial_destino,
@@ -180,6 +184,8 @@ class BdBezerraService {
         id: row.id,
         numero_pedido: row.numero_pedido,
         numero_nf_origem: row.numero_nf_origem,
+        cod_fornecedor: row.cod_fornecedor,
+        nome_fornecedor: row.nome_fornecedor,
         numero_transferencia: row.numero_transferencia,
         cod_filial_destino: row.cod_filial_destino,
         nome_filial_destino: row.nome_filial_destino,
@@ -207,21 +213,24 @@ class BdBezerraService {
     try {
       const pedidoQuery = `
         SELECT 
-          id,
-          numero_pedido,
-          numero_nf_origem,
-          cod_filial_destino,
-          nome_filial_destino,
-          data_pedido,
-          status,
-          usuario,
-          observacao,
-          total_itens,
-          total_quantidade,
-          created_at,
-          updated_at
-        FROM auditoria_integracao."Pedido_DRP"
-        WHERE id = $1
+          p.id,
+          p.numero_pedido,
+          p.numero_nf_origem,
+          p.cod_fornecedor,
+          p.nome_fornecedor,
+          p.numero_transferencia,
+          p.cod_filial_destino,
+          p.nome_filial_destino,
+          p.data_pedido,
+          p.status,
+          p.usuario,
+          p.observacao,
+          p.total_itens,
+          p.total_quantidade,
+          p.created_at,
+          p.updated_at
+        FROM auditoria_integracao."Pedido_DRP" p
+        WHERE p.id = $1
       `
       
       const pedidoResult = await client.query(pedidoQuery, [id])
@@ -254,13 +263,15 @@ class BdBezerraService {
         id: row.id,
         numero_pedido: row.numero_pedido,
         numero_nf_origem: row.numero_nf_origem,
+        cod_fornecedor: row.cod_fornecedor,
+        nome_fornecedor: row.nome_fornecedor,
+        numero_transferencia: row.numero_transferencia,
         cod_filial_destino: row.cod_filial_destino,
         nome_filial_destino: row.nome_filial_destino,
         data_pedido: row.data_pedido,
         status: row.status,
         usuario: row.usuario,
         observacao: row.observacao,
-        numero_transferencia: row.numero_transferencia,
         total_itens: row.total_itens,
         total_quantidade: row.total_quantidade ? parseFloat(row.total_quantidade) : null,
         created_at: row.created_at,

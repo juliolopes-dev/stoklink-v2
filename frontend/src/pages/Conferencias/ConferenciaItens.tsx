@@ -111,56 +111,56 @@ export function ConferenciaItens() {
   const itensConferidos = nota.itens.filter(i => i.conferido).length
 
   return (
-    <div>
-      <div className="flex items-center gap-4 mb-6">
+    <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden p-3">
+      <div className="flex items-center gap-3 mb-3 flex-shrink-0">
         <button
           onClick={() => navigate(`/notas-fiscais/${id}`)}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
         >
-          <FiArrowLeft size={24} />
+          <FiArrowLeft size={16} />
         </button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-800">Conferência de Itens</h1>
-          <p className="text-gray-500">NF {nota.numero} - {nota.fornecedorNome}</p>
+          <h1 className="text-sm font-semibold text-gray-800">Conferência de Itens</h1>
+          <p className="text-xs text-gray-500">NF {nota.numero} - {nota.fornecedorNome}</p>
         </div>
         <StatusBadge status={nota.status} />
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-6">
+        <div className="bg-red-50 text-red-600 px-3 py-2 rounded-md mb-3 text-xs flex-shrink-0">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="bg-green-50 text-green-600 px-4 py-3 rounded-lg mb-6">
+        <div className="bg-green-50 text-green-600 px-3 py-2 rounded-md mb-3 text-xs flex-shrink-0">
           {success}
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm">
-        <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+      <div className="bg-white rounded-lg shadow-sm flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="p-3 border-b border-gray-200 flex items-center justify-between flex-shrink-0">
           <div>
-            <span className="text-gray-600">Progresso: </span>
-            <span className="font-medium">{itensConferidos} / {totalItens} itens conferidos</span>
+            <span className="text-xs text-gray-600">Progresso: </span>
+            <span className="text-xs font-medium">{itensConferidos} / {totalItens} itens conferidos</span>
           </div>
-          <div className="w-48 bg-gray-200 rounded-full h-2">
+          <div className="w-36 bg-gray-200 rounded-full h-1.5">
             <div 
-              className="bg-primary-600 h-2 rounded-full transition-all"
+              className="bg-primary-600 h-1.5 rounded-full transition-all"
               style={{ width: `${(itensConferidos / totalItens) * 100}%` }}
             />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="flex-1 overflow-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 sticky top-0">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descrição</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Qtd NF</th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase w-32">Qtd Conferida</th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase w-20">Status</th>
+                <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
+                <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase">Descrição</th>
+                <th className="px-2 py-1 text-right text-xs font-medium text-gray-500 uppercase">Qtd NF</th>
+                <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase w-28">Qtd Conferida</th>
+                <th className="px-2 py-1 text-center text-xs font-medium text-gray-500 uppercase w-16">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -171,28 +171,28 @@ export function ConferenciaItens() {
 
                 return (
                   <tr key={item.id} className={divergente ? 'bg-red-50' : ''}>
-                    <td className="px-4 py-3 text-sm font-mono">{item.codigoProduto}</td>
-                    <td className="px-4 py-3 text-sm">{item.descricao}</td>
-                    <td className="px-4 py-3 text-sm text-right">
+                    <td className="px-2 py-1 text-xs font-mono">{item.codigoProduto}</td>
+                    <td className="px-2 py-1 text-xs">{item.descricao}</td>
+                    <td className="px-2 py-1 text-xs text-right">
                       {item.quantidadeNota} {item.unidade}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-1">
                       <input
                         type="number"
                         value={quantidades[item.id] || ''}
                         onChange={(e) => updateQuantidade(item.id, e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg text-center ${
+                        className={`w-full h-7 px-2 text-xs border rounded-md text-center ${
                           divergente ? 'border-red-300 bg-red-50' : 'border-gray-300'
                         }`}
                         step="0.001"
                         min="0"
                       />
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-2 py-1 text-center">
                       {item.conferido ? (
-                        <span className="text-green-600"><FiCheck size={20} /></span>
+                        <span className="text-green-600"><FiCheck size={14} /></span>
                       ) : (
-                        <span className="text-gray-300">-</span>
+                        <span className="text-xs text-gray-300">-</span>
                       )}
                     </td>
                   </tr>
@@ -202,27 +202,27 @@ export function ConferenciaItens() {
           </table>
         </div>
 
-        <div className="p-4 border-t border-gray-200 flex justify-end gap-4">
+        <div className="p-3 border-t border-gray-200 flex justify-end gap-2 flex-shrink-0">
           <button
             onClick={() => navigate(`/notas-fiscais/${id}`)}
-            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="h-7 px-3 text-xs border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
           >
             Cancelar
           </button>
           <button
             onClick={() => handleSalvar(false)}
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 h-7 px-3 text-xs bg-gray-600 hover:bg-gray-700 text-white rounded-md transition-colors disabled:opacity-50"
           >
-            <FiSave />
+            <FiSave size={12} />
             Salvar Parcial
           </button>
           <button
             onClick={() => handleSalvar(true)}
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 h-7 px-3 text-xs bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors disabled:opacity-50"
           >
-            <FiCheck />
+            <FiCheck size={12} />
             Finalizar Conferência
           </button>
         </div>

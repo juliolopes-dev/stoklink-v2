@@ -222,15 +222,15 @@ export function NovaNotaFiscal() {
   }
 
   return (
-    <div className="h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-6">
-      <div className="flex items-center gap-4 mb-3 flex-shrink-0">
+    <div className="h-[calc(100vh-2rem)] flex flex-col overflow-hidden p-3">
+      <div className="flex items-center gap-3 mb-3 flex-shrink-0">
         <button
           onClick={() => navigate('/notas-fiscais')}
-          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+          className="p-1.5 hover:bg-gray-100 rounded-md transition-colors"
         >
-          <FiArrowLeft size={20} />
+          <FiArrowLeft size={16} />
         </button>
-        <h1 className="text-lg font-semibold text-gray-800">Nova Nota Fiscal</h1>
+        <h1 className="text-sm font-semibold text-gray-800">Nova Nota Fiscal</h1>
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-gray-200 flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -263,55 +263,55 @@ export function NovaNotaFiscal() {
 
         <div className="p-3 flex-1 overflow-y-auto">
           {error && (
-            <div className="bg-error-50 text-error-700 px-4 py-3 rounded-md mb-4 text-sm border border-error-200">
+            <div className="bg-error-50 text-error-700 px-3 py-2 rounded-md mb-3 text-xs border border-error-200">
               {error}
             </div>
           )}
 
           {activeTab === 'manual' ? (
-            <form onSubmit={handleSubmitManual} className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <form onSubmit={handleSubmitManual} className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Número da NF *
                   </label>
                   <input
                     type="text"
                     value={numero}
                     onChange={(e) => setNumero(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Série
                   </label>
                   <input
                     type="text"
                     value={serie}
                     onChange={(e) => setSerie(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Quantidade de Volumes *
                   </label>
                   <input
                     type="number"
                     value={quantidadeVolumes}
                     onChange={(e) => setQuantidadeVolumes(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     required
                     min="1"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Nome do Fornecedor * <span className="text-xs text-gray-500">(Digite para buscar)</span>
                   </label>
                   <input
@@ -339,12 +339,12 @@ export function NovaNotaFiscal() {
                     onBlur={() => {
                       setTimeout(() => setShowFornecedorSuggestions(false), 200)
                     }}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     placeholder="Digite o nome do fornecedor..."
                     required
                   />
                   {showFornecedorSuggestions && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
                       {filteredFornecedores.map((f) => (
                         <button
                           key={f.id}
@@ -354,9 +354,9 @@ export function NovaNotaFiscal() {
                             setFornecedorCnpj(f.cnpj || '')
                             setShowFornecedorSuggestions(false)
                           }}
-                          className="w-full px-4 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
+                          className="w-full px-2 py-1.5 text-left hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                         >
-                          <p className="font-medium text-sm text-gray-800">{f.nome}</p>
+                          <p className="font-medium text-xs text-gray-800">{f.nome}</p>
                           {f.cnpj && <p className="text-xs text-gray-500">{f.cnpj}</p>}
                         </button>
                       ))}
@@ -364,27 +364,27 @@ export function NovaNotaFiscal() {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     CNPJ do Fornecedor
                   </label>
                   <input
                     type="text"
                     value={fornecedorCnpj}
                     onChange={(e) => setFornecedorCnpj(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     placeholder="Opcional"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
                     Tipo de Movimentação *
                     <span className="relative group">
-                      <FiHelpCircle size={14} className="text-gray-400 cursor-help" />
-                      <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-72 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10">
-                        <p className="font-semibold mb-2">Tipos de Movimentação:</p>
+                      <FiHelpCircle size={12} className="text-gray-400 cursor-help" />
+                      <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-900 text-white text-xs rounded-md shadow-lg z-10">
+                        <p className="font-semibold mb-1">Tipos de Movimentação:</p>
                         <p className="mb-1"><strong>Normal:</strong> Movimentação padrão de mercadoria.</p>
                         <p><strong>Distribuição Imediata:</strong> Mercadoria com prioridade de distribuição imediata.</p>
                       </div>
@@ -393,20 +393,20 @@ export function NovaNotaFiscal() {
                   <select
                     value={tipoMovimentacao}
                     onChange={(e) => setTipoMovimentacao(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   >
                     <option value="NORMAL">Normal</option>
                     <option value="DISTRIBUICAO_IMEDIATA">Distribuição Imediata</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Filial de Destino *
                   </label>
                   <select
                     value={filialDestinoId}
                     onChange={(e) => setFilialDestinoId(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     required
                   >
                     {filiais.map(filial => (
@@ -419,41 +419,41 @@ export function NovaNotaFiscal() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Observações
                 </label>
                 <textarea
                   value={observacoes}
                   onChange={(e) => setObservacoes(e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  rows={2}
+                  className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                 />
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium text-gray-800">Itens</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-medium text-gray-800">Itens</h3>
                   <button
                     type="button"
                     onClick={addItem}
-                    className="flex items-center gap-2 text-primary-600 hover:text-primary-700"
+                    className="flex items-center gap-1.5 text-xs text-primary-600 hover:text-primary-700"
                   >
-                    <FiPlus />
+                    <FiPlus size={12} />
                     Adicionar Item
                   </button>
                 </div>
 
                 {itens.length > 0 && (
-                  <div className="space-y-4">
+                  <div className="space-y-2">
                     {itens.map((item, index) => (
-                      <div key={index} className="flex gap-4 items-start p-4 bg-gray-50 rounded-lg">
-                        <div className="flex-1 grid grid-cols-2 md:grid-cols-5 gap-4">
+                      <div key={index} className="flex gap-2 items-start p-2 bg-gray-50 rounded-md">
+                        <div className="flex-1 grid grid-cols-2 md:grid-cols-5 gap-2">
                           <input
                             type="text"
                             placeholder="Código"
                             value={item.codigoProduto}
                             onChange={(e) => updateItem(index, 'codigoProduto', e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            className="h-7 px-2 border border-gray-300 rounded-md text-xs"
                             required
                           />
                           <input
@@ -461,7 +461,7 @@ export function NovaNotaFiscal() {
                             placeholder="Descrição"
                             value={item.descricao}
                             onChange={(e) => updateItem(index, 'descricao', e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg text-sm md:col-span-2"
+                            className="h-7 px-2 border border-gray-300 rounded-md text-xs md:col-span-2"
                             required
                           />
                           <input
@@ -469,7 +469,7 @@ export function NovaNotaFiscal() {
                             placeholder="Quantidade"
                             value={item.quantidadeNota}
                             onChange={(e) => updateItem(index, 'quantidadeNota', e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            className="h-7 px-2 border border-gray-300 rounded-md text-xs"
                             required
                             step="0.001"
                           />
@@ -478,16 +478,16 @@ export function NovaNotaFiscal() {
                             placeholder="Unidade"
                             value={item.unidade}
                             onChange={(e) => updateItem(index, 'unidade', e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            className="h-7 px-2 border border-gray-300 rounded-md text-xs"
                             required
                           />
                         </div>
                         <button
                           type="button"
                           onClick={() => removeItem(index)}
-                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-md"
                         >
-                          <FiTrash2 />
+                          <FiTrash2 size={14} />
                         </button>
                       </div>
                     ))}
@@ -495,30 +495,30 @@ export function NovaNotaFiscal() {
                 )}
               </div>
 
-              <div className="flex justify-end gap-4 pt-4 border-t">
+              <div className="flex justify-end gap-2 pt-3 border-t">
                 <button
                   type="button"
                   onClick={() => navigate('/notas-fiscais')}
-                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="h-7 px-3 text-xs border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                  className="h-7 px-3 text-xs bg-primary-600 hover:bg-primary-700 text-white rounded-md transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Salvando...' : 'Salvar'}
                 </button>
               </div>
             </form>
           ) : (
-            <form onSubmit={handleSubmitXml} className="space-y-4">
+            <form onSubmit={handleSubmitXml} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-1">
                   Arquivo XML da NF-e *
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                <div className="border-2 border-dashed border-gray-300 rounded-md p-3 text-center">
                   <input
                     type="file"
                     accept=".xml"
@@ -531,16 +531,16 @@ export function NovaNotaFiscal() {
                     className="cursor-pointer flex flex-col items-center"
                   >
                     {loadingPreview ? (
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mb-2"></div>
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600 mb-1"></div>
                     ) : (
-                      <FiUpload size={32} className="text-gray-400 mb-2" />
+                      <FiUpload size={24} className="text-gray-400 mb-1" />
                     )}
                     {xmlFile ? (
-                      <p className="text-primary-600 font-medium">{xmlFile.name}</p>
+                      <p className="text-xs text-primary-600 font-medium">{xmlFile.name}</p>
                     ) : (
                       <>
-                        <p className="text-gray-600">Clique para selecionar o arquivo XML</p>
-                        <p className="text-sm text-gray-400 mt-1">ou arraste e solte aqui</p>
+                        <p className="text-xs text-gray-600">Clique para selecionar o arquivo XML</p>
+                        <p className="text-xs text-gray-400 mt-0.5">ou arraste e solte aqui</p>
                       </>
                     )}
                   </label>
@@ -593,9 +593,9 @@ export function NovaNotaFiscal() {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1 flex items-center gap-1">
                     Tipo de Movimentação *
                     <span className="relative group">
                       <FiHelpCircle size={14} className="text-gray-400 cursor-help" />
@@ -609,20 +609,20 @@ export function NovaNotaFiscal() {
                   <select
                     value={xmlTipoMovimentacao}
                     onChange={(e) => setXmlTipoMovimentacao(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   >
                     <option value="NORMAL">Normal</option>
                     <option value="DISTRIBUICAO_IMEDIATA">Distribuição Imediata</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Filial Destino *
                   </label>
                   <select
                     value={xmlFilialDestinoId}
                     onChange={(e) => setXmlFilialDestinoId(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     required
                   >
                     {filiais.map(filial => (
@@ -633,41 +633,41 @@ export function NovaNotaFiscal() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Volumes
                   </label>
                   <input
                     type="number"
                     value={xmlQuantidadeVolumes}
                     onChange={(e) => setXmlQuantidadeVolumes(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     placeholder="Do XML"
                     min="1"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-200">
+              <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-gray-200">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     NF Secundária
                   </label>
                   <input
                     type="text"
                     value={xmlNumeroSecundario}
                     onChange={(e) => setXmlNumeroSecundario(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                     placeholder="Número da NF secundária (opcional)"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     Fornecedor Secundário
                   </label>
                   <select
                     value={xmlFornecedorSecundarioId}
                     onChange={(e) => setXmlFornecedorSecundarioId(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+                    className="w-full h-7 px-2 text-xs border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
                   >
                     <option value="">Nenhum</option>
                     {fornecedores.map(f => (
@@ -679,16 +679,16 @@ export function NovaNotaFiscal() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
                     DANF da NF Secundária (PDF)
                   </label>
                   <input
                     type="file"
                     accept="application/pdf"
                     onChange={(e) => setXmlDanfFile(e.target.files?.[0] || null)}
-                    className="w-full text-sm border border-gray-300 rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-medium file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                    className="w-full text-xs border border-gray-300 rounded-md file:mr-2 file:py-1 file:px-2 file:rounded-l-md file:border-0 file:text-xs file:font-medium file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
                   />
                   {xmlDanfFile && (
                     <p className="text-xs text-gray-600 mt-1">
@@ -699,18 +699,18 @@ export function NovaNotaFiscal() {
 
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t mt-4">
+              <div className="flex justify-end gap-2 pt-3 border-t mt-3">
                 <button
                   type="button"
                   onClick={() => navigate('/notas-fiscais')}
-                  className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="h-7 px-3 text-xs border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading || !xmlFile}
-                  className="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50"
+                  className="h-7 px-3 text-xs bg-primary-600 hover:bg-primary-700 text-white rounded-md transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Importando...' : 'Importar'}
                 </button>
