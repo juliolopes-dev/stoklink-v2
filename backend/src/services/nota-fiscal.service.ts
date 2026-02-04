@@ -3,7 +3,7 @@ import { XmlParserService } from './xml-parser.service.js'
 import { fornecedorService } from './fornecedor.service.js'
 import { webhookService } from './webhook.service.js'
 
-type StatusNotaFiscal = 'PENDENTE_TRANSFERENCIA' | 'VOLUMES_CONFERIDOS' | 'VOLUMES_DIVERGENTES' | 'AGUARDANDO_CONFERENCIA_DESTINO' | 'EM_CONFERENCIA' | 'CONFERIDO_OK' | 'CONFERIDO_DIVERGENCIA' | 'BLOQUEADO'
+type StatusNotaFiscal = 'PENDENTE_TRANSFERENCIA' | 'VOLUMES_CONFERIDOS' | 'VOLUMES_DIVERGENTES' | 'AGUARDANDO_CONFERENCIA_DESTINO' | 'EM_CONFERENCIA' | 'CONFERIDO_OK' | 'CONFERIDO_DIVERGENCIA' | 'BLOQUEADO' | 'SEPARACAO_FINALIZADA'
 type TipoMovimentacao = 'NORMAL' | 'DISTRIBUICAO_IMEDIATA'
 
 interface ImportarXmlInput {
