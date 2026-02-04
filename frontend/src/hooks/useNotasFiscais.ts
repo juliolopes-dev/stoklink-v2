@@ -25,6 +25,8 @@ interface NotaFiscal {
   transportadora: string | null
   mercadoriaBloqueada: boolean
   entradaRp: boolean | null
+  auditoriaRealizada: boolean
+  dataAuditoria: string | null
   filialRecebimento: {
     id: string
     nome: string

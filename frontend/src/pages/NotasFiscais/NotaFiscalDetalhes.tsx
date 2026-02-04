@@ -85,6 +85,8 @@ interface NotaFiscalDetalhe {
   observacoes: string | null
   mercadoriaBloqueada: boolean
   danfSecundario: string | null
+  auditoriaRealizada: boolean
+  dataAuditoria: string | null
   filialRecebimento: {
     id: string
     nome: string
@@ -137,6 +139,7 @@ export function NotaFiscalDetalhes() {
   // Estados de loading para ações
   const [loadingConferencia, setLoadingConferencia] = useState(false)
   const [loadingItem, setLoadingItem] = useState(false)
+  const [loadingAuditoria, setLoadingAuditoria] = useState(false)
   const [loadingBloqueio, setLoadingBloqueio] = useState(false)
   const [loadingDelete, setLoadingDelete] = useState(false)
   
@@ -591,6 +594,25 @@ export function NotaFiscalDetalhes() {
     }
   }
 
+  async function handleConfirmarAuditoria() {
+    if (!window.confirm('Confirmar que a auditoria desta nota fiscal foi realizada?')) {
+      return
+    }
+
+    setLoadingAuditoria(true)
+    try {
+      await api.patch(`/notas-fiscais/${id}/auditoria`)
+      alert('Sucesso', 'Auditoria confirmada com sucesso!', 'success')
+      loadNota()
+    } catch (error) {
+      console.error('Erro ao confirmar auditoria:', error)
+      const err = error as { response?: { data?: { error?: string } } }
+      alert('Erro', err.response?.data?.error || 'Erro ao confirmar auditoria', 'error')
+    } finally {
+      setLoadingAuditoria(false)
+    }
+  }
+
   function formatDate(dateString: string | null) {
     if (!dateString) return '-'
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -666,6 +688,17 @@ export function NotaFiscalDetalhes() {
               <FiEdit2 size={14} />
               Editar
             </button>
+            {!nota.auditoriaRealizada && (user?.perfil === 'ADMIN' || user?.perfil === 'COMPRAS') && (
+              <button
+                onClick={handleConfirmarAuditoria}
+                disabled={loadingAuditoria}
+                className="h-8 flex items-center gap-1.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition-colors shadow-sm disabled:opacity-50"
+                title="Confirmar que a auditoria foi realizada"
+              >
+                <FiCheckCircle size={14} />
+                {loadingAuditoria ? 'Confirmando...' : 'Confirmar Auditoria'}
+              </button>
+            )}
           </div>
 
           {/* Separador */}

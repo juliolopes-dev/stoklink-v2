@@ -141,6 +141,8 @@ model NotaFiscal {
   entradaRp              Boolean?            @map("entrada_rp")
   danfSecundario         String?             @map("danf_secundario")
   txtSecundario          String?             @map("txt_secundario")
+  auditoriaRealizada     Boolean             @default(false) @map("auditoria_realizada")
+  dataAuditoria          DateTime?           @map("data_auditoria")
   conferenciasItens      ConferenciaItem[]
   conferenciasVolumes    ConferenciaVolume[]
   distribuicoes          Distribuicao[]

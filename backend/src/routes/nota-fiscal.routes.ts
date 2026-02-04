@@ -396,6 +396,22 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     }
   })
 
+  // Confirmar auditoria
+  app.patch('/notas-fiscais/:id/auditoria', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const { id } = idParamSchema.parse(request.params)
+      const usuarioId = (request as any).user?.id
+      
+      const notaFiscal = await notaFiscalService.confirmarAuditoria(id, usuarioId)
+      return reply.send(notaFiscal)
+    } catch (error) {
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao confirmar auditoria' })
+    }
+  })
+
   // Conferir todos os itens de uma vez
   app.post('/notas-fiscais/:id/itens/conferir-todos', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {

@@ -371,6 +371,13 @@ export function NotasFiscais() {
                     </td>
                     <td className="px-2 py-1 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        {nf.auditoriaRealizada && (
+                          <Tooltip content={`Auditoria realizada em ${formatDate(nf.dataAuditoria || '')}`}>
+                            <span className="px-1 py-0.5 bg-blue-600 text-white text-[10px] font-bold rounded">
+                              AUD
+                            </span>
+                          </Tooltip>
+                        )}
                         {/* Botão 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (
                           <Link
