@@ -85,24 +85,44 @@
 - [x] `findOrCreate` modificado para exigir fornecedor cadastrado previamente
 
 ## 3. Última Sessão
-- **Data**: 02/02/2026 (manhã)
+- **Data**: 03/02/2026 (noite)
 - **Mudanças**:
-  - **Pedidos DRP**: adicionada coluna `numero_transferencia` (scripts em `backend/scripts/add-numero-transferencia-pedido-drp.{ts,sql}`)
-  - **Backend**: endpoint PUT `/api/pedidos-drp/:id` para status e número de transferência; endpoint DELETE `/api/pedidos-drp/:id` com transação removendo itens e pedido
-  - **Frontend**: listagem exibe Nº Transferência; detalhe permite editar Nº Transferência, finalizar separação e excluir pedido; status `SEPARACAO_FINALIZADA` com badge azul
-  - **Serviço BD Bezerra**: SELECTs de pedidos DRP retornam `numero_nf_origem` e `numero_transferencia`
+  - **Sistema de Auditoria**: implementado sistema completo de auditoria de notas fiscais
+    - Backend: campos `auditoria_realizada` e `data_auditoria` no modelo NotaFiscal
+    - Script de migração: `backend/scripts/add-auditoria-fields.ts` (executado com sucesso - 335 NFs)
+    - Endpoint: `PATCH /api/notas-fiscais/:id/auditoria` para confirmar auditoria
+    - Webhook: evento `auditoria_realizada` disparado automaticamente
+    - Frontend: botão "Confirmar Auditoria" na página de detalhes (apenas ADMIN/COMPRAS)
+    - Tag "AUD" azul compacta (10px) na coluna AÇÕES da listagem
+    - Validação: impede auditoria duplicada
+  
+  - **Correções de Filtros e Busca**:
+    - Adicionado status `SEPARACAO_FINALIZADA` ao schema de validação de filtros
+    - Busca por fornecedor implementada (além de número da NF)
+    - Filtro de status agora aceita todos os status incluindo `SEPARACAO_FINALIZADA`
+  
+  - **Ajustes Visuais**:
+    - Tag "DISTRIBUIÇÃO IMEDIATA" muda de laranja para verde quando status é `SEPARACAO_FINALIZADA`
+    - Tag "Separação Finalizada" alterada de azul para verde no StatusBadge
+    - Liberação de mercadoria permitida para status `SEPARACAO_FINALIZADA` (além de `CONFERIDO_OK` e `CONFERIDO_DIVERGENCIA`)
 
 - **Arquivos modificados** (principais):
-  - `backend/src/services/bd-bezerra.service.ts` — métodos atualizar/excluir pedido DRP e SELECTs com novos campos
-  - `backend/src/routes/pedido-drp.routes.ts` — novas rotas PUT/DELETE
-  - `backend/scripts/add-numero-transferencia-pedido-drp.ts` e `.sql` — migração da coluna
-  - `frontend/src/pages/PedidosDRP/index.tsx` e `PedidoDRPDetalhes.tsx` — coluna Nº Transferência, edição, botão finalizar separação e botão excluir
-  - `frontend/src/components/Layout/Sidebar.tsx` — limpeza de import não usado
+  - `backend/prisma/schema.prisma` — campos auditoria no modelo NotaFiscal
+  - `backend/scripts/add-auditoria-fields.ts` — migração do banco de dados
+  - `backend/src/routes/nota-fiscal.routes.ts` — endpoint de auditoria e correção do schema de filtros
+  - `backend/src/services/nota-fiscal.service.ts` — método `confirmarAuditoria()` e busca por fornecedor
+  - `backend/src/services/webhook.service.ts` — evento `auditoriaRealizada()`
+  - `frontend/src/pages/NotasFiscais/NotaFiscalDetalhes.tsx` — botão "Confirmar Auditoria"
+  - `frontend/src/pages/NotasFiscais/index.tsx` — tag AUD na coluna AÇÕES e ajustes de cores
+  - `frontend/src/hooks/useNotasFiscais.ts` — interface com campos de auditoria
+  - `frontend/src/components/StatusBadge.tsx` — cor verde para SEPARACAO_FINALIZADA
 
 - **Impacto**:
-  - ✅ Controle completo de status e transferência dos Pedidos DRP
-  - ✅ Exclusão segura (itens + pedido) com UI dedicada
-  - ✅ NF Origem e Nº Transferência exibidos corretamente na listagem e detalhes
+  - ✅ Controle de auditoria com rastreabilidade (data e usuário)
+  - ✅ Webhook integrado para automações externas (n8n)
+  - ✅ Filtros e busca funcionando corretamente para todos os status
+  - ✅ Visual consistente com cores semânticas (verde = finalizado/liberado)
+  - ✅ Tag compacta e discreta na coluna de ações
 
 ## 4. Próximos Passos (Priorizado)
 - [ ] Telas de Admin (Filiais, Usuários)
@@ -205,6 +225,9 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - PUT /notas-fiscais/:id
 - POST /notas-fiscais/importar-xml
 - DELETE /notas-fiscais/:id
+- PATCH /notas-fiscais/:id/mercadoria-bloqueada
+- PATCH /notas-fiscais/:id/auditoria
+- PATCH /notas-fiscais/:id/separacao-finalizada
 
 ### Conferência
 - POST /notas-fiscais/:id/conferencia-volumes
