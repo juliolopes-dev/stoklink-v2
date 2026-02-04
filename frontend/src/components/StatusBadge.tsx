@@ -49,7 +49,7 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
   },
   SEPARACAO_FINALIZADA: {
     label: 'Separação Finalizada',
-    color: 'bg-blue-100 text-blue-700',
+    color: 'bg-green-100 text-green-700',
     defaultTooltip: 'Separação dos itens finalizada - Distribuição Imediata'
   }
 }

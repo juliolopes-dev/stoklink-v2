@@ -304,12 +304,13 @@ export class NotaFiscalService {
       where.mercadoriaBloqueada = filters.mercadoriaBloqueada
     }
 
-    // Busca por número exato
+    // Busca por número exato ou fornecedor
     if (hasSearchTerm) {
       const search = filters.searchTerm!.trim()
       where.OR = [
         { numero: search },
-        { numeroSecundario: search }
+        { numeroSecundario: search },
+        { fornecedorNome: { contains: search, mode: 'insensitive' } }
       ]
     }
 
@@ -698,7 +699,7 @@ export class NotaFiscalService {
     }
 
     // Impedir desbloqueio se o fluxo não foi concluído
-    if (!bloqueada && notaFiscal.status !== 'CONFERIDO_OK' && notaFiscal.status !== 'CONFERIDO_DIVERGENCIA') {
+    if (!bloqueada && notaFiscal.status !== 'CONFERIDO_OK' && notaFiscal.status !== 'CONFERIDO_DIVERGENCIA' && notaFiscal.status !== 'SEPARACAO_FINALIZADA') {
       throw new Error('A mercadoria só pode ser desbloqueada após a conclusão de todo o fluxo de conferência')
     }
 

@@ -275,7 +275,7 @@ export function NotasFiscais() {
                             </Tooltip>
                           )}
                           {nf.tipoMovimentacao === 'DISTRIBUICAO_IMEDIATA' && (
-                            <span className="px-2 py-0.5 bg-gradient-to-r from-orange-600 to-red-600 text-xs font-bold rounded flex items-center gap-1">
+                            <span className={`px-2 py-0.5 ${nf.status === 'SEPARACAO_FINALIZADA' ? 'bg-gradient-to-r from-green-600 to-emerald-600' : 'bg-gradient-to-r from-orange-600 to-red-600'} text-xs font-bold rounded flex items-center gap-1`}>
                               <span className="animate-bounce">⚡</span>
                               <span className="text-white animate-pulse" style={{ textShadow: '0 0 8px rgba(255,255,255,0.8)' }}>
                                 DISTRIBUIÇÃO IMEDIATA

@@ -549,7 +549,9 @@ export function NotaFiscalDetalhes() {
       loadNota()
     } catch (error) {
       console.error('Erro ao alterar bloqueio:', error)
-      alert('Erro', 'Erro ao alterar bloqueio da mercadoria', 'error')
+      const err = error as { response?: { data?: { error?: string } } }
+      const message = err.response?.data?.error || 'Erro ao alterar bloqueio da mercadoria'
+      alert('Erro', message, 'error')
     } finally {
       setLoadingBloqueio(false)
     }
@@ -685,7 +687,6 @@ export function NotaFiscalDetalhes() {
             >
               {nota.mercadoriaBloqueada ? 'Liberar Mercadoria' : 'Bloquear Mercadoria'}
             </button>
-            
             {nota.status === 'SEPARACAO_FINALIZADA' ? (
               <div className="flex flex-col gap-1">
                 <StatusBadge status="CONFERIDO_OK" />

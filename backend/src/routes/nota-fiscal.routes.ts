@@ -52,7 +52,8 @@ const listFiltersSchema = z.object({
     'EM_CONFERENCIA',
     'CONFERIDO_OK',
     'CONFERIDO_DIVERGENCIA',
-    'BLOQUEADO'
+    'BLOQUEADO',
+    'SEPARACAO_FINALIZADA'
   ]).optional(),
   filialRecebimentoId: z.string().uuid().optional(),
   filialDestinoId: z.string().uuid().optional(),
