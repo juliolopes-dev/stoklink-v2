@@ -212,8 +212,8 @@ export function NotaFiscalDetalhes() {
   })
   const [savingItemExtra, setSavingItemExtra] = useState(false)
 
-  // Verificar se usuário pode conferir itens (pertence à filial de destino)
-  const podeConferirItens = nota && user ? user.filialId === nota.filialDestino.id : false
+  // Verificar se usuário pode conferir itens (pertence à filial de destino ou é ADMIN)
+  const podeConferirItens = nota && user ? (user.perfil === 'ADMIN' || user.filialId === nota.filialDestino.id) : false
 
   useEffect(() => {
     loadNota()
@@ -324,9 +324,12 @@ export function NotaFiscalDetalhes() {
 
   function handleSelecionarTodos() {
     if (!nota) return
-    // Preencher quantidades de todos os itens não conferidos com a quantidade da nota
     const quantidades: Record<string, string> = {}
-    nota.itens.filter(i => !i.conferido).forEach(item => {
+    // ADMIN pode reconferir todos os itens (inclusive já conferidos)
+    const itensParaConferir = user?.perfil === 'ADMIN' 
+      ? nota.itens 
+      : nota.itens.filter(i => !i.conferido)
+    itensParaConferir.forEach(item => {
       quantidades[item.id] = item.quantidadeNota.toString()
     })
     setQuantidadesLote(quantidades)
@@ -853,7 +856,7 @@ export function NotaFiscalDetalhes() {
                   {loadingBuscarItens ? 'Buscando...' : 'Buscar Itens Secundários'}
                 </button>
               )}
-              {['VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES', 'EM_CONFERENCIA', 'AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA'].includes(nota.status) && (
+              {(['VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES', 'EM_CONFERENCIA', 'AGUARDANDO_CONFERENCIA', 'PENDENTE_TRANSFERENCIA'].includes(nota.status) || (user?.perfil === 'ADMIN' && ['CONFERIDO_OK', 'CONFERIDO_DIVERGENCIA', 'SEPARACAO_FINALIZADA'].includes(nota.status))) && (
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {!mostrarItensSecundarios && (
                     <button
@@ -1075,7 +1078,7 @@ export function NotaFiscalDetalhes() {
                           )
                         })
                         .map((item) => {
-                        const emLote = modoConferenciaLote && !item.conferido
+                        const emLote = modoConferenciaLote && (!item.conferido || (user?.perfil === 'ADMIN' && quantidadesLote[item.id] !== undefined))
                         const emEdicaoIndividual = conferindoItemId === item.id
                         
                         return (
@@ -1130,7 +1133,17 @@ export function NotaFiscalDetalhes() {
                               ) : emLote ? (
                                 <span className="text-blue-600 text-xs">Em lote</span>
                               ) : item.conferido ? (
-                                <span className="text-green-600"><FiCheckCircle size={14} /></span>
+                                user?.perfil === 'ADMIN' ? (
+                                  <button
+                                    onClick={() => iniciarConferenciaItem(item)}
+                                    className="px-2 py-0.5 rounded text-xs bg-amber-500 hover:bg-amber-600 text-white"
+                                    title="Reconferir item (ADMIN)"
+                                  >
+                                    Reconferir
+                                  </button>
+                                ) : (
+                                  <span className="text-green-600"><FiCheckCircle size={14} /></span>
+                                )
                               ) : (
                                 <button
                                   onClick={() => iniciarConferenciaItem(item)}

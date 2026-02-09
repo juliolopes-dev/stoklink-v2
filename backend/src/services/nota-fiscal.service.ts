@@ -492,7 +492,7 @@ export class NotaFiscalService {
   }
 
 
-  async conferirTodosItens(notaFiscalId: string, quantidades: Record<string, number>) {
+  async conferirTodosItens(notaFiscalId: string, quantidades: Record<string, number>, usuarioId?: string) {
     const notaFiscal = await prisma.notaFiscal.findUnique({
       where: { id: notaFiscalId },
       include: { itens: true }
@@ -502,9 +502,26 @@ export class NotaFiscalService {
       throw new Error('Nota fiscal não encontrada')
     }
 
+    // Verificar se é ADMIN para permitir reconferência
+    let isAdmin = false
+    if (usuarioId) {
+      const usuario = await prisma.usuario.findUnique({
+        where: { id: usuarioId },
+        select: { perfil: true }
+      })
+      isAdmin = usuario?.perfil === 'ADMIN'
+    }
+
+    // Se ADMIN está reconferindo, limpar divergências antigas
+    if (isAdmin) {
+      await prisma.divergencia.deleteMany({
+        where: { notaFiscalId }
+      })
+    }
+
     // Atualizar cada item com a quantidade informada
     for (const item of notaFiscal.itens) {
-      if (!item.conferido && quantidades[item.id] !== undefined) {
+      if (quantidades[item.id] !== undefined && (!item.conferido || isAdmin)) {
         const qtdConferida = quantidades[item.id]
         
         await prisma.itemNotaFiscal.update({
@@ -602,6 +619,13 @@ export class NotaFiscalService {
 
     if (!item) {
       throw new Error('Item não encontrado')
+    }
+
+    // Se ADMIN está reconferindo um item já conferido, limpar divergência antiga desse item
+    if (usuario?.perfil === 'ADMIN' && item.conferido) {
+      await prisma.divergencia.deleteMany({
+        where: { itemNotaFiscalId: itemId }
+      })
     }
 
     // Atualizar item com quantidade conferida

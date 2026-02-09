@@ -182,16 +182,27 @@ export class ConferenciaService {
       throw new Error('Nota fiscal não encontrada')
     }
 
-    // Verificar se pode conferir itens
-    if (!['VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES', 'BLOQUEADO', 'PENDENTE_TRANSFERENCIA'].includes(notaFiscal.status)) {
-      throw new Error('Esta nota fiscal não está em um status que permita conferência de itens')
-    }
-
     // Validar que o usuário pertence à filial de destino (exceto ADMIN que pode tudo)
     const usuario = await prisma.usuario.findUnique({
       where: { id: input.usuarioId },
       select: { filialId: true, perfil: true }
     })
+
+    // Verificar se pode conferir itens
+    const statusPermitidos = ['VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES', 'BLOQUEADO', 'PENDENTE_TRANSFERENCIA']
+    const statusFinalizados = ['CONFERIDO_OK', 'CONFERIDO_DIVERGENCIA', 'EM_CONFERENCIA', 'SEPARACAO_FINALIZADA']
+    
+    if (!statusPermitidos.includes(notaFiscal.status)) {
+      // ADMIN pode reconferir mesmo em status finalizados
+      if (usuario?.perfil === 'ADMIN' && statusFinalizados.includes(notaFiscal.status)) {
+        // Limpar divergências antigas antes de reconferir para evitar duplicatas
+        await prisma.divergencia.deleteMany({
+          where: { notaFiscalId: input.notaFiscalId }
+        })
+      } else {
+        throw new Error('Esta nota fiscal não está em um status que permita conferência de itens')
+      }
+    }
     
     // ADMIN pode fazer qualquer conferência
     if (usuario?.perfil !== 'ADMIN') {
