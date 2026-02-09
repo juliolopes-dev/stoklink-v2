@@ -304,14 +304,15 @@ export class NotaFiscalService {
       where.mercadoriaBloqueada = filters.mercadoriaBloqueada
     }
 
-    // Busca por número ou fornecedor
+    // Busca por número ou fornecedor (primário e secundário)
     if (hasSearchTerm) {
       const search = filters.searchTerm!.trim()
       where.OR = [
         { numero: { contains: search, mode: 'insensitive' } },
         { numeroSecundario: { contains: search, mode: 'insensitive' } },
         { fornecedorNome: { contains: search, mode: 'insensitive' } },
-        { fornecedor: { nome: { contains: search, mode: 'insensitive' } } }
+        { fornecedor: { nome: { contains: search, mode: 'insensitive' } } },
+        { fornecedorSecundario: { nome: { contains: search, mode: 'insensitive' } } }
       ]
     }
 
