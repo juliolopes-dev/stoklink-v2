@@ -307,6 +307,16 @@ class WebhookService {
       notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
     }, usuarioId)
   }
+
+  async auditoriaMurilloRealizada(notaFiscalId: string, usuarioId?: string) {
+    const nf = await this.buscarDadosNotaFiscal(notaFiscalId)
+    if (!nf) return
+
+    await this.trigger('auditoria_murillo_realizada', {
+      acao: 'AUDITORIA_MURILLO_CONFIRMADA',
+      notaFiscal: this.montarDadosNotaFiscalPadrao(nf)
+    }, usuarioId)
+  }
 }
 
 export const webhookService = new WebhookService()

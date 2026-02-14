@@ -814,6 +814,9 @@ export class NotaFiscalService {
       }
     })
 
+    // Disparar webhook de auditoria Murillo realizada
+    await webhookService.auditoriaMurilloRealizada(id, usuarioId)
+
     return result
   }
 
