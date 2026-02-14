@@ -27,6 +27,8 @@ interface NotaFiscal {
   entradaRp: boolean | null
   auditoriaRealizada: boolean
   dataAuditoria: string | null
+  auditoriaMurillo: boolean
+  dataAuditoriaMurillo: string | null
   filialRecebimento: {
     id: string
     nome: string

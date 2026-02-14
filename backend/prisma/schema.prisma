@@ -143,6 +143,8 @@ model NotaFiscal {
   txtSecundario          String?             @map("txt_secundario")
   auditoriaRealizada     Boolean             @default(false) @map("auditoria_realizada")
   dataAuditoria          DateTime?           @map("data_auditoria")
+  auditoriaMurillo       Boolean             @default(false) @map("auditoria_murillo")
+  dataAuditoriaMurillo   DateTime?           @map("data_auditoria_murillo")
   conferenciasItens      ConferenciaItem[]
   conferenciasVolumes    ConferenciaVolume[]
   distribuicoes          Distribuicao[]

@@ -786,6 +786,37 @@ export class NotaFiscalService {
     return result
   }
 
+  async confirmarAuditoriaMurillo(id: string, usuarioId?: string) {
+    const notaFiscal = await prisma.notaFiscal.findUnique({
+      where: { id }
+    })
+
+    if (!notaFiscal) {
+      throw new Error('Nota fiscal não encontrada')
+    }
+
+    if (notaFiscal.auditoriaMurillo) {
+      throw new Error('Auditoria Murillo já foi realizada para esta nota fiscal')
+    }
+
+    const result = await prisma.notaFiscal.update({
+      where: { id },
+      data: { 
+        auditoriaMurillo: true,
+        dataAuditoriaMurillo: new Date()
+      } as any,
+      include: {
+        fornecedor: true,
+        fornecedorSecundario: true,
+        filialRecebimento: true,
+        filialDestino: true,
+        usuarioCadastro: true
+      }
+    })
+
+    return result
+  }
+
   async getByFilialRecebimento(filialId: string) {
     return prisma.notaFiscal.findMany({
       where: {

@@ -378,6 +378,13 @@ export function NotasFiscais() {
                             </span>
                           </Tooltip>
                         )}
+                        {nf.auditoriaMurillo && (
+                          <Tooltip content={`Auditoria Murillo realizada em ${formatDate(nf.dataAuditoriaMurillo || '')}`}>
+                            <span className="px-1 py-0.5 bg-green-600 text-white text-[10px] font-bold rounded">
+                              AUD-M
+                            </span>
+                          </Tooltip>
+                        )}
                         {/* Botão 1ª Conferência - Receber na filial */}
                         {!nf.filialRecebimento && (
                           <Link

@@ -172,6 +172,9 @@ export function NotaFiscalDetalhes() {
   const [loadingSeparacao, setLoadingSeparacao] = useState(false)
   const [showConfirmSeparacao, setShowConfirmSeparacao] = useState(false)
   
+  // Auditoria Murillo
+  const [loadingAuditoriaMurillo, setLoadingAuditoriaMurillo] = useState(false)
+  
   // Opções de filiais do BD-BEZERRA
   const filiaisBezerra = [
     { codigo: '00', nome: 'Petrolina' },
@@ -616,6 +619,25 @@ export function NotaFiscalDetalhes() {
     }
   }
 
+  async function handleConfirmarAuditoriaMurillo() {
+    if (!window.confirm('Confirmar que a Auditoria Murillo desta nota fiscal foi realizada?')) {
+      return
+    }
+
+    setLoadingAuditoriaMurillo(true)
+    try {
+      await api.patch(`/notas-fiscais/${id}/auditoria-murillo`)
+      alert('Sucesso', 'Auditoria Murillo confirmada com sucesso!', 'success')
+      loadNota()
+    } catch (error) {
+      console.error('Erro ao confirmar auditoria Murillo:', error)
+      const err = error as { response?: { data?: { error?: string } } }
+      alert('Erro', err.response?.data?.error || 'Erro ao confirmar auditoria Murillo', 'error')
+    } finally {
+      setLoadingAuditoriaMurillo(false)
+    }
+  }
+
   function formatDate(dateString: string | null) {
     if (!dateString) return '-'
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -700,6 +722,17 @@ export function NotaFiscalDetalhes() {
               >
                 <FiCheckCircle size={14} />
                 {loadingAuditoria ? 'Confirmando...' : 'Confirmar Auditoria'}
+              </button>
+            )}
+            {!nota.auditoriaMurillo && user?.nome?.toLowerCase().includes('murillo') && (
+              <button
+                onClick={handleConfirmarAuditoriaMurillo}
+                disabled={loadingAuditoriaMurillo}
+                className="h-8 flex items-center gap-1.5 px-3 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-medium transition-colors shadow-sm disabled:opacity-50"
+                title="Confirmar que a Auditoria Murillo foi realizada"
+              >
+                <FiCheckCircle size={14} />
+                {loadingAuditoriaMurillo ? 'Confirmando...' : 'Auditoria Murillo'}
               </button>
             )}
           </div>
