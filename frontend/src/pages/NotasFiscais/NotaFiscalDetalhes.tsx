@@ -155,6 +155,7 @@ export function NotaFiscalDetalhes() {
     filialDestinoId: '',
     tipoMovimentacao: '',
     transportadora: '',
+    quantidadeVolumes: '',
     observacoes: ''
   })
   const [saving, setSaving] = useState(false)
@@ -441,6 +442,7 @@ export function NotaFiscalDetalhes() {
         filialDestinoId: nota?.filialDestino?.id || '',
         tipoMovimentacao: nota?.tipoMovimentacao || '',
         transportadora: transportadoraAtual,
+        quantidadeVolumes: nota?.quantidadeVolumes.toString() || '',
         observacoes: nota?.observacoes || ''
       })
       setTransportadoraSearch(transportadoraAtual)
@@ -460,6 +462,7 @@ export function NotaFiscalDetalhes() {
         filialDestinoId: editForm.filialDestinoId || null,
         tipoMovimentacao: editForm.tipoMovimentacao || null,
         transportadora: editForm.transportadora || null,
+        quantidadeVolumes: editForm.quantidadeVolumes ? parseInt(editForm.quantidadeVolumes) : null,
         observacoes: editForm.observacoes || null
       }
       console.log('Enviando:', payload)
@@ -752,10 +755,10 @@ export function NotaFiscalDetalhes() {
                 onClick={() => toggleBloqueioMercadoria(!nota.mercadoriaBloqueada)}
                 disabled={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA'}
                 className={`h-8 flex items-center gap-1.5 px-3 rounded text-xs font-medium transition-colors shadow-sm ${nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA'
-                    ? 'bg-slate-300 cursor-not-allowed text-slate-500'
-                    : nota.mercadoriaBloqueada
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                      : 'bg-red-600 hover:bg-red-700 text-white'
+                  ? 'bg-slate-300 cursor-not-allowed text-slate-500'
+                  : nota.mercadoriaBloqueada
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                    : 'bg-red-600 hover:bg-red-700 text-white'
                   }`}
                 title={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA' ? 'A mercadoria só pode ser desbloqueada após a conclusão de todo o fluxo de conferência' : ''}
               >
@@ -1553,47 +1556,56 @@ export function NotaFiscalDetalhes() {
                 </select>
               </div>
 
-              <div className="relative">
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Transportadora
-                </label>
-                <input
-                  type="text"
-                  value={transportadoraSearch}
-                  onChange={(e) => {
-                    setTransportadoraSearch(e.target.value)
-                    setEditForm({ ...editForm, transportadora: e.target.value })
-                    setShowTransportadoraDropdown(true)
-                  }}
-                  onFocus={() => setShowTransportadoraDropdown(true)}
-                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-                  placeholder="Digite para buscar ou selecionar"
-                />
-                {showTransportadoraDropdown && transportadoras.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                    {transportadoras
-                      .filter(t => t.nome.toLowerCase().includes(transportadoraSearch.toLowerCase()))
-                      .map((t) => (
-                        <button
-                          key={t.id}
-                          type="button"
-                          onClick={() => {
-                            setTransportadoraSearch(t.nome)
-                            setEditForm({ ...editForm, transportadora: t.nome })
-                            setShowTransportadoraDropdown(false)
-                          }}
-                          className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors"
-                        >
-                          {t.nome}
-                        </button>
-                      ))}
-                    {transportadoras.filter(t => t.nome.toLowerCase().includes(transportadoraSearch.toLowerCase())).length === 0 && (
-                      <div className="px-3 py-2 text-sm text-gray-500">
-                        Nenhuma transportadora encontrada
-                      </div>
-                    )}
-                  </div>
-                )}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="relative">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Transportadora
+                  </label>
+                  <input
+                    type="text"
+                    value={transportadoraSearch}
+                    onChange={(e) => {
+                      setTransportadoraSearch(e.target.value)
+                      setEditForm({ ...editForm, transportadora: e.target.value })
+                      setShowTransportadoraDropdown(true)
+                    }}
+                    onFocus={() => setShowTransportadoraDropdown(true)}
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                    placeholder="Digite para buscar"
+                  />
+                  {showTransportadoraDropdown && transportadoras.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {transportadoras
+                        .filter(t => t.nome.toLowerCase().includes(transportadoraSearch.toLowerCase()))
+                        .map((t) => (
+                          <button
+                            key={t.id}
+                            type="button"
+                            onClick={() => {
+                              setTransportadoraSearch(t.nome)
+                              setEditForm({ ...editForm, transportadora: t.nome })
+                              setShowTransportadoraDropdown(false)
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-gray-100 transition-colors"
+                          >
+                            {t.nome}
+                          </button>
+                        ))}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Qtd. Volumes
+                  </label>
+                  <input
+                    type="number"
+                    value={editForm.quantidadeVolumes}
+                    onChange={(e) => setEditForm({ ...editForm, quantidadeVolumes: e.target.value })}
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  />
+                </div>
               </div>
 
               <div>

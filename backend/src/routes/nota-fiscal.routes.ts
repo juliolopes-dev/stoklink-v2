@@ -76,7 +76,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   app.post('/notas-fiscais/preview-xml', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
       const data = await request.file()
-      
+
       if (!data) {
         return reply.status(400).send({ error: 'Arquivo XML é obrigatório' })
       }
@@ -124,11 +124,11 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
           fields[part.fieldname] = part.value as string
         }
       }
-      
+
       if (!xmlContent) {
         return reply.status(400).send({ error: 'Arquivo XML é obrigatório' })
       }
-      
+
       const params = importarXmlSchema.parse(fields)
 
       const notaFiscal = await notaFiscalService.importarXml({
@@ -152,7 +152,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
 
         const uniqueFilename = `${notaFiscal.id}-${Date.now()}.pdf`
         const filePath = path.join(uploadDir, uniqueFilename)
-        
+
         fs.writeFileSync(filePath, danfFile.buffer)
 
         // Atualizar NF com caminho do DANF
@@ -166,7 +166,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         console.log(`📄 Processando arquivo TXT: ${txtFile.filename}`)
         const txtContent = txtFile.buffer.toString('latin1') // Encoding para arquivos Windows
         console.log(`📝 Tamanho do conteúdo: ${txtContent.length} caracteres`)
-        
+
         // Validar TXT
         const validacao = validarTxtSecundario(txtContent)
         console.log(`✅ Validação do TXT:`, validacao)
@@ -176,7 +176,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
           // Parsear itens do TXT
           const itensSecundarios = parseTxtSecundario(txtContent)
           console.log(`📦 Itens encontrados no TXT: ${itensSecundarios.length}`)
-          
+
           if (itensSecundarios.length > 0) {
             // Salvar TXT no disco
             const uploadDir = path.join(process.cwd(), 'uploads', 'txt-secundarios')
@@ -292,7 +292,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   app.put('/notas-fiscais/:id', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
       const { id } = idParamSchema.parse(request.params)
-      
+
       const bodySchema = z.object({
         numero: z.string().optional().nullable(),
         numeroSecundario: z.string().optional().nullable(),
@@ -301,15 +301,16 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         filialDestinoId: z.string().uuid().optional().nullable(),
         tipoMovimentacao: z.enum(['NORMAL', 'DISTRIBUICAO_IMEDIATA']).optional().nullable(),
         transportadora: z.string().optional().nullable(),
+        quantidadeVolumes: z.coerce.number().int().positive().optional().nullable(),
         observacoes: z.string().optional().nullable(),
         entradaRp: z.boolean().optional().nullable()
       })
 
       const body = bodySchema.parse(request.body)
-      
+
       // Preparar dados para atualização
       const data: Record<string, unknown> = {}
-      
+
       if (body.numero !== undefined) data.numero = body.numero || null
       if (body.numeroSecundario !== undefined) data.numeroSecundario = body.numeroSecundario || null
       if (body.fornecedorSecundarioId !== undefined) data.fornecedorSecundarioId = body.fornecedorSecundarioId
@@ -317,9 +318,10 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       if (body.filialDestinoId !== undefined) data.filialDestinoId = body.filialDestinoId
       if (body.tipoMovimentacao !== undefined) data.tipoMovimentacao = body.tipoMovimentacao
       if (body.transportadora !== undefined) data.transportadora = body.transportadora || null
+      if (body.quantidadeVolumes !== undefined) data.quantidadeVolumes = body.quantidadeVolumes
       if (body.observacoes !== undefined) data.observacoes = body.observacoes || null
       if (body.entradaRp !== undefined) data.entradaRp = body.entradaRp
-      
+
       const notaFiscal = await notaFiscalService.update(id, data)
 
       // Enviar webhook para n8n
@@ -350,7 +352,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       }
 
       const { id } = idParamSchema.parse(request.params)
-      
+
       // Enviar webhook ANTES de excluir para garantir que os dados existam
       await webhookService.notaFiscalExcluida(
         id,
@@ -382,12 +384,12 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
 
       const { id } = idParamSchema.parse(request.params)
       const usuarioId = (request as any).user?.id
-      
+
       const bodySchema = z.object({
         bloqueada: z.boolean()
       })
       const { bloqueada } = bodySchema.parse(request.body)
-      
+
       const notaFiscal = await notaFiscalService.toggleBloqueioMercadoria(id, bloqueada, usuarioId)
       return reply.send(notaFiscal)
     } catch (error) {
@@ -406,7 +408,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     try {
       const { id } = idParamSchema.parse(request.params)
       const usuarioId = (request as any).user?.id
-      
+
       const notaFiscal = await notaFiscalService.confirmarAuditoria(id, usuarioId)
       return reply.send(notaFiscal)
     } catch (error) {
@@ -422,7 +424,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     try {
       const { id } = idParamSchema.parse(request.params)
       const usuarioId = (request as any).user?.id
-      
+
       const notaFiscal = await notaFiscalService.confirmarAuditoriaMurillo(id, usuarioId)
       return reply.send(notaFiscal)
     } catch (error) {
@@ -437,12 +439,12 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   app.post('/notas-fiscais/:id/itens/conferir-todos', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
       const { id } = idParamSchema.parse(request.params)
-      
+
       const bodySchema = z.object({
         quantidades: z.record(z.string(), z.coerce.number().min(0))
       })
       const { quantidades } = bodySchema.parse(request.body)
-      
+
       const result = await notaFiscalService.conferirTodosItens(id, quantidades, request.user.id)
       return reply.send(result)
     } catch (error) {
@@ -464,12 +466,12 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         itemId: z.string().uuid()
       })
       const { id, itemId } = paramsSchema.parse(request.params)
-      
+
       const bodySchema = z.object({
         quantidadeConferida: z.coerce.number().min(0)
       })
       const { quantidadeConferida } = bodySchema.parse(request.body)
-      
+
       const item = await notaFiscalService.conferirItem(id, itemId, quantidadeConferida, request.user.id)
       return reply.send(item)
     } catch (error) {
@@ -520,28 +522,28 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   app.patch('/notas-fiscais/:id/separacao-finalizada', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
       const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
-      
+
       // Buscar NF para validar
       const nf = await notaFiscalService.findById(id)
-      
+
       // Validar se é Distribuição Imediata
       if (nf.tipoMovimentacao !== 'DISTRIBUICAO_IMEDIATA') {
         return reply.status(400).send({ error: 'Esta ação só é permitida para NFs de Distribuição Imediata' })
       }
-      
+
       // Validar se está com status Processo Finalizado (CONFERIDO_OK)
       if (nf.status !== 'CONFERIDO_OK') {
         return reply.status(400).send({ error: 'A NF precisa estar com status "Processo Finalizado" para marcar a separação como finalizada' })
       }
-      
+
       // Atualizar status para SEPARACAO_FINALIZADA
       await prisma.notaFiscal.update({
         where: { id },
         data: { status: 'SEPARACAO_FINALIZADA' }
       })
-      
+
       console.log(`✅ NF ${nf.numero} marcada como Separação Finalizada`)
-      
+
       return reply.send({ message: 'Separação marcada como finalizada com sucesso' })
     } catch (error) {
       console.error('Erro ao finalizar separação:', error)
@@ -559,9 +561,9 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   app.post('/notas-fiscais/:id/upload-danf-secundario', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
       const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
-      
+
       const data = await request.file()
-      
+
       if (!data) {
         return reply.status(400).send({ error: 'Nenhum arquivo enviado' })
       }
@@ -595,9 +597,9 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       const relativePath = `uploads/danf-secundarios/${filename}`
       await notaFiscalService.update(id, { danfSecundario: relativePath })
 
-      return reply.send({ 
+      return reply.send({
         message: 'DANF secundário enviado com sucesso',
-        path: relativePath 
+        path: relativePath
       })
     } catch (error) {
       console.error('Erro ao fazer upload do DANF:', error)
@@ -615,9 +617,9 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   app.get('/uploads/danf-secundarios/:filename', async (request, reply) => {
     try {
       const { filename } = z.object({ filename: z.string() }).parse(request.params)
-      
+
       const filepath = path.join(__dirname, '../../uploads/danf-secundarios', filename)
-      
+
       if (!fs.existsSync(filepath)) {
         return reply.status(404).send({ error: 'Arquivo não encontrado' })
       }
@@ -635,13 +637,13 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   app.delete('/notas-fiscais/:id/danf-secundario', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
       const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
-      
+
       // Buscar NF para pegar caminho do arquivo
       const nf = await notaFiscalService.findById(id)
-      
+
       if (nf.danfSecundario) {
         const filepath = path.join(__dirname, '../..', nf.danfSecundario)
-        
+
         // Deletar arquivo se existir
         if (fs.existsSync(filepath)) {
           fs.unlinkSync(filepath)
@@ -669,10 +671,10 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     try {
       const { id } = z.object({ id: z.string().uuid() }).parse(request.params)
       const { codFilial } = z.object({ codFilial: z.string().min(1, 'Código da filial é obrigatório') }).parse(request.body)
-      
+
       // Buscar NF para pegar o número secundário
       const nf = await notaFiscalService.findById(id)
-      
+
       if (!nf.numeroSecundario) {
         return reply.status(400).send({ error: 'Esta NF não possui número secundário cadastrado' })
       }
@@ -683,8 +685,8 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       const itensBezerra = await bdBezerraService.buscarItensNf(nf.numeroSecundario, codFilial)
 
       if (itensBezerra.length === 0) {
-        return reply.status(404).send({ 
-          error: `Nenhum item encontrado no BD-BEZERRA para a NF ${nf.numeroSecundario}` 
+        return reply.status(404).send({
+          error: `Nenhum item encontrado no BD-BEZERRA para a NF ${nf.numeroSecundario}`
         })
       }
 
@@ -715,7 +717,7 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
 
       console.log(`✅ ${itensBezerra.length} itens secundários importados do BD-BEZERRA`)
 
-      return reply.send({ 
+      return reply.send({
         message: `${itensBezerra.length} itens importados com sucesso`,
         quantidadeItens: itensBezerra.length,
         itens: itensBezerra

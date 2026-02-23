@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 // O timestamp local deve ser atualizado manualmente em novos deploys críticos
 // ou capturado do version.json durante o build
-const LOCAL_VERSION = '1.1.0';
+const LOCAL_VERSION = '1.1.1';
 
 export function useUpdateCheck() {
     const [updateAvailable, setUpdateAvailable] = useState(false);
