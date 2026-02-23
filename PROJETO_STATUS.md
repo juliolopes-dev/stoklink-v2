@@ -85,44 +85,21 @@
 - [x] `findOrCreate` modificado para exigir fornecedor cadastrado previamente
 
 ## 3. Última Sessão
-- **Data**: 03/02/2026 (noite)
+- **Data**: 23/02/2026 (manhã)
 - **Mudanças**:
-  - **Sistema de Auditoria**: implementado sistema completo de auditoria de notas fiscais
-    - Backend: campos `auditoria_realizada` e `data_auditoria` no modelo NotaFiscal
-    - Script de migração: `backend/scripts/add-auditoria-fields.ts` (executado com sucesso - 335 NFs)
-    - Endpoint: `PATCH /api/notas-fiscais/:id/auditoria` para confirmar auditoria
-    - Webhook: evento `auditoria_realizada` disparado automaticamente
-    - Frontend: botão "Confirmar Auditoria" na página de detalhes (apenas ADMIN/COMPRAS)
-    - Tag "AUD" azul compacta (10px) na coluna AÇÕES da listagem
-    - Validação: impede auditoria duplicada
-  
-  - **Correções de Filtros e Busca**:
-    - Adicionado status `SEPARACAO_FINALIZADA` ao schema de validação de filtros
-    - Busca por fornecedor implementada (além de número da NF)
-    - Filtro de status agora aceita todos os status incluindo `SEPARACAO_FINALIZADA`
-  
-  - **Ajustes Visuais**:
-    - Tag "DISTRIBUIÇÃO IMEDIATA" muda de laranja para verde quando status é `SEPARACAO_FINALIZADA`
-    - Tag "Separação Finalizada" alterada de azul para verde no StatusBadge
-    - Liberação de mercadoria permitida para status `SEPARACAO_FINALIZADA` (além de `CONFERIDO_OK` e `CONFERIDO_DIVERGENCIA`)
+  - **Restrição de Liberação de Mercadoria**: implementada restrição de segurança para a funcionalidade de bloquear/liberar mercadoria.
+    - Backend: Adicionada verificação de perfil na rota `PATCH /api/notas-fiscais/:id/mercadoria-bloqueada` permitindo apenas perfis `ADMIN` e `COMPRAS`.
+    - Frontend: Botão de "Liberar/Bloquear Mercadoria" agora é renderizado condicionalmente, visível apenas para usuários com perfil `ADMIN` ou `COMPRAS`.
+    - Git: Alterações enviadas para o repositório principal no GitHub.
 
 - **Arquivos modificados** (principais):
-  - `backend/prisma/schema.prisma` — campos auditoria no modelo NotaFiscal
-  - `backend/scripts/add-auditoria-fields.ts` — migração do banco de dados
-  - `backend/src/routes/nota-fiscal.routes.ts` — endpoint de auditoria e correção do schema de filtros
-  - `backend/src/services/nota-fiscal.service.ts` — método `confirmarAuditoria()` e busca por fornecedor
-  - `backend/src/services/webhook.service.ts` — evento `auditoriaRealizada()`
-  - `frontend/src/pages/NotasFiscais/NotaFiscalDetalhes.tsx` — botão "Confirmar Auditoria"
-  - `frontend/src/pages/NotasFiscais/index.tsx` — tag AUD na coluna AÇÕES e ajustes de cores
-  - `frontend/src/hooks/useNotasFiscais.ts` — interface com campos de auditoria
-  - `frontend/src/components/StatusBadge.tsx` — cor verde para SEPARACAO_FINALIZADA
+  - `backend/src/routes/nota-fiscal.routes.ts` — restrição de perfil na API.
+  - `frontend/src/pages/NotasFiscais/NotaFiscalDetalhes.tsx` — renderização condicional do botão de liberação.
 
 - **Impacto**:
-  - ✅ Controle de auditoria com rastreabilidade (data e usuário)
-  - ✅ Webhook integrado para automações externas (n8n)
-  - ✅ Filtros e busca funcionando corretamente para todos os status
-  - ✅ Visual consistente com cores semânticas (verde = finalizado/liberado)
-  - ✅ Tag compacta e discreta na coluna de ações
+  - ✅ Maior segurança no controle de estoque e mercadoria.
+  - ✅ Garantia de que apenas usuários autorizados tomem decisões críticas de liberação.
+  - ✅ Sincronização garantida com o repositório remoto.
 
 ## 4. Próximos Passos (Priorizado)
 - [ ] Telas de Admin (Filiais, Usuários)
@@ -130,7 +107,7 @@
 - [ ] Testes e ajustes finais
 
 ## 5. Ponto de Retomada
-**Iniciar por**: Deploy das melhorias de performance e permissões do admin
+**Iniciar por**: Criação das telas de administração de Filiais e Usuários no frontend.
 
 ## 6. Fluxo de Status Padronizado - NF Direta vs Indireta
 
