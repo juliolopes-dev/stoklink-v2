@@ -1,6 +1,7 @@
 # Status do Projeto
 
 ## 1. Visão Geral
+
 - **Stack**: React + Vite + TypeScript + Tailwind (Frontend) | Node.js + Fastify + Prisma (Backend) | PostgreSQL
 - **Arquitetura**: Monorepo com frontend e backend separados
 - **Objetivo**: Sistema de Controle de Recebimento e Distribuição de Mercadorias entre Filiais - focado em monitoramento e rastreabilidade
@@ -8,6 +9,7 @@
 ## 2. Estado Atual
 
 ### Fase 1 - Fundação ✅
+
 - [x] Estrutura de pastas (backend e frontend)
 - [x] Configurações base (tsconfig, package.json, vite.config)
 - [x] Prisma + PostgreSQL configurado
@@ -16,6 +18,7 @@
 - [x] CRUD de Usuários
 
 ### Fase 2 - Core do Sistema ✅
+
 - [x] Importação de XML da NF
 - [x] Cadastro manual de NF
 - [x] Conferência de Volumes
@@ -24,6 +27,7 @@
 - [x] Distribuição para Filiais
 
 ### Fase 3 - Frontend Base ✅
+
 - [x] Setup do projeto React + rotas + layout
 - [x] Tela de Login
 - [x] Dashboard principal
@@ -32,12 +36,14 @@
 - [x] Cadastro/Importação de NF (manual + XML)
 
 ### Fase 4 - Frontend Conferência ✅
+
 - [x] Tela de Conferência de Volumes
 - [x] Tela de Conferência de Itens
 - [x] Tela de Divergências
 - [x] Tela de Distribuições
 
 ### Fase 5 - Melhorias de UX ✅
+
 - [x] Botão "Receber" na lista de NFs para acesso rápido
 - [x] Conferência de itens inline na página de detalhes da NF
 - [x] Botões "Selecionar Todos" + "Confirmar Todos" para conferência em lote
@@ -48,6 +54,7 @@
 - [x] Status simplificados com labels curtos
 
 ### Fase 6 - Cadastros e Controles Adicionais ✅
+
 - [x] Campo entrada_rp (RP-SIM/RP-NÃO) para NFs
 - [x] CRUD completo de Transportadoras
 - [x] Dropdown de transportadoras na conferência de volumes (substituiu campo texto livre)
@@ -56,6 +63,7 @@
 - [x] Validações e normalização de CNPJ
 
 ### Fase 7 - NF Secundária com TXT ✅
+
 - [x] Parser para arquivo TXT de itens secundários (código, descrição, quantidade)
 - [x] Tabela `itens_nf_secundaria` no banco de dados
 - [x] Coluna `txt_secundario` na tabela `notas_fiscais`
@@ -65,6 +73,7 @@
 - [x] Tabela de itens secundários com visual diferenciado (azul)
 
 ### Fase 8 - Performance e Permissões ✅
+
 - [x] React Query (TanStack Query) para gerenciamento de estado e cache
 - [x] Paginação no backend (50 itens por página)
 - [x] Todos os filtros processados no backend (não mais no frontend)
@@ -74,6 +83,7 @@
 - [x] Hook customizado `useNotasFiscais` com cache e revalidação
 
 ### Fase 9 - Códigos de Fornecedores e Validação de CNPJ ✅
+
 - [x] Adicionada coluna `codigo` na tabela `fornecedores`
 - [x] Criado índice `idx_fornecedores_codigo` para busca rápida
 - [x] Migração de 845 códigos do sistema antigo (CSV)
@@ -85,6 +95,7 @@
 - [x] `findOrCreate` modificado para exigir fornecedor cadastrado previamente
 
 ## 3. Última Sessão
+
 - **Data**: 23/02/2026 (manhã)
 - **Mudanças**:
   - **Restrição de Liberação de Mercadoria**: implementada restrição de segurança para a funcionalidade de bloquear/liberar mercadoria.
@@ -102,16 +113,19 @@
   - ✅ Sincronização garantida com o repositório remoto.
 
 ## 4. Próximos Passos (Priorizado)
+
 - [ ] Telas de Admin (Filiais, Usuários)
 - [ ] Relatórios e exportações
 - [ ] Testes e ajustes finais
 
 ## 5. Ponto de Retomada
+
 **Iniciar por**: Criação das telas de administração de Filiais e Usuários no frontend.
 
 ## 6. Fluxo de Status Padronizado - NF Direta vs Indireta
 
-### Status Disponíveis (Padronizados):
+### Status Disponíveis (Padronizados)
+
 1. `PENDENTE_TRANSFERENCIA` - Em trânsito
 2. `VOLUMES_CONFERIDOS` - Volumes conferidos, aguardando conferência de itens
 3. `VOLUMES_DIVERGENTES` - Divergência em volumes
@@ -122,6 +136,7 @@
 8. `BLOQUEADO` - NF bloqueada para movimentação
 
 ### A) NF DIRETA (Filial Recebimento = Filial Destino)
+
 **Mercadoria vai direto para filial destino**
 
 1. **Em Trânsito**
@@ -141,6 +156,7 @@
    - Badge: "Conferido" ou "Conferido c/ Divergência" (verde/vermelho)
 
 ### B) NF INDIRETA (Filial Recebimento ≠ Filial Destino)
+
 **Passa por 2 filiais: Filial de Recebimento → Filial Destino**
 
 1. **Em Trânsito para Recebimento**
@@ -164,23 +180,31 @@
    - Status: `CONFERIDO_OK` ou `CONFERIDO_DIVERGENCIA`
    - Badge: "Conferido" ou "Conferido c/ Divergência" (verde/vermelho)
 
-### Regras Importantes:
+### Regras Importantes
+
 - **Interface Limpa**: Removidas tags complementares redundantes, mantendo apenas badge principal e botões de ação
 - **Fluxo Unificado**: Ambos os tipos começam com `PENDENTE_TRANSFERENCIA` (em trânsito)
 - **Filial Recebimento (NF Indireta)**: Confere APENAS volumes, não itens
 - **Filial Destino**: Confere volumes + itens (ambos os tipos de NF)
 - **Bloqueio de Mercadoria**: Só pode ser desbloqueada após status `CONFERIDO_OK` ou `CONFERIDO_DIVERGENCIA`
+- **Padrão de Versionamento (Frontend)**:
+  - Todo deploy crítico deve incrementar a versão em `frontend/public/version.json` e `frontend/src/hooks/useUpdateCheck.ts`.
+  - O sistema detecta mudanças automaticamente a cada 5 minutos.
+  - O usuário é notificado via `UpdateNotification` para evitar problemas de cache.
 
 ## 7. Contexto Técnico Completo
-Sistema StokLink para controle de recebimento de mercadorias entre filiais. Backend 100% funcional com: Autenticação JWT, CRUD Filiais/Usuários, Importação XML NF-e, Cadastro manual NF, Conferência de Volumes/Itens com atualização automática de status, Registro de Divergências, Distribuição entre filiais. Usuários: Admin e Conferente. Status NF (Padronizados): PENDENTE_TRANSFERENCIA, VOLUMES_CONFERIDOS, VOLUMES_DIVERGENTES, AGUARDANDO_CONFERENCIA_DESTINO, EM_CONFERENCIA, CONFERIDO_OK, CONFERIDO_DIVERGENCIA, BLOQUEADO. Credenciais teste: admin@stoklink.com/admin123, conferente@stoklink.com/conferente123. PostgreSQL em 147.93.144.135:4154/stoklink-v2. Backend porta 3333, frontend porta 5173.
+
+Sistema StokLink para controle de recebimento de mercadorias entre filiais. Backend 100% funcional com: Autenticação JWT, CRUD Filiais/Usuários, Importação XML NF-e, Cadastro manual NF, Conferência de Volumes/Itens com atualização automática de status, Registro de Divergências, Distribuição entre filiais. Usuários: Admin e Conferente. Status NF (Padronizados): PENDENTE_TRANSFERENCIA, VOLUMES_CONFERIDOS, VOLUMES_DIVERGENTES, AGUARDANDO_CONFERENCIA_DESTINO, EM_CONFERENCIA, CONFERIDO_OK, CONFERIDO_DIVERGENCIA, BLOQUEADO. Credenciais teste: <admin@stoklink.com>/admin123, <conferente@stoklink.com>/conferente123. PostgreSQL em 147.93.144.135:4154/stoklink-v2. Backend porta 3333, frontend porta 5173.
 
 ## 8. Endpoints da API
 
 ### Auth
+
 - POST /auth/login
 - GET /auth/me
 
 ### Filiais
+
 - GET /filiais
 - GET /filiais/ativas
 - GET /filiais/:id
@@ -189,6 +213,7 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - DELETE /filiais/:id (Admin)
 
 ### Usuários
+
 - GET /usuarios (Admin)
 - GET /usuarios/:id (Admin)
 - POST /usuarios (Admin)
@@ -196,6 +221,7 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - DELETE /usuarios/:id (Admin)
 
 ### Notas Fiscais
+
 - GET /notas-fiscais
 - GET /notas-fiscais/:id
 - POST /notas-fiscais
@@ -207,6 +233,7 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - PATCH /notas-fiscais/:id/separacao-finalizada
 
 ### Conferência
+
 - POST /notas-fiscais/:id/conferencia-volumes
 - GET /notas-fiscais/:id/conferencia-volumes
 - POST /notas-fiscais/:id/conferencia-itens
@@ -215,6 +242,7 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - POST /notas-fiscais/:id/conferir-todos-itens
 
 ### Divergências
+
 - GET /divergencias
 - GET /divergencias/resumo
 - GET /divergencias/:id
@@ -224,6 +252,7 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - DELETE /divergencias/:id
 
 ### Distribuições
+
 - GET /distribuicoes
 - GET /distribuicoes/resumo
 - GET /distribuicoes/:id
@@ -236,6 +265,7 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - DELETE /distribuicoes/:id
 
 ### Fornecedores
+
 - GET /fornecedores
 - GET /fornecedores/ativos
 - GET /fornecedores/resumo
@@ -245,6 +275,7 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - DELETE /fornecedores/:id (Admin)
 
 ### Transportadoras
+
 - GET /transportadoras
 - GET /transportadoras/ativos
 - GET /transportadoras/:id
@@ -253,5 +284,6 @@ Sistema StokLink para controle de recebimento de mercadorias entre filiais. Back
 - DELETE /transportadoras/:id (Admin)
 
 ### Empresas
+
 - GET /empresas (Admin)
 - GET /empresas/:id (Admin)
