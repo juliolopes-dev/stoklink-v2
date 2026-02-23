@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AppRoutes } from './routes'
+import { UpdateNotification } from './components/UpdateNotification'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,6 +16,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppRoutes />
+      <UpdateNotification />
     </QueryClientProvider>
   )
 }
