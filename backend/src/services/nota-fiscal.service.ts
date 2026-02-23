@@ -262,7 +262,7 @@ export class NotaFiscalService {
 
     // Se houver searchTerm (busca por número), ignorar filtros de filial
     const hasSearchTerm = filters?.searchTerm && filters.searchTerm.trim().length > 0
-    
+
     if (!hasSearchTerm) {
       if (filters?.filialRecebimentoId) {
         where.filialRecebimentoId = filters.filialRecebimentoId
@@ -426,7 +426,7 @@ export class NotaFiscalService {
 
   async update(id: string, data: Record<string, unknown>) {
     console.log(' [UPDATE NF] Dados recebidos:', JSON.stringify(data, null, 2))
-    
+
     const notaFiscal = await prisma.notaFiscal.findUnique({
       where: { id },
       include: { conferenciasVolumes: { orderBy: { dataConferencia: 'asc' } } }
@@ -443,20 +443,57 @@ export class NotaFiscalService {
       const transportadora = data.transportadora as string | null
       console.log(` [UPDATE NF] Transportadora recebida: "${transportadora}"`)
       delete data.transportadora
-      
+
       if (notaFiscal.conferenciasVolumes.length > 0) {
         const conferenciaId = notaFiscal.conferenciasVolumes[0].id
         console.log(` [UPDATE NF] Atualizando conferência ${conferenciaId} com transportadora: "${transportadora}"`)
         console.log(`✅ [UPDATE NF] Atualizando conferência ${conferenciaId} com transportadora: "${transportadora}"`)
-        
+
         const updated = await prisma.conferenciaVolume.update({
           where: { id: conferenciaId },
           data: { transportadora } as any
         })
-        
+
         console.log(`✅ [UPDATE NF] Conferência atualizada:`, JSON.stringify(updated, null, 2))
       } else {
         console.log('⚠️ [UPDATE NF] Nenhuma conferência encontrada - transportadora não será salva')
+      }
+    }
+
+    // Se a quantidade de volumes foi enviada, precisamos atualizar todas as conferências existentes
+    if (data.quantidadeVolumes !== undefined) {
+      const novaQtdVolumes = data.quantidadeVolumes as number
+      console.log(` [UPDATE NF] Quantidade de volumes alterada para: ${novaQtdVolumes}`)
+
+      for (const conf of notaFiscal.conferenciasVolumes) {
+        const batendo = conf.volumesRecebidos === novaQtdVolumes
+        console.log(` [UPDATE NF] Atualizando batimento da conferência ${conf.id}: ${conf.volumesRecebidos} vs ${novaQtdVolumes} -> ${batendo}`)
+
+        await prisma.conferenciaVolume.update({
+          where: { id: conf.id },
+          data: {
+            volumesEsperados: novaQtdVolumes,
+            volumesBatendo: batendo
+          }
+        })
+      }
+
+      // Verificar se precisamos alterar o status da NF
+      const nfAtualizada = await prisma.notaFiscal.findUnique({
+        where: { id },
+        include: { conferenciasVolumes: true }
+      })
+
+      if (nfAtualizada) {
+        const todasBatendo = nfAtualizada.conferenciasVolumes.every(c => c.volumesBatendo)
+
+        if (todasBatendo && nfAtualizada.status === 'VOLUMES_DIVERGENTES') {
+          console.log(` [UPDATE NF] Mudando status para VOLUMES_CONFERIDOS (Geral)`)
+          data.status = 'VOLUMES_CONFERIDOS'
+        } else if (!todasBatendo && nfAtualizada.status === 'VOLUMES_CONFERIDOS') {
+          console.log(` [UPDATE NF] Mudando status para VOLUMES_DIVERGENTES (Geral)`)
+          data.status = 'VOLUMES_DIVERGENTES'
+        }
       }
     }
 
@@ -525,7 +562,7 @@ export class NotaFiscalService {
     for (const item of notaFiscal.itens) {
       if (quantidades[item.id] !== undefined && (!item.conferido || isAdmin)) {
         const qtdConferida = quantidades[item.id]
-        
+
         await prisma.itemNotaFiscal.update({
           where: { id: item.id },
           data: {
@@ -547,21 +584,21 @@ export class NotaFiscalService {
       const todosItens = await prisma.itemNotaFiscal.findMany({
         where: { notaFiscalId, conferido: true }
       })
-      
+
       let temDivergencia = false
-      
+
       for (const i of todosItens) {
         const qtdNota = Number(i.quantidadeNota)
         const qtdConferida = Number(i.quantidadeConferida || 0)
-        
+
         if (qtdNota !== qtdConferida) {
           temDivergencia = true
-          
+
           // Verificar se já existe divergência para este item
           const divergenciaExistente = await prisma.divergencia.findFirst({
             where: { itemNotaFiscalId: i.id }
           })
-          
+
           if (!divergenciaExistente) {
             await prisma.divergencia.create({
               data: {
@@ -576,7 +613,7 @@ export class NotaFiscalService {
           }
         }
       }
-      
+
       await prisma.notaFiscal.update({
         where: { id: notaFiscalId },
         data: { status: temDivergencia ? 'CONFERIDO_DIVERGENCIA' : 'CONFERIDO_OK' }
@@ -607,7 +644,7 @@ export class NotaFiscalService {
       where: { id: usuarioId },
       select: { filialId: true, perfil: true }
     })
-    
+
     // ADMIN pode fazer qualquer conferência
     if (usuario?.perfil !== 'ADMIN') {
       if (!usuario?.filialId || usuario.filialId !== notaFiscal.filialDestinoId) {
@@ -648,26 +685,26 @@ export class NotaFiscalService {
     if (itensNaoConferidos === 0) {
       // Verificar se há divergências e criar registros
       const todosItens = await prisma.itemNotaFiscal.findMany({
-        where: { 
+        where: {
           notaFiscalId,
           conferido: true
         }
       })
 
       let temDivergencia = false
-      
+
       for (const i of todosItens) {
         const qtdNota = Number(i.quantidadeNota)
         const qtdConferida = Number(i.quantidadeConferida || 0)
-        
+
         if (qtdNota !== qtdConferida) {
           temDivergencia = true
-          
+
           // Verificar se já existe divergência para este item
           const divergenciaExistente = await prisma.divergencia.findFirst({
             where: { itemNotaFiscalId: i.id }
           })
-          
+
           if (!divergenciaExistente) {
             await prisma.divergencia.create({
               data: {
@@ -685,8 +722,8 @@ export class NotaFiscalService {
 
       await prisma.notaFiscal.update({
         where: { id: notaFiscalId },
-        data: { 
-          status: temDivergencia ? 'CONFERIDO_DIVERGENCIA' : 'CONFERIDO_OK' 
+        data: {
+          status: temDivergencia ? 'CONFERIDO_DIVERGENCIA' : 'CONFERIDO_OK'
         }
       })
     } else {
@@ -767,7 +804,7 @@ export class NotaFiscalService {
 
     const result = await prisma.notaFiscal.update({
       where: { id },
-      data: { 
+      data: {
         auditoriaRealizada: true,
         dataAuditoria: new Date()
       } as any,
@@ -801,7 +838,7 @@ export class NotaFiscalService {
 
     const result = await prisma.notaFiscal.update({
       where: { id },
-      data: { 
+      data: {
         auditoriaMurillo: true,
         dataAuditoriaMurillo: new Date()
       } as any,
@@ -863,11 +900,11 @@ export class NotaFiscalService {
 
     // Estatísticas por filial de recebimento
     const filialStats: Record<string, { nome: string, codigo: string, total: number, conferidas: number, tempoMedioHoras: number }> = {}
-    
+
     for (const nf of notas) {
       const filialId = nf.filialRecebimentoId || nf.filialDestinoId
       const filial = nf.filialRecebimento || nf.filialDestino
-      
+
       if (!filialStats[filialId]) {
         filialStats[filialId] = {
           nome: filial.nome,
@@ -877,18 +914,18 @@ export class NotaFiscalService {
           tempoMedioHoras: 0
         }
       }
-      
+
       filialStats[filialId].total++
-      
+
       if (nf.status === 'CONFERIDO_OK' || nf.status === 'CONFERIDO_DIVERGENCIA') {
         filialStats[filialId].conferidas++
-        
+
         // Calcular tempo de conferência
         const primeiraConf = nf.conferenciasVolumes.find((c: { tipo: string }) => c.tipo === 'RECEBIMENTO')
         if (primeiraConf && nf.createdAt) {
           const tempoMs = new Date(primeiraConf.createdAt).getTime() - new Date(nf.createdAt).getTime()
           const tempoHoras = tempoMs / (1000 * 60 * 60)
-          filialStats[filialId].tempoMedioHoras = 
+          filialStats[filialId].tempoMedioHoras =
             (filialStats[filialId].tempoMedioHoras * (filialStats[filialId].conferidas - 1) + tempoHoras) / filialStats[filialId].conferidas
         }
       }
