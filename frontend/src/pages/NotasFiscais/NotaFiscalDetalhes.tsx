@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { 
-  FiArrowLeft, 
-  FiPackage, 
-  FiCheckCircle, 
+import {
+  FiArrowLeft,
+  FiPackage,
+  FiCheckCircle,
   FiAlertTriangle,
   FiTruck,
   FiFileText,
@@ -127,7 +127,7 @@ export function NotaFiscalDetalhes() {
   const navigate = useNavigate()
   const { alert } = useModal()
   const { user } = useAuth()
-  
+
   // Verificar se o usuário pode conferir itens (pertence à filial de destino)
   const [nota, setNota] = useState<NotaFiscalDetalhe | null>(null)
   const [loading, setLoading] = useState(true)
@@ -137,14 +137,14 @@ export function NotaFiscalDetalhes() {
   const [transportadora, setTransportadora] = useState('')
   const [filiaisDisponiveis, setFiliaisDisponiveis] = useState<FilialOption[]>([])
   const [transportadoras, setTransportadoras] = useState<Array<{ id: string; nome: string }>>([])
-  
+
   // Estados de loading para ações
   const [loadingConferencia, setLoadingConferencia] = useState(false)
   const [loadingItem, setLoadingItem] = useState(false)
   const [loadingAuditoria, setLoadingAuditoria] = useState(false)
   const [loadingBloqueio, setLoadingBloqueio] = useState(false)
   const [loadingDelete, setLoadingDelete] = useState(false)
-  
+
   // Modal de edição
   const [showEditModal, setShowEditModal] = useState(false)
   const [fornecedores, setFornecedores] = useState<FornecedorOption[]>([])
@@ -160,23 +160,23 @@ export function NotaFiscalDetalhes() {
   const [saving, setSaving] = useState(false)
   const [transportadoraSearch, setTransportadoraSearch] = useState('')
   const [showTransportadoraDropdown, setShowTransportadoraDropdown] = useState(false)
-  
+
   // Upload de DANF secundário
   const [uploadingDanf, setUploadingDanf] = useState(false)
   const [danfFile, setDanfFile] = useState<File | null>(null)
-  
+
   // Buscar itens secundários do BD-BEZERRA
   const [loadingBuscarItens, setLoadingBuscarItens] = useState(false)
   const [showFilialModal, setShowFilialModal] = useState(false)
   const [filialSelecionada, setFilialSelecionada] = useState('')
-  
+
   // Separação Finalizada (Distribuição Imediata)
   const [loadingSeparacao, setLoadingSeparacao] = useState(false)
   const [showConfirmSeparacao, setShowConfirmSeparacao] = useState(false)
-  
+
   // Auditoria Murillo
   const [loadingAuditoriaMurillo, setLoadingAuditoriaMurillo] = useState(false)
-  
+
   // Opções de filiais do BD-BEZERRA
   const filiaisBezerra = [
     { codigo: '00', nome: 'Petrolina' },
@@ -186,27 +186,27 @@ export function NotaFiscalDetalhes() {
     { codigo: '05', nome: 'Bonfim' },
     { codigo: '06', nome: 'Picos' }
   ]
-  
+
   // Conferência de itens inline
   const [conferindoItemId, setConferindoItemId] = useState<string | null>(null)
   const [quantidadeConferida, setQuantidadeConferida] = useState('')
-  
+
   // Modo de conferência em lote (todos os itens)
   const [modoConferenciaLote, setModoConferenciaLote] = useState(false)
   const [quantidadesLote, setQuantidadesLote] = useState<Record<string, string>>({})
-  
+
   // Pesquisa de itens
   const [pesquisaItem, setPesquisaItem] = useState('')
-  
+
   // Toggle para alternar entre itens originais e secundários
   const [mostrarItensSecundarios, setMostrarItensSecundarios] = useState(false)
-  
+
   // Conferência de itens secundários
   const [conferindoItemSecundarioId, setConferindoItemSecundarioId] = useState<string | null>(null)
   const [quantidadeConferidaSecundario, setQuantidadeConferidaSecundario] = useState('')
   const [modoConferenciaLoteSecundario, setModoConferenciaLoteSecundario] = useState(false)
   const [quantidadesLoteSecundario, setQuantidadesLoteSecundario] = useState<Record<string, string>>({})
-  
+
   // Modal de item extra
   const [showItemExtraModal, setShowItemExtraModal] = useState(false)
   const [itemExtraForm, setItemExtraForm] = useState({
@@ -219,6 +219,9 @@ export function NotaFiscalDetalhes() {
 
   // Verificar se usuário pode conferir itens (pertence à filial de destino ou é ADMIN)
   const podeConferirItens = nota && user ? (user.perfil === 'ADMIN' || user.filialId === nota.filialDestino.id) : false
+
+  // Verificar se usuário pode liberar mercadoria (ADMIN ou COMPRAS)
+  const podeLiberarMercadoria = user ? (user.perfil === 'ADMIN' || user.perfil === 'COMPRAS') : false
 
   useEffect(() => {
     loadNota()
@@ -239,7 +242,7 @@ export function NotaFiscalDetalhes() {
 
   async function handleConferirVolumes() {
     if (!volumesRecebidos) return
-    
+
     // Se não tem filial de recebimento definida, exige seleção
     if (!nota?.filialRecebimento && !filialRecebimentoId) {
       alert('Atenção', 'Selecione a filial de recebimento', 'info')
@@ -331,8 +334,8 @@ export function NotaFiscalDetalhes() {
     if (!nota) return
     const quantidades: Record<string, string> = {}
     // ADMIN pode reconferir todos os itens (inclusive já conferidos)
-    const itensParaConferir = user?.perfil === 'ADMIN' 
-      ? nota.itens 
+    const itensParaConferir = user?.perfil === 'ADMIN'
+      ? nota.itens
       : nota.itens.filter(i => !i.conferido)
     itensParaConferir.forEach(item => {
       quantidades[item.id] = item.quantidadeNota.toString()
@@ -361,7 +364,7 @@ export function NotaFiscalDetalhes() {
   }
 
   // ==================== CONFERÊNCIA DE ITENS SECUNDÁRIOS ====================
-  
+
   function iniciarConferenciaItemSecundario(item: ItemNFSecundaria) {
     setConferindoItemSecundarioId(item.id)
     setQuantidadeConferidaSecundario(Number(item.quantidade).toString())
@@ -426,11 +429,11 @@ export function NotaFiscalDetalhes() {
       setFornecedores(fornecedoresRes.data)
       setFiliaisDisponiveis(filiaisRes.data)
       setTransportadoras(transportadorasRes.data)
-      
+
       // Buscar transportadora da primeira conferência (recebimento)
       const primeiraConferencia = nota?.conferenciasVolumes?.[0]
       const transportadoraAtual = primeiraConferencia?.transportadora || ''
-      
+
       setEditForm({
         numeroSecundario: nota?.numeroSecundario || '',
         fornecedorSecundarioId: nota?.fornecedorSecundario?.id || '',
@@ -668,7 +671,7 @@ export function NotaFiscalDetalhes() {
   // Pode conferir volumes se está em trânsito (PENDENTE_TRANSFERENCIA) e ainda não tem filial de recebimento
   const podeConferirVolumes = nota.status === 'PENDENTE_TRANSFERENCIA' && !nota.filialRecebimento
   const podeConferirVolumesDestino = nota.status === 'AGUARDANDO_CONFERENCIA_DESTINO'
-  
+
   // Verificar se usuário pertence à filial de destino para conferir volumes no destino
   const usuarioPodeConferirDestino = user?.filialId === nota.filialDestino.id
 
@@ -744,28 +747,29 @@ export function NotaFiscalDetalhes() {
 
           {/* Ações de status */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => toggleBloqueioMercadoria(!nota.mercadoriaBloqueada)}
-              disabled={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA'}
-              className={`h-8 flex items-center gap-1.5 px-3 rounded text-xs font-medium transition-colors shadow-sm ${
-                nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA'
-                  ? 'bg-slate-300 cursor-not-allowed text-slate-500'
-                  : nota.mercadoriaBloqueada
-                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                  : 'bg-red-600 hover:bg-red-700 text-white'
-              }`}
-              title={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA' ? 'A mercadoria só pode ser desbloqueada após a conclusão de todo o fluxo de conferência' : ''}
-            >
-              {nota.mercadoriaBloqueada ? 'Liberar Mercadoria' : 'Bloquear Mercadoria'}
-            </button>
+            {podeLiberarMercadoria && (
+              <button
+                onClick={() => toggleBloqueioMercadoria(!nota.mercadoriaBloqueada)}
+                disabled={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA'}
+                className={`h-8 flex items-center gap-1.5 px-3 rounded text-xs font-medium transition-colors shadow-sm ${nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA'
+                    ? 'bg-slate-300 cursor-not-allowed text-slate-500'
+                    : nota.mercadoriaBloqueada
+                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                      : 'bg-red-600 hover:bg-red-700 text-white'
+                  }`}
+                title={nota.mercadoriaBloqueada && nota.status !== 'CONFERIDO_OK' && nota.status !== 'CONFERIDO_DIVERGENCIA' && nota.status !== 'SEPARACAO_FINALIZADA' ? 'A mercadoria só pode ser desbloqueada após a conclusão de todo o fluxo de conferência' : ''}
+              >
+                {nota.mercadoriaBloqueada ? 'Liberar Mercadoria' : 'Bloquear Mercadoria'}
+              </button>
+            )}
             {nota.status === 'SEPARACAO_FINALIZADA' ? (
               <div className="flex flex-col gap-1">
                 <StatusBadge status="CONFERIDO_OK" />
                 <StatusBadge status="SEPARACAO_FINALIZADA" />
               </div>
             ) : (
-              <StatusBadge 
-                status={nota.status} 
+              <StatusBadge
+                status={nota.status}
                 filialRecebimento={nota.filialRecebimento?.nome}
               />
             )}
@@ -842,21 +846,19 @@ export function NotaFiscalDetalhes() {
                   <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
                     <button
                       onClick={() => setMostrarItensSecundarios(false)}
-                      className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                        !mostrarItensSecundarios
-                          ? 'bg-white text-primary-700 shadow-sm'
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
+                      className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${!mostrarItensSecundarios
+                        ? 'bg-white text-primary-700 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-700'
+                        }`}
                     >
                       NF Original
                     </button>
                     <button
                       onClick={() => setMostrarItensSecundarios(true)}
-                      className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-                        mostrarItensSecundarios
-                          ? 'bg-white text-blue-700 shadow-sm'
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
+                      className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${mostrarItensSecundarios
+                        ? 'bg-white text-blue-700 shadow-sm'
+                        : 'text-gray-500 hover:text-gray-700'
+                        }`}
                     >
                       NF Secundária ({nota.itensSecundarios.length})
                     </button>
@@ -897,11 +899,10 @@ export function NotaFiscalDetalhes() {
                     <button
                       onClick={() => setShowItemExtraModal(true)}
                       disabled={!podeConferirItens}
-                      className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${
-                        podeConferirItens 
-                          ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
+                      className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${podeConferirItens
+                        ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        }`}
                       title={!podeConferirItens ? 'Apenas usuários da filial de destino podem adicionar itens extras' : 'Registrar item que chegou mas não está na NF'}
                     >
                       <FiAlertTriangle size={14} />
@@ -930,11 +931,10 @@ export function NotaFiscalDetalhes() {
                       <button
                         onClick={handleSelecionarTodosSecundarios}
                         disabled={!podeConferirItens}
-                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${
-                          podeConferirItens 
-                            ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        }`}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${podeConferirItens
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          }`}
                         title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
                       >
                         Selecionar Todos
@@ -962,11 +962,10 @@ export function NotaFiscalDetalhes() {
                       <button
                         onClick={handleSelecionarTodos}
                         disabled={!podeConferirItens}
-                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${
-                          podeConferirItens 
-                            ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        }`}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs transition-colors ${podeConferirItens
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          }`}
                         title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
                       >
                         Selecionar Todos
@@ -1006,7 +1005,7 @@ export function NotaFiscalDetalhes() {
                           .map((item) => {
                             const emEdicaoSecundario = conferindoItemSecundarioId === item.id
                             const emLoteSecundario = modoConferenciaLoteSecundario && !item.conferido
-                            
+
                             return (
                               <tr key={item.id} className={`hover:bg-blue-50 ${emEdicaoSecundario || emLoteSecundario ? 'bg-blue-100' : ''}`}>
                                 <td className="px-3 py-1.5 text-xs w-24 font-mono">{item.codigo}</td>
@@ -1064,11 +1063,10 @@ export function NotaFiscalDetalhes() {
                                     <button
                                       onClick={() => iniciarConferenciaItemSecundario(item)}
                                       disabled={!podeConferirItens}
-                                      className={`px-2 py-0.5 rounded text-xs ${
-                                        podeConferirItens 
-                                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                      }`}
+                                      className={`px-2 py-0.5 rounded text-xs ${podeConferirItens
+                                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                        }`}
                                       title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
                                     >
                                       Conferir
@@ -1113,90 +1111,89 @@ export function NotaFiscalDetalhes() {
                           )
                         })
                         .map((item) => {
-                        const emLote = modoConferenciaLote && (!item.conferido || (user?.perfil === 'ADMIN' && quantidadesLote[item.id] !== undefined))
-                        const emEdicaoIndividual = conferindoItemId === item.id
-                        
-                        return (
-                          <tr key={item.id} className={`hover:bg-gray-50 ${emEdicaoIndividual || emLote ? 'bg-blue-50' : ''}`}>
-                            <td className="px-3 py-1.5 text-xs w-24">{item.codigoProduto}</td>
-                            <td className="px-3 py-1.5 text-xs">{item.descricao}</td>
-                            <td className="px-3 py-1.5 text-xs text-right w-20">{item.quantidadeNota} {item.unidade}</td>
-                            <td className="px-3 py-1.5 text-xs text-right w-28">
-                              {emEdicaoIndividual ? (
-                                <input
-                                  type="number"
-                                  value={quantidadeConferida}
-                                  onChange={(e) => setQuantidadeConferida(e.target.value)}
-                                  className="w-20 px-2 py-1 border border-gray-300 rounded text-right text-xs"
-                                  autoFocus
-                                  min="0"
-                                  step="0.01"
-                                />
-                              ) : emLote ? (
-                                <input
-                                  type="number"
-                                  value={quantidadesLote[item.id] || ''}
-                                  onChange={(e) => setQuantidadesLote(prev => ({ ...prev, [item.id]: e.target.value }))}
-                                  className="w-20 px-2 py-1 border border-blue-300 rounded text-right text-xs bg-blue-50"
-                                  min="0"
-                                  step="0.01"
-                                />
-                              ) : item.conferido ? (
-                                <span className={item.quantidadeConferida !== item.quantidadeNota ? 'text-red-600 font-medium' : 'text-green-600'}>
-                                  {item.quantidadeConferida} {item.unidade}
-                                </span>
-                              ) : '-'}
-                            </td>
-                            <td className="px-3 py-1.5 text-center w-20">
-                              {emEdicaoIndividual ? (
-                                <div className="flex items-center justify-center gap-1">
-                                  <button
-                                    onClick={() => handleConferirItem(item.id)}
-                                    className="p-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs"
-                                    title="Confirmar"
-                                  >
-                                    <FiCheckCircle size={12} />
-                                  </button>
-                                  <button
-                                    onClick={() => { setConferindoItemId(null); setQuantidadeConferida(''); }}
-                                    className="p-1 bg-gray-400 hover:bg-gray-500 text-white rounded text-xs"
-                                    title="Cancelar"
-                                  >
-                                    ✕
-                                  </button>
-                                </div>
-                              ) : emLote ? (
-                                <span className="text-blue-600 text-xs">Em lote</span>
-                              ) : item.conferido ? (
-                                user?.perfil === 'ADMIN' ? (
+                          const emLote = modoConferenciaLote && (!item.conferido || (user?.perfil === 'ADMIN' && quantidadesLote[item.id] !== undefined))
+                          const emEdicaoIndividual = conferindoItemId === item.id
+
+                          return (
+                            <tr key={item.id} className={`hover:bg-gray-50 ${emEdicaoIndividual || emLote ? 'bg-blue-50' : ''}`}>
+                              <td className="px-3 py-1.5 text-xs w-24">{item.codigoProduto}</td>
+                              <td className="px-3 py-1.5 text-xs">{item.descricao}</td>
+                              <td className="px-3 py-1.5 text-xs text-right w-20">{item.quantidadeNota} {item.unidade}</td>
+                              <td className="px-3 py-1.5 text-xs text-right w-28">
+                                {emEdicaoIndividual ? (
+                                  <input
+                                    type="number"
+                                    value={quantidadeConferida}
+                                    onChange={(e) => setQuantidadeConferida(e.target.value)}
+                                    className="w-20 px-2 py-1 border border-gray-300 rounded text-right text-xs"
+                                    autoFocus
+                                    min="0"
+                                    step="0.01"
+                                  />
+                                ) : emLote ? (
+                                  <input
+                                    type="number"
+                                    value={quantidadesLote[item.id] || ''}
+                                    onChange={(e) => setQuantidadesLote(prev => ({ ...prev, [item.id]: e.target.value }))}
+                                    className="w-20 px-2 py-1 border border-blue-300 rounded text-right text-xs bg-blue-50"
+                                    min="0"
+                                    step="0.01"
+                                  />
+                                ) : item.conferido ? (
+                                  <span className={item.quantidadeConferida !== item.quantidadeNota ? 'text-red-600 font-medium' : 'text-green-600'}>
+                                    {item.quantidadeConferida} {item.unidade}
+                                  </span>
+                                ) : '-'}
+                              </td>
+                              <td className="px-3 py-1.5 text-center w-20">
+                                {emEdicaoIndividual ? (
+                                  <div className="flex items-center justify-center gap-1">
+                                    <button
+                                      onClick={() => handleConferirItem(item.id)}
+                                      className="p-1 bg-green-600 hover:bg-green-700 text-white rounded text-xs"
+                                      title="Confirmar"
+                                    >
+                                      <FiCheckCircle size={12} />
+                                    </button>
+                                    <button
+                                      onClick={() => { setConferindoItemId(null); setQuantidadeConferida(''); }}
+                                      className="p-1 bg-gray-400 hover:bg-gray-500 text-white rounded text-xs"
+                                      title="Cancelar"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                ) : emLote ? (
+                                  <span className="text-blue-600 text-xs">Em lote</span>
+                                ) : item.conferido ? (
+                                  user?.perfil === 'ADMIN' ? (
+                                    <button
+                                      onClick={() => iniciarConferenciaItem(item)}
+                                      className="px-2 py-0.5 rounded text-xs bg-amber-500 hover:bg-amber-600 text-white"
+                                      title="Reconferir item (ADMIN)"
+                                    >
+                                      Reconferir
+                                    </button>
+                                  ) : (
+                                    <span className="text-green-600"><FiCheckCircle size={14} /></span>
+                                  )
+                                ) : (
                                   <button
                                     onClick={() => iniciarConferenciaItem(item)}
-                                    className="px-2 py-0.5 rounded text-xs bg-amber-500 hover:bg-amber-600 text-white"
-                                    title="Reconferir item (ADMIN)"
-                                  >
-                                    Reconferir
-                                  </button>
-                                ) : (
-                                  <span className="text-green-600"><FiCheckCircle size={14} /></span>
-                                )
-                              ) : (
-                                <button
-                                  onClick={() => iniciarConferenciaItem(item)}
-                                  disabled={!podeConferirItens}
-                                  className={`px-2 py-0.5 rounded text-xs ${
-                                    podeConferirItens 
-                                      ? 'bg-primary-600 hover:bg-primary-700 text-white' 
+                                    disabled={!podeConferirItens}
+                                    className={`px-2 py-0.5 rounded text-xs ${podeConferirItens
+                                      ? 'bg-primary-600 hover:bg-primary-700 text-white'
                                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                  }`}
-                                  title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
-                                >
-                                  Conferir
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        )
-                      })}
+                                      }`}
+                                    title={!podeConferirItens ? 'Apenas usuários da filial de destino podem conferir itens' : ''}
+                                  >
+                                    Conferir
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          )
+                        })}
                     </tbody>
                   </table>
                 </div>
@@ -1240,15 +1237,14 @@ export function NotaFiscalDetalhes() {
               <FiCheckCircle size={16} />
               Conferência de Volumes
             </h2>
-            
+
             {nota.conferenciasVolumes.length > 0 ? (
               <div className="space-y-3">
                 {nota.conferenciasVolumes.map((conf) => (
-                  <div key={conf.id} className={`p-3 rounded-lg border-l-4 text-sm ${
-                    conf.volumesBatendo 
-                      ? 'bg-green-50 border-green-500' 
-                      : 'bg-red-50 border-red-500'
-                  }`}>
+                  <div key={conf.id} className={`p-3 rounded-lg border-l-4 text-sm ${conf.volumesBatendo
+                    ? 'bg-green-50 border-green-500'
+                    : 'bg-red-50 border-red-500'
+                    }`}>
                     {/* Cabeçalho com tipo e status */}
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1260,35 +1256,35 @@ export function NotaFiscalDetalhes() {
                         </span>
                       </div>
                     </div>
-                    
+
                     {/* Volumes */}
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`font-medium ${conf.volumesBatendo ? 'text-green-700' : 'text-red-700'}`}>
                         {conf.volumesRecebidos} / {conf.volumesEsperados} volumes
                       </span>
                     </div>
-                    
+
                     {/* Filial */}
                     {conf.filial && (
                       <p className="text-xs text-gray-700 mb-1">
                         📍 {conf.filial.nome} ({conf.filial.codigo})
                       </p>
                     )}
-                    
+
                     {/* Transportadora */}
                     {conf.transportadora && (
                       <p className="text-xs text-blue-600 mb-1 flex items-center gap-1">
                         <FiTruck size={12} /> {conf.transportadora}
                       </p>
                     )}
-                    
+
                     {/* Observações */}
                     {conf.observacoes && (
                       <p className="text-xs text-gray-600 mb-1 italic">
                         💬 {conf.observacoes}
                       </p>
                     )}
-                    
+
                     {/* Usuário e data */}
                     <p className="text-xs text-gray-500 mt-2 pt-2 border-t border-gray-200">
                       {conf.usuario.nome} - {formatDate(conf.dataConferencia)}
@@ -1419,11 +1415,10 @@ export function NotaFiscalDetalhes() {
                   <button
                     onClick={() => setConferindoVolumes(true)}
                     disabled={!usuarioPodeConferirDestino}
-                    className={`w-full py-2 rounded-lg transition-colors text-sm ${
-                      usuarioPodeConferirDestino
-                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    }`}
+                    className={`w-full py-2 rounded-lg transition-colors text-sm ${usuarioPodeConferirDestino
+                      ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
                     title={!usuarioPodeConferirDestino ? 'Apenas usuários da filial de destino podem conferir volumes no destino' : ''}
                   >
                     📦 Conferir Volumes (Destino)
@@ -1618,7 +1613,7 @@ export function NotaFiscalDetalhes() {
                 <label className="block text-xs font-medium text-gray-700 mb-2">
                   DANF da NF Secundária
                 </label>
-                
+
                 {nota?.danfSecundario ? (
                   <div className="flex items-center gap-2">
                     <button
@@ -1854,16 +1849,15 @@ export function NotaFiscalDetalhes() {
               <p className="text-sm text-gray-600 mb-4">
                 De qual filial deseja buscar os itens da NF secundária <strong>{nota.numeroSecundario}</strong>?
               </p>
-              
+
               <div className="space-y-2">
                 {filiaisBezerra.map((filial) => (
                   <label
                     key={filial.codigo}
-                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                      filialSelecionada === filial.codigo
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
-                    }`}
+                    className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${filialSelecionada === filial.codigo
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-purple-300 hover:bg-purple-50/50'
+                      }`}
                   >
                     <input
                       type="radio"
@@ -1913,7 +1907,7 @@ export function NotaFiscalDetalhes() {
                   Confirmar Separação Finalizada
                 </h3>
               </div>
-              
+
               <p className="text-sm text-gray-600 mb-6">
                 Confirma que a separação dos itens foi finalizada?
               </p>
@@ -1939,17 +1933,17 @@ export function NotaFiscalDetalhes() {
 
       {/* Loading Fullscreen para ações assíncronas */}
       {(loadingConferencia || loadingItem || loadingBloqueio || loadingDelete || saving) && (
-        <Loading 
-          size="lg" 
+        <Loading
+          size="lg"
           text={
             loadingConferencia ? 'Processando conferência...' :
-            loadingItem ? 'Conferindo itens...' :
-            loadingBloqueio ? 'Alterando bloqueio...' :
-            loadingDelete ? 'Excluindo nota fiscal...' :
-            saving ? 'Salvando alterações...' :
-            'Processando...'
+              loadingItem ? 'Conferindo itens...' :
+                loadingBloqueio ? 'Alterando bloqueio...' :
+                  loadingDelete ? 'Excluindo nota fiscal...' :
+                    saving ? 'Salvando alterações...' :
+                      'Processando...'
           }
-          fullScreen 
+          fullScreen
         />
       )}
     </div>

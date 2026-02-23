@@ -375,6 +375,11 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   // Liberar/Bloquear mercadoria
   app.patch('/notas-fiscais/:id/mercadoria-bloqueada', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
+      // Verificar perfil (apenas ADMIN e COMPRAS)
+      if (request.user.perfil !== 'ADMIN' && request.user.perfil !== 'COMPRAS') {
+        return reply.status(403).send({ error: 'Apenas administradores e o setor de compras podem alterar o status de bloqueio da mercadoria' })
+      }
+
       const { id } = idParamSchema.parse(request.params)
       const usuarioId = (request as any).user?.id
       
