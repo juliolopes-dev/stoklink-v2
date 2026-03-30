@@ -2,7 +2,7 @@
 process.env.TZ = 'America/Sao_Paulo'
 
 // Versão da aplicação - incrementar a cada deploy
-const APP_VERSION = '1.2.2'
+const APP_VERSION = '1.2.3'
 
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
@@ -94,7 +94,7 @@ app.register(pedidoDrpRoutes, { prefix: '/api' })
 
 // Health check
 app.get('/health', async () => {
-  return { status: 'ok', timestamp: new Date().toISOString() }
+  return { status: 'ok', version: APP_VERSION, timestamp: new Date().toISOString() }
 })
 
 // Servir frontend estático em produção

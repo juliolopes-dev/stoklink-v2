@@ -261,7 +261,10 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
   app.get('/notas-fiscais', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
       const filters = listFiltersSchema.parse(request.query)
-      const notasFiscais = await notaFiscalService.findAll(filters)
+      const notasFiscais = await notaFiscalService.findAll({
+        ...filters,
+        empresaId: request.user.empresaId
+      })
       return reply.send(notasFiscais)
     } catch (error) {
       if (error instanceof z.ZodError) {

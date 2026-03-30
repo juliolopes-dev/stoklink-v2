@@ -728,7 +728,11 @@ Campo codigo nos fornecedores, código de reserva nas NFs, modal de NFs por forn
 ---
 
 **Última Atualização**: 30/03/2026
-**Versão**: 2.2
+**Versão**: 2.3 (v1.2.3)
 **Status**: Em produção
-**Última Sessão (30/03/2026)**: Refinamento da lógica de status "Processo Finalizado". O label agora é dinâmico: só aparece se a nota estiver conferida (OK ou Divergência) E a mercadoria estiver desbloqueada (`mercadoriaBloqueada: false`). Caso contrário, exibe apenas "Conferido". Alteração aplicada globalmente (Listagem de NFs, Detalhes, Conferências e Fornecedores). Sincronização do backend (`fornecedorService`) para incluir o campo de bloqueio nos selects.
-**Próximos Passos**: Deploy das melhorias de performance (Fase 8), finalização das telas de Admin, e refatoração de dívidas técnicas (remover `any` e `console.log`).
+**Última Sessão (30/03/2026 - 15h)**: Correção da busca de notas fiscais (Busca Global), segurança multi-empresa e limpeza de logs.
+1.  **Busca Global de NFs**: O `findAll` agora ignora filtros de Status, Data e Filiais quando um `searchTerm` é fornecido, garantindo que o usuário encontre a nota pelo número independente do estado atual.
+2.  **Segurança Multi-empresa**: Corrigida falha onde o filtro de `empresaId` não estava sendo aplicado no listagem de NFs.
+3.  **Dívida Técnica**: Substituídos `console.log` por `logger` oficial nos serviços de NF, Webhook e Bezerra.
+4.  **Refinamento de Status (Session Anterior)**: Reforçada a lógica do label "Processo Finalizado" (Conferido + Desbloqueado).
+**Próximos Passos**: Monitorar feedback da busca, finalizar telas de Admin (Fase 11) e auditoria de exclusões.

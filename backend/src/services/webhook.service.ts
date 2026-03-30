@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { prisma } from '../lib/prisma.js'
+import { logger } from '../lib/logger.js'
 
 interface WebhookPayload {
   evento: string
@@ -24,41 +25,45 @@ class WebhookService {
   }
 
   private loadWebhookUrls() {
-    // Verificar se existem URLs únicas (prioridade)
-    // Suporta múltiplas URLs únicas: WEBHOOK_N8N_URL, WEBHOOK_N8N_URL_TESTE, WEBHOOK_N8N_URL_PRODUCAO
-    const urlUnicaKeys = ['WEBHOOK_N8N_URL', 'WEBHOOK_N8N_URL_TESTE', 'WEBHOOK_N8N_URL_PRODUCAO']
-    
-    urlUnicaKeys.forEach(key => {
-      const url = process.env[key]
-      if (url) {
-        this.webhookUrlsUnicas.push(url)
-      }
-    })
-    
-    if (this.webhookUrlsUnicas.length > 0) {
-      console.log(`✅ Webhook n8n configurado com ${this.webhookUrlsUnicas.length} URL(s) única(s)`)
-      this.webhookUrlsUnicas.forEach((url, index) => {
-        console.log(`   ${index + 1}. ${url}`)
+    try {
+      // Verificar se existem URLs únicas (prioridade)
+      // Suporta múltiplas URLs únicas: WEBHOOK_N8N_URL, WEBHOOK_N8N_URL_TESTE, WEBHOOK_N8N_URL_PRODUCAO
+      const urlUnicaKeys = ['WEBHOOK_N8N_URL', 'WEBHOOK_N8N_URL_TESTE', 'WEBHOOK_N8N_URL_PRODUCAO']
+      
+      urlUnicaKeys.forEach(key => {
+        const url = process.env[key]
+        if (url) {
+          this.webhookUrlsUnicas.push(url)
+        }
       })
-      return
-    }
-
-    // Carregar URLs individuais de webhooks das variáveis de ambiente
-    const webhookKeys = Object.keys(process.env).filter(key => 
-      key.startsWith('WEBHOOK_N8N_') && 
-      !urlUnicaKeys.includes(key)
-    )
-    
-    webhookKeys.forEach(key => {
-      const eventName = key.replace('WEBHOOK_N8N_', '').toLowerCase()
-      const url = process.env[key]
-      if (url) {
-        this.webhookUrls.set(eventName, url)
+      
+      if (this.webhookUrlsUnicas.length > 0) {
+        logger.success(`Webhook n8n configurado com ${this.webhookUrlsUnicas.length} URL(s) única(s)`)
+        this.webhookUrlsUnicas.forEach((url, index) => {
+          logger.info(`   ${index + 1}. ${url}`)
+        })
+        return
       }
-    })
 
-    if (this.webhookUrls.size > 0) {
-      console.log(`✅ Webhook n8n configurado com ${this.webhookUrls.size} URLs individuais`)
+      // Carregar URLs individuais de webhooks das variáveis de ambiente
+      const webhookKeys = Object.keys(process.env).filter(key => 
+        key.startsWith('WEBHOOK_N8N_') && 
+        !urlUnicaKeys.includes(key)
+      )
+      
+      webhookKeys.forEach(key => {
+        const eventName = key.replace('WEBHOOK_N8N_', '').toLowerCase()
+        const url = process.env[key]
+        if (url) {
+          this.webhookUrls.set(eventName, url)
+        }
+      })
+
+      if (this.webhookUrls.size > 0) {
+        logger.success(`Webhook n8n configurado com ${this.webhookUrls.size} URLs individuais`)
+      }
+    } catch (error) {
+      logger.error('Erro ao inicializar URLs do webhook:', error)
     }
   }
 
@@ -70,7 +75,7 @@ class WebhookService {
       })
       return usuario || undefined
     } catch (error) {
-      console.error('Erro ao buscar usuário para webhook:', error)
+      logger.error('Erro ao buscar usuário para webhook:', error)
       return undefined
     }
   }
@@ -117,7 +122,7 @@ class WebhookService {
       })
       return nf
     } catch (error) {
-      console.error('Erro ao buscar dados da nota fiscal para webhook:', error)
+      logger.error('Erro ao buscar dados da nota fiscal para webhook:', error)
       return null
     }
   }
@@ -181,10 +186,10 @@ class WebhookService {
             },
             timeout: 5000 // 5 segundos timeout
           })
-          console.log(`✅ Webhook ${index + 1} enviado com sucesso: ${evento}`)
+          logger.success(`Webhook ${index + 1} enviado com sucesso: ${evento}`)
         } catch (error) {
           // Não bloquear a aplicação se webhook falhar
-          console.error(`❌ Erro ao enviar webhook ${index + 1} para ${evento}:`, error instanceof Error ? error.message : error)
+          logger.error(`Erro ao enviar webhook ${index + 1} para ${evento}:`, error)
         }
       })
 

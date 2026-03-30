@@ -2,6 +2,7 @@ import { prisma } from '../lib/prisma.js'
 import { XmlParserService } from './xml-parser.service.js'
 import { fornecedorService } from './fornecedor.service.js'
 import { webhookService } from './webhook.service.js'
+import { logger } from '../lib/logger.js'
 
 type StatusNotaFiscal = 'PENDENTE_TRANSFERENCIA' | 'VOLUMES_CONFERIDOS' | 'VOLUMES_DIVERGENTES' | 'AGUARDANDO_CONFERENCIA_DESTINO' | 'EM_CONFERENCIA' | 'CONFERIDO_OK' | 'CONFERIDO_DIVERGENCIA' | 'BLOQUEADO' | 'SEPARACAO_FINALIZADA'
 type TipoMovimentacao = 'NORMAL' | 'DISTRIBUICAO_IMEDIATA'
@@ -44,6 +45,7 @@ interface CreateNotaFiscalInput {
 }
 
 interface ListNotasFiscaisFilters {
+  empresaId?: string
   status?: StatusNotaFiscal
   filialRecebimentoId?: string
   filialDestinoId?: string
@@ -251,19 +253,21 @@ export class NotaFiscalService {
   }
 
   async findAll(filters?: ListNotasFiscaisFilters): Promise<PaginatedResult<any>> {
-    const where: Record<string, unknown> = {}
+    const where: Record<string, any> = {
+      empresaId: filters?.empresaId
+    }
     const page = filters?.page || 1
     const limit = filters?.limit || 50
     const skip = (page - 1) * limit
 
-    if (filters?.status) {
-      where.status = filters.status
-    }
-
-    // Se houver searchTerm (busca por número), ignorar filtros de filial
     const hasSearchTerm = filters?.searchTerm && filters.searchTerm.trim().length > 0
 
+    // Se houver searchTerm, ignorar os outros filtros para busca global
     if (!hasSearchTerm) {
+      if (filters?.status) {
+        where.status = filters.status
+      }
+
       if (filters?.filialRecebimentoId) {
         where.filialRecebimentoId = filters.filialRecebimentoId
       }
@@ -271,37 +275,37 @@ export class NotaFiscalService {
       if (filters?.filialDestinoId) {
         where.filialDestinoId = filters.filialDestinoId
       }
-    }
 
-    // Filtro por data de recebimento (range)
-    if (filters?.dataInicio || filters?.dataFim) {
-      where.dataRecebimento = {}
-      if (filters.dataInicio) {
-        (where.dataRecebimento as Record<string, Date>).gte = filters.dataInicio
+      // Filtro por data de recebimento (range)
+      if (filters?.dataInicio || filters?.dataFim) {
+        where.dataRecebimento = {}
+        if (filters.dataInicio) {
+          (where.dataRecebimento as Record<string, Date>).gte = filters.dataInicio
+        }
+        if (filters.dataFim) {
+          (where.dataRecebimento as Record<string, Date>).lte = filters.dataFim
+        }
       }
-      if (filters.dataFim) {
-        (where.dataRecebimento as Record<string, Date>).lte = filters.dataFim
+
+      // Filtro por data de emissão (dia específico)
+      if (filters?.dataEmissao) {
+        const dataInicio = new Date(filters.dataEmissao + 'T00:00:00.000Z')
+        const dataFim = new Date(filters.dataEmissao + 'T23:59:59.999Z')
+        where.dataEmissao = {
+          gte: dataInicio,
+          lte: dataFim
+        }
       }
-    }
 
-    // Filtro por data de emissão (dia específico)
-    if (filters?.dataEmissao) {
-      const dataInicio = new Date(filters.dataEmissao + 'T00:00:00.000Z')
-      const dataFim = new Date(filters.dataEmissao + 'T23:59:59.999Z')
-      where.dataEmissao = {
-        gte: dataInicio,
-        lte: dataFim
+      // Filtro por entrada RP
+      if (filters?.entradaRp !== undefined) {
+        where.entradaRp = filters.entradaRp
       }
-    }
 
-    // Filtro por entrada RP
-    if (filters?.entradaRp !== undefined) {
-      where.entradaRp = filters.entradaRp
-    }
-
-    // Filtro por mercadoria bloqueada
-    if (filters?.mercadoriaBloqueada !== undefined) {
-      where.mercadoriaBloqueada = filters.mercadoriaBloqueada
+      // Filtro por mercadoria bloqueada
+      if (filters?.mercadoriaBloqueada !== undefined) {
+        where.mercadoriaBloqueada = filters.mercadoriaBloqueada
+      }
     }
 
     // Busca por número ou fornecedor (primário e secundário)
@@ -425,7 +429,7 @@ export class NotaFiscalService {
   }
 
   async update(id: string, data: Record<string, unknown>) {
-    console.log(' [UPDATE NF] Dados recebidos:', JSON.stringify(data, null, 2))
+    logger.info('[UPDATE NF] Dados recebidos:', data)
 
     const notaFiscal = await prisma.notaFiscal.findUnique({
       where: { id },
@@ -436,38 +440,35 @@ export class NotaFiscalService {
       throw new Error('Nota fiscal não encontrada')
     }
 
-    console.log(` [UPDATE NF] NF ${notaFiscal.numero} tem ${notaFiscal.conferenciasVolumes.length} conferências`)
+    logger.info(`[UPDATE NF] NF ${notaFiscal.numero} tem ${notaFiscal.conferenciasVolumes.length} conferências`)
 
     // Se transportadora foi enviada, atualizar na primeira conferência de volumes (recebimento)
     if (data.transportadora !== undefined) {
       const transportadora = data.transportadora as string | null
-      console.log(` [UPDATE NF] Transportadora recebida: "${transportadora}"`)
+      logger.info(`[UPDATE NF] Transportadora recebida: "${transportadora}"`)
       delete data.transportadora
 
-      if (notaFiscal.conferenciasVolumes.length > 0) {
-        const conferenciaId = notaFiscal.conferenciasVolumes[0].id
-        console.log(` [UPDATE NF] Atualizando conferência ${conferenciaId} com transportadora: "${transportadora}"`)
-        console.log(`✅ [UPDATE NF] Atualizando conferência ${conferenciaId} com transportadora: "${transportadora}"`)
-
+      const conferenciaId = notaFiscal.conferenciasVolumes[0]?.id
+      if (conferenciaId) {
+        logger.success(`[UPDATE NF] Atualizando conferência ${conferenciaId} com transportadora: "${transportadora}"`)
         const updated = await prisma.conferenciaVolume.update({
           where: { id: conferenciaId },
           data: { transportadora } as any
         })
-
-        console.log(`✅ [UPDATE NF] Conferência atualizada:`, JSON.stringify(updated, null, 2))
+        logger.success(`[UPDATE NF] Conferência atualizada:`, updated)
       } else {
-        console.log('⚠️ [UPDATE NF] Nenhuma conferência encontrada - transportadora não será salva')
+        logger.warn('[UPDATE NF] Nenhuma conferência encontrada - transportadora não será salva')
       }
     }
 
     // Se a quantidade de volumes foi enviada, precisamos atualizar todas as conferências existentes
     if (data.quantidadeVolumes !== undefined) {
       const novaQtdVolumes = data.quantidadeVolumes as number
-      console.log(` [UPDATE NF] Quantidade de volumes alterada para: ${novaQtdVolumes}`)
+      logger.info(`[UPDATE NF] Quantidade de volumes alterada para: ${novaQtdVolumes}`)
 
       for (const conf of notaFiscal.conferenciasVolumes) {
         const batendo = conf.volumesRecebidos === novaQtdVolumes
-        console.log(` [UPDATE NF] Atualizando batimento da conferência ${conf.id}: ${conf.volumesRecebidos} vs ${novaQtdVolumes} -> ${batendo}`)
+        logger.info(`[UPDATE NF] Atualizando batimento da conferência ${conf.id}: ${conf.volumesRecebidos} vs ${novaQtdVolumes} -> ${batendo}`)
 
         await prisma.conferenciaVolume.update({
           where: { id: conf.id },

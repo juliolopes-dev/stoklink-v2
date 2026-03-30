@@ -1,5 +1,5 @@
 {
-    "version": "1.2.2",
-    "timestamp": 1774878640000,
-    "message": "Refinamento nas condicionais do badge de status 'Processo Finalizado'."
+  "version": "1.2.3",
+  "timestamp": "2026-03-30T14:30:00Z",
+  "message": "v1.2.3: Correção na busca de notas fiscais (Busca Global), segurança multi-empresa e limpeza de logs internos."
 }
