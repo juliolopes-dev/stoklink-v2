@@ -19,6 +19,7 @@ interface NotaFiscal {
   numero: string
   fornecedorNome: string
   status: string
+  mercadoriaBloqueada: boolean
   itens: Item[]
 }
 
@@ -123,7 +124,7 @@ export function ConferenciaItens() {
           <h1 className="text-sm font-semibold text-gray-800">Conferência de Itens</h1>
           <p className="text-xs text-gray-500">NF {nota.numero} - {nota.fornecedorNome}</p>
         </div>
-        <StatusBadge status={nota.status} />
+        <StatusBadge status={nota.status} mercadoriaBloqueada={nota.mercadoriaBloqueada} />
       </div>
 
       {error && (

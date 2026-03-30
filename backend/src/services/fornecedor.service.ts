@@ -56,7 +56,8 @@ export const fornecedorService = {
             numeroSecundario: true,
             dataRecebimento: true,
             status: true,
-            valorTotal: true
+            valorTotal: true,
+            mercadoriaBloqueada: true
           }
         },
         notasFiscaisSecundario: {
@@ -67,7 +68,8 @@ export const fornecedorService = {
             numeroSecundario: true,
             dataRecebimento: true,
             status: true,
-            valorTotal: true
+            valorTotal: true,
+            mercadoriaBloqueada: true
           }
         },
         _count: {

@@ -11,6 +11,7 @@ interface NotaFiscal {
   dataRecebimento: string
   quantidadeVolumes: number
   status: string
+  mercadoriaBloqueada: boolean
   filialRecebimentoId: string | null
   filialDestinoId: string
   filialRecebimento: {
@@ -130,7 +131,7 @@ export function Conferencias() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="text-sm font-semibold text-gray-800">NF {nf.numero}</h3>
-                    <StatusBadge status={nf.status} />
+                    <StatusBadge status={nf.status} mercadoriaBloqueada={nf.mercadoriaBloqueada} />
                   </div>
                   <p className="text-xs text-gray-600 mb-1">{nf.fornecedorNome}</p>
                   <p className="text-xs text-gray-500">

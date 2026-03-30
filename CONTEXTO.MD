@@ -134,6 +134,7 @@ stoklink_v2/
 - [x] Bloqueio/liberação de mercadoria
 - [x] Código de Reserva (2 últimos dígitos do fornecedor + número NF)
 - [x] Exibição de código de reserva quando status = CONFERIDO_OK
+- [x] Lógica dinâmica de status "Processo Finalizado" (exibido apenas se conferido E mercadoria desbloqueada)
 
 ### ✅ Conferência de Volumes
 - [x] Conferência de volumes recebidos
@@ -723,8 +724,11 @@ React Query, paginação, filtros no backend, debounce, permissões admin, webho
 ### Fase 9 - Códigos de Fornecedores e Código de Reserva (Completa)
 Campo codigo nos fornecedores, código de reserva nas NFs, modal de NFs por fornecedor, limpeza de duplicados, identificação de NFs secundárias.
 
+
 ---
 
-**Última Atualização**: 26/01/2026
-**Versão**: 2.1
+**Última Atualização**: 30/03/2026
+**Versão**: 2.2
 **Status**: Em produção
+**Última Sessão (30/03/2026)**: Refinamento da lógica de status "Processo Finalizado". O label agora é dinâmico: só aparece se a nota estiver conferida (OK ou Divergência) E a mercadoria estiver desbloqueada (`mercadoriaBloqueada: false`). Caso contrário, exibe apenas "Conferido". Alteração aplicada globalmente (Listagem de NFs, Detalhes, Conferências e Fornecedores). Sincronização do backend (`fornecedorService`) para incluir o campo de bloqueio nos selects.
+**Próximos Passos**: Deploy das melhorias de performance (Fase 8), finalização das telas de Admin, e refatoração de dívidas técnicas (remover `any` e `console.log`).

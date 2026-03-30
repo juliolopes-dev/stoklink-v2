@@ -767,13 +767,17 @@ export function NotaFiscalDetalhes() {
             )}
             {nota.status === 'SEPARACAO_FINALIZADA' ? (
               <div className="flex flex-col gap-1">
-                <StatusBadge status="CONFERIDO_OK" />
+                <StatusBadge 
+                  status="CONFERIDO_OK" 
+                  mercadoriaBloqueada={nota.mercadoriaBloqueada}
+                />
                 <StatusBadge status="SEPARACAO_FINALIZADA" />
               </div>
             ) : (
               <StatusBadge
                 status={nota.status}
                 filialRecebimento={nota.filialRecebimento?.nome}
+                mercadoriaBloqueada={nota.mercadoriaBloqueada}
               />
             )}
           </div>

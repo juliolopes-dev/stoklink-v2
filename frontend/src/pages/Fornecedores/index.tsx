@@ -537,7 +537,7 @@ export function Fornecedores() {
                             }).format(nf.valorTotal)}
                           </span>
                         )}
-                        <StatusBadge status={nf.status} />
+                        <StatusBadge status={nf.status} mercadoriaBloqueada={nf.mercadoriaBloqueada} />
                       </div>
                     </div>
                   ))}

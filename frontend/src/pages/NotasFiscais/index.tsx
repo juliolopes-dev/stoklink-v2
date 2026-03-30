@@ -350,6 +350,7 @@ export function NotasFiscais() {
                           <StatusBadge 
                             status="CONFERIDO_OK" 
                             filialRecebimento={nf.filialRecebimento?.nome}
+                            mercadoriaBloqueada={nf.mercadoriaBloqueada}
                           />
                           <StatusBadge 
                             status="SEPARACAO_FINALIZADA" 
@@ -359,6 +360,7 @@ export function NotasFiscais() {
                         <StatusBadge 
                           status={nf.status} 
                           filialRecebimento={nf.filialRecebimento?.nome}
+                          mercadoriaBloqueada={nf.mercadoriaBloqueada}
                         />
                       )}
                     </td>

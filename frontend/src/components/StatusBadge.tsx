@@ -4,6 +4,7 @@ interface StatusBadgeProps {
   status: string
   tooltip?: string
   filialRecebimento?: string | null
+  mercadoriaBloqueada?: boolean
 }
 
 const statusConfig: Record<string, { label: string; color: string; defaultTooltip?: string }> = {
@@ -33,9 +34,9 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
     defaultTooltip: 'Conferência de itens em andamento'
   },
   CONFERIDO_OK: {
-    label: 'Processo Finalizado',
+    label: 'Conferido',
     color: 'bg-success-100 text-success-700',
-    defaultTooltip: 'Conferência concluída - Processo finalizado'
+    defaultTooltip: 'Conferência concluída'
   },
   CONFERIDO_DIVERGENCIA: {
     label: 'Conferido c/ Divergência',
@@ -54,10 +55,17 @@ const statusConfig: Record<string, { label: string; color: string; defaultToolti
   }
 }
 
-export function StatusBadge({ status, tooltip, filialRecebimento }: StatusBadgeProps) {
-  const config = statusConfig[status] || {
+export function StatusBadge({ status, tooltip, filialRecebimento, mercadoriaBloqueada }: StatusBadgeProps) {
+  const config = { ...(statusConfig[status] || {
     label: status,
     color: 'bg-gray-100 text-gray-800'
+  }) }
+
+  // Lógica para "Processo Finalizado" sugerida pelo Julio
+  // Só aparece se estiver conferido e LIBERADO
+  if ((status === 'CONFERIDO_OK' || status === 'CONFERIDO_DIVERGENCIA') && mercadoriaBloqueada === false) {
+    config.label = 'Processo Finalizado'
+    config.color = 'bg-success-100 text-success-700'
   }
 
   let tooltipText = tooltip || config.defaultTooltip
