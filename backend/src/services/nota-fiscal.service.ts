@@ -378,6 +378,119 @@ export class NotaFiscalService {
     }
   }
 
+  async exportarExcel(filters?: ListNotasFiscaisFilters): Promise<Buffer> {
+    const ExcelJS = (await import('exceljs')).default
+    const LIMITE_LINHAS = 10000
+
+    const where: Record<string, any> = {
+      empresaId: filters?.empresaId
+    }
+    const hasSearchTerm = filters?.searchTerm && filters.searchTerm.trim().length > 0
+
+    if (!hasSearchTerm) {
+      if (filters?.status) where.status = filters.status
+      if (filters?.filialRecebimentoId) where.filialRecebimentoId = filters.filialRecebimentoId
+      if (filters?.filialDestinoId) where.filialDestinoId = filters.filialDestinoId
+
+      if (filters?.dataInicio || filters?.dataFim) {
+        where.dataRecebimento = {}
+        if (filters.dataInicio) (where.dataRecebimento as Record<string, Date>).gte = filters.dataInicio
+        if (filters.dataFim) (where.dataRecebimento as Record<string, Date>).lte = filters.dataFim
+      }
+
+      if (filters?.dataEmissao) {
+        const dataInicio = new Date(filters.dataEmissao + 'T00:00:00.000Z')
+        const dataFim = new Date(filters.dataEmissao + 'T23:59:59.999Z')
+        where.dataEmissao = { gte: dataInicio, lte: dataFim }
+      }
+
+      if (filters?.entradaRp !== undefined) where.entradaRp = filters.entradaRp
+      if (filters?.mercadoriaBloqueada !== undefined) where.mercadoriaBloqueada = filters.mercadoriaBloqueada
+    }
+
+    if (hasSearchTerm) {
+      const search = filters!.searchTerm!.trim()
+      where.OR = [
+        { numero: { contains: search, mode: 'insensitive' } },
+        { numeroSecundario: { contains: search, mode: 'insensitive' } },
+        { fornecedorNome: { contains: search, mode: 'insensitive' } },
+        { fornecedor: { nome: { contains: search, mode: 'insensitive' } } },
+        { fornecedorSecundario: { nome: { contains: search, mode: 'insensitive' } } }
+      ]
+    }
+
+    const total = await prisma.notaFiscal.count({ where })
+    if (total > LIMITE_LINHAS) {
+      throw new Error(`O relatório excede o limite de ${LIMITE_LINHAS.toLocaleString('pt-BR')} linhas (${total.toLocaleString('pt-BR')} encontradas). Refine os filtros.`)
+    }
+
+    const notas = await prisma.notaFiscal.findMany({
+      where,
+      include: {
+        filialRecebimento: { select: { nome: true } },
+        fornecedorSecundario: { select: { nome: true } }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: LIMITE_LINHAS
+    })
+
+    const statusLabels: Record<string, string> = {
+      PENDENTE_TRANSFERENCIA: 'Em Trânsito',
+      AGUARDANDO_CONFERENCIA_DESTINO: 'Aguard. Destino',
+      VOLUMES_CONFERIDOS: 'Volumes Conferidos',
+      VOLUMES_DIVERGENTES: 'Divergência em Volumes',
+      EM_CONFERENCIA: 'Em Conferência',
+      CONFERIDO_OK: 'Processo Finalizado',
+      CONFERIDO_DIVERGENCIA: 'Conferido c/ Divergência',
+      BLOQUEADO: 'Bloqueado',
+      SEPARACAO_FINALIZADA: 'Separação Finalizada'
+    }
+
+    const workbook = new ExcelJS.Workbook()
+    const sheet = workbook.addWorksheet('Notas Fiscais')
+
+    sheet.columns = [
+      { header: 'NF Primária', key: 'numero', width: 15 },
+      { header: 'NF Secundária', key: 'numeroSecundario', width: 15 },
+      { header: 'Fornecedor', key: 'fornecedor', width: 40 },
+      { header: 'Fornecedor Secundário', key: 'fornecedorSecundario', width: 40 },
+      { header: 'Data Emissão', key: 'dataEmissao', width: 18 },
+      { header: 'Filial Recebimento', key: 'filialRecebimento', width: 20 },
+      { header: 'Status', key: 'status', width: 22 }
+    ]
+
+    sheet.getRow(1).font = { bold: true }
+    sheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE5E7EB' }
+    }
+    sheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'left' }
+
+    notas.forEach((nf: any) => {
+      const statusBase = statusLabels[nf.status] || nf.status
+      // Aplica regra "Processo Finalizado" só se conferido + liberado (igual o StatusBadge)
+      const statusFinal = (
+        (nf.status === 'CONFERIDO_OK' || nf.status === 'CONFERIDO_DIVERGENCIA') && nf.mercadoriaBloqueada === false
+      ) ? 'Processo Finalizado' : statusBase
+
+      sheet.addRow({
+        numero: nf.numero,
+        numeroSecundario: nf.numeroSecundario || '',
+        fornecedor: nf.fornecedorNome,
+        fornecedorSecundario: nf.fornecedorSecundario?.nome || '',
+        dataEmissao: nf.dataEmissao ? new Date(nf.dataEmissao) : '',
+        filialRecebimento: nf.filialRecebimento?.nome || '',
+        status: statusFinal
+      })
+    })
+
+    sheet.getColumn('dataEmissao').numFmt = 'dd/mm/yyyy hh:mm'
+
+    const buffer = await workbook.xlsx.writeBuffer()
+    return Buffer.from(buffer)
+  }
+
   async findById(id: string) {
     const notaFiscal = await prisma.notaFiscal.findUnique({
       where: { id },

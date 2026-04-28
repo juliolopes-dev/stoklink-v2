@@ -58,7 +58,7 @@ app.addHook('onSend', (request, reply, payload, done) => {
 app.addHook('onResponse', (request, reply, done) => {
   const responseTime = reply.elapsedTime
   const userId = (request.user as { id?: string })?.id
-  
+
   // Não logar requisições de arquivos estáticos
   if (!request.url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
     logger.request(
@@ -100,7 +100,7 @@ app.get('/health', async () => {
 // Servir frontend estático em produção
 if (env.NODE_ENV === 'production') {
   const publicPath = path.join(process.cwd(), 'public')
-  
+
   app.register(fastifyStatic, {
     root: publicPath,
     prefix: '/'

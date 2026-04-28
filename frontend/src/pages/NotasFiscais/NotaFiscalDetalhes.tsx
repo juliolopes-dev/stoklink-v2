@@ -149,6 +149,11 @@ export function NotaFiscalDetalhes() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [fornecedores, setFornecedores] = useState<FornecedorOption[]>([])
   const [editForm, setEditForm] = useState({
+    numero: '',
+    fornecedorId: '',
+    fornecedorNome: '',
+    dataEmissao: '',
+    dataRecebimento: '',
     numeroSecundario: '',
     fornecedorSecundarioId: '',
     filialRecebimentoId: '',
@@ -435,7 +440,18 @@ export function NotaFiscalDetalhes() {
       const primeiraConferencia = nota?.conferenciasVolumes?.[0]
       const transportadoraAtual = primeiraConferencia?.transportadora || ''
 
+      // Formatar datas para input datetime-local (YYYY-MM-DDTHH:mm)
+      const toDatetimeLocal = (iso: string | null) => {
+        if (!iso) return ''
+        return new Date(iso).toISOString().slice(0, 16)
+      }
+
       setEditForm({
+        numero: nota?.numero || '',
+        fornecedorId: nota?.fornecedor?.id || '',
+        fornecedorNome: nota?.fornecedorNome || '',
+        dataEmissao: toDatetimeLocal(nota?.dataEmissao || null),
+        dataRecebimento: toDatetimeLocal(nota?.dataRecebimento || null),
         numeroSecundario: nota?.numeroSecundario || '',
         fornecedorSecundarioId: nota?.fornecedorSecundario?.id || '',
         filialRecebimentoId: nota?.filialRecebimento?.id || '',
@@ -456,6 +472,11 @@ export function NotaFiscalDetalhes() {
     setSaving(true)
     try {
       const payload = {
+        numero: editForm.numero || null,
+        fornecedorId: editForm.fornecedorId || null,
+        fornecedorNome: editForm.fornecedorNome || null,
+        dataEmissao: editForm.dataEmissao || null,
+        dataRecebimento: editForm.dataRecebimento || null,
         numeroSecundario: editForm.numeroSecundario || null,
         fornecedorSecundarioId: editForm.fornecedorSecundarioId || null,
         filialRecebimentoId: editForm.filialRecebimentoId || null,
@@ -1467,13 +1488,61 @@ export function NotaFiscalDetalhes() {
             </div>
 
             <div className="p-4 space-y-3 max-h-[70vh] overflow-y-auto">
+
+              {/* Número da NF */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Número da NF</label>
+                  <input
+                    type="text"
+                    value={editForm.numero}
+                    onChange={(e) => setEditForm({ ...editForm, numero: e.target.value })}
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Data de Emissão</label>
+                  <input
+                    type="datetime-local"
+                    value={editForm.dataEmissao}
+                    onChange={(e) => setEditForm({ ...editForm, dataEmissao: e.target.value })}
+                    className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Fornecedor Principal */}
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">
-                  Fornecedor Principal
-                </label>
-                <p className="px-3 py-1.5 bg-gray-100 rounded-lg text-gray-600 text-sm">
-                  {nota.fornecedorNome}
-                </p>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Fornecedor Principal</label>
+                <select
+                  value={editForm.fornecedorId}
+                  onChange={(e) => {
+                    const fornecedor = fornecedores.find(f => f.id === e.target.value)
+                    setEditForm({
+                      ...editForm,
+                      fornecedorId: e.target.value,
+                      fornecedorNome: fornecedor?.nome || editForm.fornecedorNome
+                    })
+                  }}
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                >
+                  <option value="">Manter atual: {nota.fornecedorNome}</option>
+                  {fornecedores.map(f => (
+                    <option key={f.id} value={f.id}>{f.nome} {f.cnpj ? `(${f.cnpj})` : ''}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Data de Recebimento */}
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Data de Recebimento</label>
+                <input
+                  type="datetime-local"
+                  value={editForm.dataRecebimento}
+                  onChange={(e) => setEditForm({ ...editForm, dataRecebimento: e.target.value })}
+                  className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                />
+                <p className="text-[10px] text-gray-400 mt-0.5">Deixe em branco para manter a data atual</p>
               </div>
 
               <div>

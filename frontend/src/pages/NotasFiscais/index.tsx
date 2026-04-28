@@ -1,21 +1,22 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { FiPlus, FiEye, FiFilter, FiSearch, FiPackage, FiRefreshCw, FiCalendar, FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { FiPlus, FiEye, FiFilter, FiSearch, FiPackage, FiRefreshCw, FiCalendar, FiChevronLeft, FiChevronRight, FiDownload } from 'react-icons/fi'
 import { api } from '../../services/api'
 import { StatusBadge } from '../../components/StatusBadge'
 import { Tooltip } from '../../components/Tooltip'
 import { useToast } from '../../contexts/ToastContext'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNotasFiscais } from '../../hooks/useNotasFiscais'
+import { ModalRelatorioNF } from './ModalRelatorioNF'
 
 const statusOptions = [
   { value: '', label: 'Todos os status' },
   { value: 'PENDENTE_TRANSFERENCIA', label: 'Em Trânsito' },
-  { value: 'CONFERIDO_DIVERGENCIA', label: 'Conferido c/ Divergência' },
+  { value: 'AGUARDANDO_CONFERENCIA_DESTINO', label: 'Aguard. Destino' },
   { value: 'VOLUMES_CONFERIDOS', label: 'Volumes Conferidos' },
   { value: 'CONFERIDO_OK', label: 'Processo Finalizado' },
+  { value: 'CONFERIDO_DIVERGENCIA', label: 'Conferido c/ Divergência' },
   { value: 'SEPARACAO_FINALIZADA', label: 'Separação Finalizada' },
-  { value: 'AGUARDANDO_CONFERENCIA_DESTINO', label: 'Aguard. Destino' },
 ]
 
 export function NotasFiscais() {
@@ -23,6 +24,7 @@ export function NotasFiscais() {
   const [rpFilter, setRpFilter] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [updating, setUpdating] = useState(false)
+  const [modalRelatorio, setModalRelatorio] = useState(false)
   const [dataFiltro, setDataFiltro] = useState('')
   const [bloqueadaFilter, setBloqueadaFilter] = useState('')
   const [filialDestinoFilter, setFilialDestinoFilter] = useState('')
@@ -108,10 +110,18 @@ export function NotasFiscais() {
               <button
                 onClick={() => refetch()}
                 disabled={isFetching}
-                className="h-7 flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 rounded-md transition-colors text-xs disabled:opacity-50"
+                className="h-7 flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 rounded-md transition-colors text-xs disabled:opacity-50 cursor-pointer"
                 title="Atualizar lista"
               >
                 <FiRefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />
+              </button>
+              <button
+                onClick={() => setModalRelatorio(true)}
+                className="h-7 flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 rounded-md transition-colors text-xs font-medium cursor-pointer"
+                title="Exportar relatório para Excel"
+              >
+                <FiDownload size={14} />
+                Exportar
               </button>
               <Link
                 to="/notas-fiscais/nova"
@@ -170,18 +180,28 @@ export function NotasFiscais() {
                   </button>
                 )}
               </div>
-              <select
-                value={filialDestinoFilter}
-                onChange={(e) => setFilialDestinoFilter(e.target.value)}
-                className="h-7 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs"
-              >
-                <option value="">Todas as Filiais</option>
-                {filiais.map(filial => (
-                  <option key={filial.id} value={filial.id}>
-                    {filial.nome}
-                  </option>
-                ))}
-              </select>
+              {(() => {
+                const filialSelect = (
+                  <select
+                    value={filialDestinoFilter}
+                    onChange={(e) => setFilialDestinoFilter(e.target.value)}
+                    disabled={!!searchTerm}
+                    className="h-7 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50"
+                  >
+                    <option value="">Todas as Filiais</option>
+                    {filiais.map(filial => (
+                      <option key={filial.id} value={filial.id}>
+                        {filial.nome}
+                      </option>
+                    ))}
+                  </select>
+                )
+                return searchTerm ? (
+                  <Tooltip content="Filtro de filial ignorado durante busca por número/fornecedor">
+                    {filialSelect}
+                  </Tooltip>
+                ) : filialSelect
+              })()}
               <select
                 value={rpFilter}
                 onChange={(e) => setRpFilter(e.target.value)}
@@ -196,7 +216,7 @@ export function NotasFiscais() {
                 onChange={(e) => setBloqueadaFilter(e.target.value)}
                 className="h-7 border border-gray-300 rounded-md px-2 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-xs"
               >
-                <option value="">Bloqueio</option>
+                <option value="">Todos</option>
                 <option value="SIM">Bloqueada</option>
                 <option value="NAO">Liberada</option>
               </select>
@@ -246,9 +266,6 @@ export function NotasFiscais() {
                   </th>
                   <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Status
-                  </th>
-                  <th className="px-2 py-1 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">
-                    Cód. Reserva
                   </th>
                   <th className="px-2 py-1 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-[10%]">
                     Ações
@@ -364,13 +381,6 @@ export function NotasFiscais() {
                         />
                       )}
                     </td>
-                    <td className="px-2 py-1">
-                      {(nf.status === 'CONFERIDO_OK' || nf.status === 'SEPARACAO_FINALIZADA') && nf.fornecedor?.codigo && (
-                        <span className="text-xs font-medium text-blue-600">
-                          {nf.fornecedor.codigo.slice(-2)}{nf.numeroSecundario || nf.numero}
-                        </span>
-                      )}
-                    </td>
                     <td className="px-2 py-1 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         {nf.auditoriaRealizada && (
@@ -462,6 +472,13 @@ export function NotasFiscais() {
           </div>
         )}
       </div>
+
+      {modalRelatorio && (
+        <ModalRelatorioNF
+          filiais={filiais}
+          onFechar={() => setModalRelatorio(false)}
+        />
+      )}
     </div>
   )
 }

@@ -274,6 +274,46 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
     }
   })
 
+  // Exportar para Excel (mesmos filtros da listagem, sem paginação, limite 10k)
+  app.get('/notas-fiscais/exportar', { preHandler: [authMiddleware] }, async (request, reply) => {
+    try {
+      const exportSchema = z.object({
+        status: z.enum([
+          'PENDENTE_TRANSFERENCIA', 'VOLUMES_CONFERIDOS', 'VOLUMES_DIVERGENTES',
+          'AGUARDANDO_CONFERENCIA_DESTINO', 'EM_CONFERENCIA', 'CONFERIDO_OK',
+          'CONFERIDO_DIVERGENCIA', 'BLOQUEADO', 'SEPARACAO_FINALIZADA'
+        ]).optional(),
+        filialRecebimentoId: z.string().uuid().optional(),
+        filialDestinoId: z.string().uuid().optional(),
+        dataInicio: z.coerce.date().optional(),
+        dataFim: z.coerce.date().optional(),
+        dataEmissao: z.string().optional(),
+        searchTerm: z.string().optional(),
+        entradaRp: z.enum(['true', 'false']).transform(v => v === 'true').optional(),
+        mercadoriaBloqueada: z.enum(['true', 'false']).transform(v => v === 'true').optional()
+      })
+      const filters = exportSchema.parse(request.query)
+
+      const buffer = await notaFiscalService.exportarExcel({
+        ...filters,
+        empresaId: request.user.empresaId
+      })
+
+      const dataAtual = new Date().toISOString().slice(0, 10)
+      reply.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+      reply.header('Content-Disposition', `attachment; filename="notas-fiscais-${dataAtual}.xlsx"`)
+      return reply.send(buffer)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return reply.status(400).send({ error: error.errors })
+      }
+      if (error instanceof Error) {
+        return reply.status(400).send({ error: error.message })
+      }
+      return reply.status(500).send({ error: 'Erro ao exportar notas fiscais' })
+    }
+  })
+
   // Buscar por ID
   app.get('/notas-fiscais/:id', { preHandler: [authMiddleware] }, async (request, reply) => {
     try {
@@ -299,6 +339,8 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       const bodySchema = z.object({
         numero: z.string().optional().nullable(),
         numeroSecundario: z.string().optional().nullable(),
+        fornecedorId: z.string().uuid().optional().nullable(),
+        fornecedorNome: z.string().optional().nullable(),
         fornecedorSecundarioId: z.string().uuid().optional().nullable(),
         filialRecebimentoId: z.string().uuid().optional().nullable(),
         filialDestinoId: z.string().uuid().optional().nullable(),
@@ -306,7 +348,9 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
         transportadora: z.string().optional().nullable(),
         quantidadeVolumes: z.coerce.number().int().positive().optional().nullable(),
         observacoes: z.string().optional().nullable(),
-        entradaRp: z.boolean().optional().nullable()
+        entradaRp: z.boolean().optional().nullable(),
+        dataEmissao: z.coerce.date().optional().nullable(),
+        dataRecebimento: z.coerce.date().optional().nullable()
       })
 
       const body = bodySchema.parse(request.body)
@@ -316,6 +360,8 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
 
       if (body.numero !== undefined) data.numero = body.numero || null
       if (body.numeroSecundario !== undefined) data.numeroSecundario = body.numeroSecundario || null
+      if (body.fornecedorId !== undefined) data.fornecedorId = body.fornecedorId
+      if (body.fornecedorNome !== undefined) data.fornecedorNome = body.fornecedorNome || null
       if (body.fornecedorSecundarioId !== undefined) data.fornecedorSecundarioId = body.fornecedorSecundarioId
       if (body.filialRecebimentoId !== undefined) data.filialRecebimentoId = body.filialRecebimentoId
       if (body.filialDestinoId !== undefined) data.filialDestinoId = body.filialDestinoId
@@ -324,6 +370,8 @@ export async function notaFiscalRoutes(app: FastifyInstance) {
       if (body.quantidadeVolumes !== undefined) data.quantidadeVolumes = body.quantidadeVolumes
       if (body.observacoes !== undefined) data.observacoes = body.observacoes || null
       if (body.entradaRp !== undefined) data.entradaRp = body.entradaRp
+      if (body.dataEmissao !== undefined) data.dataEmissao = body.dataEmissao
+      if (body.dataRecebimento !== undefined) data.dataRecebimento = body.dataRecebimento
 
       const notaFiscal = await notaFiscalService.update(id, data)
 
