@@ -456,7 +456,8 @@ export class NotaFiscalService {
       { header: 'Fornecedor Secundário', key: 'fornecedorSecundario', width: 40 },
       { header: 'Data Emissão', key: 'dataEmissao', width: 18 },
       { header: 'Filial Recebimento', key: 'filialRecebimento', width: 20 },
-      { header: 'Status', key: 'status', width: 22 }
+      { header: 'Status', key: 'status', width: 22 },
+      { header: 'Volumes', key: 'quantidadeVolumes', width: 12 }
     ]
 
     sheet.getRow(1).font = { bold: true }
@@ -481,7 +482,8 @@ export class NotaFiscalService {
         fornecedorSecundario: nf.fornecedorSecundario?.nome || '',
         dataEmissao: nf.dataEmissao ? new Date(nf.dataEmissao) : '',
         filialRecebimento: nf.filialRecebimento?.nome || '',
-        status: statusFinal
+        status: statusFinal,
+        quantidadeVolumes: nf.quantidadeVolumes
       })
     })
 
